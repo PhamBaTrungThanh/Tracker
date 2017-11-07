@@ -10,4 +10,6 @@ class Work extends Model
     {
         return $this->morphMany('App\Models\Category', 'parent');
     }
+
+    
 }

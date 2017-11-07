@@ -17,10 +17,10 @@ class CreateTrackersTable extends Migration
             $table->increments('id');
             
             $table->integer('work_id')->unsigned();
-            $table->integer('parent_id')->unsigned();
-            $table->string('parent_type');
-            
+            $table->integer('material_id')->unsigned();
+
             $table->string('type');
+            
             $table->string('note')->nullable();
 
             $table->date('bought_at')->nullable();

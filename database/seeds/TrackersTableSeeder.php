@@ -13,8 +13,7 @@ class TrackersTableSeeder extends Seeder
     {
         DB::table('trackers')->insert([
             "work_id" => 1,
-            "parent_id" => 1,
-            "parent_type" => "App\Models\Material",
+            "material_id" => 1,
             "type" => "boq",
             "unit" => 100,
             "cost" => 3600,
@@ -23,8 +22,7 @@ class TrackersTableSeeder extends Seeder
         ]);
         DB::table('trackers')->insert([
             "work_id" => 1,
-            "parent_id" => 1,
-            "parent_type" => "App\Models\Material",
+            "material_id" => 1,
             "type" => "contract",
             "unit" => 80,
             "cost" => 3000,

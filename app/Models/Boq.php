@@ -7,6 +7,8 @@ use Illuminate\Database\Eloquent\Builder;
 
 class Boq extends Model
 {
+    protected $table = 'trackers';
+    
     protected static function boot()
     {
         parent::boot();
