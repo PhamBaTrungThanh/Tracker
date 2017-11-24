@@ -24,6 +24,7 @@ class MaterialInWorkDetails extends Resource
             'note' => $this->pivot->note,
             'boq' => $this->boqInWork($request->work->id)->get(),
             'contract' => $this->contractInWork($request->work->id)->get(),
+            'invoices' => $this->invoiceInWork($request->work->id)->get(),
         ];
     }
 }

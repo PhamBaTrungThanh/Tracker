@@ -19,4 +19,8 @@ class Material extends Model
     {
         return $this->hasMany(Contract::class)->limit(1)->where('work_id', $work);
     }
+    public function invoiceInWork(int $work)
+    {
+        return $this->hasMany(Invoice::class)->limit(1)->where('work_id', $work);
+    }
 }
