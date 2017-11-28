@@ -19,4 +19,5 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 
 Route::prefix('v1')->middleware('auth:api')->namespace('Api_v1')->group(function() {
     Route::get('work/{work}', 'DataController@workTrackers')->name('work_trackers');
+    Route::get('/user', 'UserController@index')->name('user.index');
 });

@@ -1,22 +1,65 @@
+'use strict';
 
-/**
- * First we will load all of this project's JavaScript dependencies which
- * includes Vue and other libraries. It is a great starting point when
- * building robust, powerful web applications using Vue and Laravel.
- */
+import Vue from 'vue';
+import VueRouter from 'vue-router';
+import Vuex from 'vuex';
+import VueCookie from "vue-cookie";
 
-require('./bootstrap');
+import axios from 'axios';
+import VueAxios from 'vue-axios';
 
-window.Vue = require('vue');
+import routes from './routes';
+import store from './store';
 
-/**
- * Next, we will create a fresh Vue application instance and attach it to
- * the page. Then, you may begin adding components to this application
- * or customize the JavaScript scaffolding to fit your unique needs.
- */
+Vue.use(VueRouter);
+Vue.use(Vuex);
+Vue.use(VueCookie);
+Vue.use(VueAxios, axios);
 
-Vue.component('example', require('./components/Example.vue'));
+const router = new VueRouter({
+    routes: routes,
+    mode: 'history',
+});
+
+router.afterEach((to, from) => {
+    if (typeof to.meta.title === "string") {
+        document.title = to.meta.title;
+    }
+});
 
 const app = new Vue({
-    el: '#app'
-});
+    router,
+    store,
+    methods: {
+        login() {
+            this.$router.push({name: "login"});
+        }
+    },
+    mounted() {
+        if (!this.$store.state.authorizationToken) {
+            const cookieToken = this.$cookie.get('cookie-token');
+            if (!cookieToken) {
+                this.login();
+            }
+            else {
+                this.$store.commit('SET_AUTHORIZATION_TOKEN', cookieToken);
+            }
+        } else {
+            // do a call to ./user
+            this.axios.defaults.headers.common['Authorization'] = this.$store.state.authorizationToken;
+            this.axios.get(`${this.$store.state.apiBase}/user`)
+                    .then(response => {
+                        this.$store.commit('SET_USER', response.data.data);
+                    })
+                    .catch(error => {
+                        if (error.status == 401) {
+                            this.login();
+                        } else {
+                            console.log(error);
+                        }
+                    });
+            }
+
+  
+    },
+}).$mount('#app');
