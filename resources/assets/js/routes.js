@@ -1,9 +1,8 @@
-const Login = () => import('./components/Login.vue');
 const routes = [
     {
         path: "/login",
         name: "login",
-        component: Login,
+        component: () => import('./components/Login.vue'),
         meta: {
             title: "Đăng nhập",
         },
