@@ -7,6 +7,14 @@ const routes = [
             title: "Đăng nhập",
         },
     },
+    {
+        path: "/dashboard",
+        name: "dashboard",
+        component: () => import('./components/Dashboard.vue'),
+        meta: {
+            title: "Quản lý"
+        }
+    }
     
 ];
 export default routes;

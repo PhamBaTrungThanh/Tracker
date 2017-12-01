@@ -44,12 +44,14 @@ const app = new Vue({
             else {
                 this.$store.commit('SET_AUTHORIZATION_TOKEN', cookieToken);
             }
-        } else {
+        }
+        if (this.$store.state.authorizationToken) {
             // do a call to ./user
             this.axios.defaults.headers.common['Authorization'] = this.$store.state.authorizationToken;
             this.axios.get(`${this.$store.state.apiBase}/user`)
                     .then(response => {
                         this.$store.commit('SET_USER', response.data.data);
+                        this.$router.push({name: "dashboard"});
                     })
                     .catch(error => {
                         if (error.status == 401) {

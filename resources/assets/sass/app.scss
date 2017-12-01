@@ -1,6 +1,6 @@
 
 // Fonts
-@import url('https://fonts.googleapis.com/css?family=Open+Sans|Roboto+Condensed');
+@import url('https://fonts.googleapis.com/css?family=Roboto:300,400&subset=vietnamese');
 
 // Variables
 @import "variables";
@@ -17,3 +17,6 @@
 @import "node_modules/bootstrap/scss/card";
 @import "node_modules/bootstrap/scss/close";
 @import "node_modules/bootstrap/scss/utilities";
+
+
+@import "./components/dashboard";

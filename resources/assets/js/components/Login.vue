@@ -31,7 +31,7 @@
         </div>
     </div> <!-- /container -->
 </template>
-616280916
+
 <script>
 export default {
     data() {
@@ -65,6 +65,7 @@ export default {
                             .then(response => {
                                 this.$store.commit('SET_USER', response.data.data);
                                 this.disabledForm = false;
+                                this.$router.push({name: "dashboard"});
                             })
                             .catch(error => {
                                 console.log(error);
