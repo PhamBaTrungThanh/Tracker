@@ -65,7 +65,7 @@ export default {
                             .then(response => {
                                 this.$store.commit('SET_USER', response.data.data);
                                 this.disabledForm = false;
-                                this.$router.push({name: "dashboard"});
+                                this.$router.push({name: "base.dashboard"});
                             })
                             .catch(error => {
                                 console.log(error);

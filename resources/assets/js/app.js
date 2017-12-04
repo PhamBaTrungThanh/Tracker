@@ -51,7 +51,7 @@ const app = new Vue({
             this.axios.get(`${this.$store.state.apiBase}/user`)
                     .then(response => {
                         this.$store.commit('SET_USER', response.data.data);
-                        this.$router.push({name: "dashboard"});
+                        this.$router.push({name: "base.dashboard"});
                     })
                     .catch(error => {
                         if (error.status == 401) {

@@ -8,13 +8,28 @@ const routes = [
         },
     },
     {
-        path: "/dashboard",
-        name: "dashboard",
-        component: () => import('./components/Dashboard.vue'),
-        meta: {
-            title: "Quản lý"
-        }
-    }
+        path: "/",
+        name: "base",
+        component: () => import('./components/Base.vue'),
+        children: [
+            {
+                path: "dashboard",
+                name: "base.dashboard",
+                component: () => import('./components/Dashboard.vue'),
+                meta: {
+                    title: "Bảng thông báo"
+                }
+            }, {
+                path: "works",
+                name: "base.works",
+                component: () => import('./components/Works.vue'),
+                meta: {
+                    title: "Danh sách công trường",
+                }
+            }
+        ],
+    },
+
     
 ];
 export default routes;
