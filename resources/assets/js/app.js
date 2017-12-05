@@ -35,7 +35,7 @@ const app = new Vue({
             this.$router.push({name: "login"});
         }
     },
-    mounted() {
+    created() {
         if (!this.$store.state.authorizationToken) {
             const cookieToken = this.$cookie.get('cookie-token');
             if (!cookieToken) {
@@ -51,7 +51,6 @@ const app = new Vue({
             this.axios.get(`${this.$store.state.apiBase}/user`)
                     .then(response => {
                         this.$store.commit('SET_USER', response.data.data);
-                        this.$router.push({name: "base.dashboard"});
                     })
                     .catch(error => {
                         if (error.status == 401) {

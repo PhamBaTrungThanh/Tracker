@@ -68,5 +68,12 @@ div#navigation {
     background: #ffffff;
 }
 main {
-    background: #eee;
+    background: #f3f5f6;
+    margin-top: 50px;
+
+    .card-deck.works {
+        & > .card {
+            max-width: 33vw;
+        }
+    }
 }

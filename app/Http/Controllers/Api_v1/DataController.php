@@ -12,7 +12,11 @@ class DataController extends Controller
 {
     public function workTrackers(Work $work)
     {
-
         return new workTrackers($work);
+    }
+
+    public function works(Request $request)
+    {
+        return new \App\Http\Resources\WorkResource(Work::all());
     }
 }

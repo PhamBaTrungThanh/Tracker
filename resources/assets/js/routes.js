@@ -26,6 +26,13 @@ const routes = [
                 meta: {
                     title: "Danh sách công trường",
                 }
+            }, {
+                path: "work/:id",
+                name: "base.workReport",
+                component: () => import('./components/WorkReport.vue'),
+                meta: {
+                    title: "Báo cáo chi tiết",
+                }
             }
         ],
     },
