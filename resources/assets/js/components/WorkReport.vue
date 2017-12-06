@@ -2,16 +2,21 @@
     <div class="card" v-if="report">
         <h4 class="card-header">Công trình {{ report.name}} </h4>
         <div class="card-body">
+            <hot-table :settings="tableSetting"></hot-table>
         </div>
     </div>
 </template>
 
 <script>
+import HotTable from 'vue-handsontable-official';
 
 export default {
     data() {
         return {
             report: false,
+            tableSetting: {
+                stretchH: "all",
+            }
         }
     },
     created() {
@@ -20,6 +25,9 @@ export default {
         }).catch( error => {
             console.log(error);
         });
+    },
+    components: {
+        HotTable,
     }
 }
 </script>

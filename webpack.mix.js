@@ -14,12 +14,17 @@ mix.webpackConfig({
                 ]
             }
         ]
-    }
+    },
+    resolve: {
+        alias: {
+         // handsontable: path.resolve(__dirname, 'node_modules/handsontable-pro')
+        }
+      },
 });
 
 
 mix.js('resources/assets/js/app.js', 'public/js')
-   .extract(['vue', 'axios', 'vue-router', 'vuex', 'vue-cookie', 'vue-axios']);
+   .extract(['vue', 'axios', 'vue-router', 'vuex', 'vue-cookie', 'vue-axios', 'vue-handsontable-official']);
     
 mix.sass('resources/assets/sass/app.scss', 'public/css');
 mix.sourceMaps();

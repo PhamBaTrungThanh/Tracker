@@ -10,10 +10,10 @@
                     <div role="sections">
                         <ul>
 
-                            <router-link tag="li" to="dashboard">
+                            <router-link tag="li" to="/dashboard">
                                 <a>Thông báo</a>
                             </router-link>
-                            <router-link tag="li" to="works">
+                            <router-link tag="li" to="/works">
                                 <a>Công trường</a>
                             </router-link>
                         </ul>
@@ -47,7 +47,7 @@ export default {
         ...mapState([
             'user',
         ]),
-    }
+    },
 }
 </script>
 
