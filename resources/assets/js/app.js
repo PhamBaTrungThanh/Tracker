@@ -37,11 +37,14 @@ const app = new Vue({
     },
     created() {
         if (!this.$store.state.authorizationToken) {
+            console.warn("No token found, process to checking cookies");
             const cookieToken = this.$cookie.get('cookie-token');
             if (!cookieToken) {
+                console.error("Cookies's empty, proceed to login");
                 this.login();
             }
             else {
+                console.info("Token found from cookies");
                 this.$store.commit('SET_AUTHORIZATION_TOKEN', cookieToken);
             }
         }
@@ -50,10 +53,13 @@ const app = new Vue({
             this.axios.defaults.headers.common['Authorization'] = this.$store.state.authorizationToken;
             this.axios.get(`${this.$store.state.apiBase}/user`)
                     .then(response => {
+                        console.info("Token is legit");
                         this.$store.commit('SET_USER', response.data.data);
                     })
                     .catch(error => {
-                        if (error.status == 401) {
+                        console.log(error.response.status);
+                        if (error.response.status == 401) {
+                            console.error("Token ilegal, proceed to login");
                             this.login();
                         } else {
                             console.log(error);

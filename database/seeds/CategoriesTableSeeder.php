@@ -1,7 +1,7 @@
 <?php
 
 use Illuminate\Database\Seeder;
-
+use App\Models\Category;
 class CategoriesTableSeeder extends Seeder
 {
     /**
@@ -11,19 +11,20 @@ class CategoriesTableSeeder extends Seeder
      */
     public function run()
     {
-        DB::table('categories')->insert([
-            'name' => 'ĐIỆN',
-            'description' => '',
-            'parent_id' => 1,
-            'parent_type' => 'App\Models\Work',
-
+        $node = Category::create([
+            'name' => "ĐIỆN",
+            "children" => [
+                ["name" => "Dây cáp điện"],
+                ["name" => "Tủ điện"],
+                ["name" => "máy phát điện"],
+            ],
         ]);
-
-        DB::table('categories')->insert([
-            'name' => "Cáp cadisun/Nam Hà Nội",
-            "description" => "",
-            "parent_id" => 1,
-            "parent_type" => "App\Models\Category",
+        $node = Category::create([
+            'name' => "NƯỚC",
+            "children" => [
+                ["name" => "Máy bơm nước"],
+                ["name" => "Ống nước"],
+            ],
         ]);
     }
 }

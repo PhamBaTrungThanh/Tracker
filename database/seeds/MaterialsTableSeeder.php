@@ -17,6 +17,7 @@ class MaterialsTableSeeder extends Seeder
             "per" => "m",
             "description" => "",
             "brand" => "Cadisun",
+            "category_id" => 2,
         ]);
         DB::table('materials')->insert([
             'uid' => "CADI002",
@@ -24,6 +25,7 @@ class MaterialsTableSeeder extends Seeder
             "per" => "m",
             "description" => "",
             "brand" => "Cadisun",
+            "category_id" => 2,
         ]);
         DB::table('materials')->insert([
             'uid' => "CADI003",
@@ -31,6 +33,7 @@ class MaterialsTableSeeder extends Seeder
             "per" => "m",
             "description" => "",
             "brand" => "Cadisun",
+            "category_id" => 2,
         ]);
     }
 }

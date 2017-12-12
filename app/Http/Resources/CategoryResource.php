@@ -15,10 +15,9 @@ class CategoryResource extends Resource
     public function toArray($request)
     {
         return [
-            'category_id' => $this->id,
-            'category_name' => $this->name,
-            'children' => $this->when($this->children->count(), CategoryResource::collection($this->children)),
-            'materials' => $this->when(!$this->children->count(), MaterialInWorkDetails::collection($this->materials)),
+            'id' => $this->id,
+            'label' => $this->name,
+            'children' => $this->children,
         ];
     }
 }

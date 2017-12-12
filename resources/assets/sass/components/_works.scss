@@ -4,3 +4,16 @@
         max-width: 30vw;
     }
 }
+.handsontable {
+    table.htCore {
+        tbody {
+            tr:nth-child(1), tr:nth-child(2), tr:nth-child(3) {
+                background: #eee;
+                td {
+                    vertical-align: middle;
+                    text-align: center;
+                }
+            }
+        }
+    }
+}

@@ -16,6 +16,9 @@
                             <router-link tag="li" to="/works">
                                 <a>Công trường</a>
                             </router-link>
+                            <router-link tag="li" to="/materials">
+                                <a>Vật tư/Báo giá</a>
+                            </router-link>
                         </ul>
                     </div>
                 </div>

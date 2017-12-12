@@ -17,6 +17,7 @@ class CreateMaterialsTable extends Migration
             $table->increments('id');
             $table->string('uid');
             $table->string('name');
+            $table->integer('category_id');
             $table->string('brand')->nullable();
             $table->text('description')->nullable();
             $table->string('per');

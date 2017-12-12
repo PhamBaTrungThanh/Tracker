@@ -12,15 +12,13 @@
             </div>                
         </div>
         <fullscreen :fullscreen.sync="fullscreen" ref="fullscreen" background="#ffffff">
-            <hot-table :settings="tableSetting" v-if="fullscreen"></hot-table>
+            <hot-table :settings="tableSetting" v-if="fullscreen" :data="tableData"></hot-table>
         </fullscreen>
     </div>
 </template>
 
 <script>
 import Fullscreen from "vue-fullscreen/src/component.vue"
-import HotTable from 'vue-handsontable-official';
-
 export default {
     data() {
         return {
@@ -28,8 +26,40 @@ export default {
             report: false,
             tableSetting: {
                 stretchH: "all",
+                contextMenu: true,
+                colWidths: [20, 100, 30, 30, 50, 50, 60, 60, 60, 60, 60],
+                mergeCells: [
+                    {row: 0, col: 0, rowspan: 3, colspan: 1},
+                    {row: 0, col: 1, rowspan: 1, colspan: 3},
+                    {row: 0, col: 4, rowspan: 1, colspan: 5},
+                    {row: 0, col: 9, rowspan: 1, colspan: 2},
+                    {row: 0, col: 11, rowspan: 3, colspan: 1},
+                    // row 2
+                    {row: 1, col: 1, rowspan: 2, colspan: 1},
+                    {row: 1, col: 2, rowspan: 2, colspan: 1},
+                    {row: 1, col: 3, rowspan: 2, colspan: 1},
+                    {row: 1, col: 4, rowspan: 2, colspan: 1}, 
+                    {row: 1, col: 5, rowspan: 2, colspan: 1},    
+                    {row: 1, col: 6, rowspan: 2, colspan: 1},    
+                    {row: 1, col: 7, rowspan: 1, colspan: 2},   
+                    {row: 1, col: 9, rowspan: 2, colspan: 1},    
+                    {row: 1, col: 10, rowspan: 2, colspan: 1},  
+                            
+                ],
             },
             fullscreen: false,
+            data: {},
+            tableHeaders: [
+                ["STT", "Loại vật tư", ""   , ""         , "Hợp đồng", ""       , ""          ,""                   , ""      , "BOQ"     , ""       ,"Ghi chú"],
+                [""   , "Tên hàng"   , "ĐVT", "Loại tiền", "Số Lượng", "Đơn giá", "Thành tiền", "Tạm ứng/thanh toán", ""      , "Số lượng", "Đơn giá", ""],
+                [""   , ""           , ""   , ""         , ""        , ""       , ""          , "Ngày"              ,"Số tiền", ""        , ""       , ""],
+            ]
+        }
+
+    },
+    computed: {
+        tableData() {
+            return this.tableHeaders;
         }
     },
     methods: {
@@ -37,9 +67,15 @@ export default {
             this.$refs.fullscreen.enter();
             this.axios.get(`${this.$store.state.apiBase}/work/${work_id}`).then( response => {
                 this.report = response.data.data;
+                this.flattenData(this.report.categories);
             }).catch( error => {
                 console.log(error);
             });
+        },
+        flattenData(data) {
+            for (let index in data) {
+                
+            }
         }
     },
     mounted() {
@@ -50,7 +86,6 @@ export default {
         });
     },
     components: {
-        HotTable,
         Fullscreen,
     }
 }

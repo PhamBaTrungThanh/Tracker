@@ -33,6 +33,13 @@ const routes = [
                 meta: {
                     title: "Báo cáo chi tiết",
                 }
+            }, {
+                path: "materials",
+                name: "base.materials",
+                component: () => import("./components/Materials.vue"),
+                meta: {
+                    title: "Danh sách vật tư"
+                }
             }
         ],
     },

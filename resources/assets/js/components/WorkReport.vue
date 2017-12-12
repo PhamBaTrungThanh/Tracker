@@ -8,7 +8,6 @@
 </template>
 
 <script>
-import HotTable from 'vue-handsontable-official';
 
 export default {
     data() {
@@ -16,6 +15,7 @@ export default {
             report: false,
             tableSetting: {
                 stretchH: "all",
+                          
             }
         }
     },
@@ -27,7 +27,6 @@ export default {
         });
     },
     components: {
-        HotTable,
     }
 }
 </script>

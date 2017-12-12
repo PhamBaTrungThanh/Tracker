@@ -18,7 +18,10 @@
 @import "node_modules/bootstrap/scss/close";
 @import "node_modules/bootstrap/scss/utilities";
 
+// Components
+@import "node_modules/@riophae/vue-treeselect/dist/vue-treeselect.min";
 
+// Apps
 @import "./components/global";
 @import "./components/dashboard";
 @import "./components/works";

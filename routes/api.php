@@ -21,4 +21,8 @@ Route::prefix('v1')->middleware('auth:api')->namespace('Api_v1')->group(function
     Route::get('works', 'DataController@works')->name('works');
     Route::get('work/{work}', 'DataController@workTrackers')->name('work_trackers');
     Route::get('/user', 'UserController@index')->name('user.index');
+
+    Route::get('/material/categories', 'MaterialController@categories')->name('category_list');
+    Route::resource('/material', 'MaterialController');
+    
 });
