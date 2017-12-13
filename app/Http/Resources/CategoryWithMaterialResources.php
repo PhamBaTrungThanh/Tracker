@@ -4,7 +4,7 @@ namespace App\Http\Resources;
 
 use Illuminate\Http\Resources\Json\Resource;
 
-class CategoryResource extends Resource
+class CategoryWithMaterialResources extends Resource
 {
     /**
      * Transform the resource into an array.
@@ -16,8 +16,9 @@ class CategoryResource extends Resource
     {
         return [
             'id' => $this->id,
-            'label' => $this->name,
-            'children' => $this->children,
+            'name' => $this->name,
+            'children' => $this->when(count($this->children), self::collection($this->children)),
+            'materials' => $this->when(count($this->materials), MaterialResources::collection($this->materials)),
         ];
     }
 }

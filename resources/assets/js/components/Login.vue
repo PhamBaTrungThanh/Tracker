@@ -49,8 +49,8 @@ export default {
                 this.disabledForm = "disabled";
                 this.axios.post(`./oauth/token`, {
                     "grant_type": "password",
-                    "client_id": "1",
-                    "client_secret": "gpeddInNL3AW5gmjoZ1bNMt178lFOqNolIs1e3da",
+                    "client_id": "2",
+                    "client_secret": "DRjEqkHVSWC2deWj3DudBoIVjRsowrC2pcSngpwB",
                     "scope": "",
                     "username": this.username,
                     "password": this.password,

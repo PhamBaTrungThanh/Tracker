@@ -11,11 +11,11 @@ class MaterialController extends Controller
 {
     public function index() 
     {
-        
+        return \App\Http\Resources\CategoryWithMaterialResources::collection(Category::with('materials')->get()->toTree());
     }
 
     public function categories()
     {
-        return new \App\Http\Resources\CategoryResource(Category::all());
+        return \App\Http\Resources\CategoryResources::collection(Category::get()->toTree());
     }
 }

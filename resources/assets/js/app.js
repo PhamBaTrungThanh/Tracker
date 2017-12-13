@@ -28,6 +28,7 @@ router.afterEach((to, from) => {
 });
 
 const app = new Vue({
+    el: '#app',
     router,
     store,
     methods: {
@@ -35,6 +36,7 @@ const app = new Vue({
             this.$router.push({name: "login"});
         }
     },
+
     created() {
         if (!this.$store.state.authorizationToken) {
             console.warn("No token found, process to checking cookies");
@@ -50,23 +52,25 @@ const app = new Vue({
         }
         if (this.$store.state.authorizationToken) {
             // do a call to ./user
-            this.axios.defaults.headers.common['Authorization'] = this.$store.state.authorizationToken;
-            this.axios.get(`${this.$store.state.apiBase}/user`)
-                    .then(response => {
-                        console.info("Token is legit");
-                        this.$store.commit('SET_USER', response.data.data);
-                    })
-                    .catch(error => {
-                        console.log(error.response.status);
-                        if (error.response.status == 401) {
-                            console.error("Token ilegal, proceed to login");
-                            this.login();
-                        } else {
-                            console.log(error);
-                        }
-                    });
+            this.axios.get(`${this.$store.state.apiBase}/user`, {
+                    headers: {
+                        'Authorization': this.$store.state.authorizationToken
+                    }
+                }).then(response => {
+                    console.info("Token is legit");
+                    this.$store.commit('SET_USER', response.data.data);
+                    this.axios.defaults.headers.common['Authorization'] = this.$store.state.authorizationToken;
+                })
+                .catch(error => {
+                    if (error.response.status == 401) {
+                        console.error("Token ilegal, proceed to login");
+                        this.login();
+                    } else {
+                        console.log(error);
+                    }
+                });
             }
 
   
     },
-}).$mount('#app');
+});

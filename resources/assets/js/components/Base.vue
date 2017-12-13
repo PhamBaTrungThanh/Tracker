@@ -51,6 +51,9 @@ export default {
             'user',
         ]),
     },
+    beforeRouteEnter(to, from, next) {
+        console.log('next');
+    },
 }
 </script>
 

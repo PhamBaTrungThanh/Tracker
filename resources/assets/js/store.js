@@ -9,6 +9,8 @@ const store = new Vuex.Store({
         authorizationToken: "",
         apiBase: "http://tracker.dev/api/v1",
         user: {},
+        categoryList: {},
+
     },
     mutations: {
         SET_AUTHORIZATION_TOKEN(state, token) {
@@ -16,6 +18,9 @@ const store = new Vuex.Store({
         },
         SET_USER(state, userObject) {
             state.user = userObject;
+        },
+        UPDATE_CATEGORY_LIST(state, list) {
+            state.categoryList = list;
         }
     },
 });

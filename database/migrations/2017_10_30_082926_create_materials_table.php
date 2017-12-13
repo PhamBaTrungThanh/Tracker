@@ -15,7 +15,7 @@ class CreateMaterialsTable extends Migration
     {
         Schema::create('materials', function (Blueprint $table) {
             $table->increments('id');
-            $table->string('uid');
+            $table->string('uid')->nullable();
             $table->string('name');
             $table->integer('category_id');
             $table->string('brand')->nullable();

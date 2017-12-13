@@ -1,7 +1,7 @@
 <?php
 
 use Illuminate\Database\Seeder;
-
+use App\Models\Material;
 class MaterialsTableSeeder extends Seeder
 {
     /**
@@ -11,7 +11,7 @@ class MaterialsTableSeeder extends Seeder
      */
     public function run()
     {
-        DB::table('materials')->insert([
+        Material::create([
             'uid' => "CADI001",
             "name" => "Cáp 1x10",
             "per" => "m",
@@ -19,7 +19,7 @@ class MaterialsTableSeeder extends Seeder
             "brand" => "Cadisun",
             "category_id" => 2,
         ]);
-        DB::table('materials')->insert([
+        Material::create([
             'uid' => "CADI002",
             "name" => "Cáp 1x20",
             "per" => "m",
@@ -27,7 +27,7 @@ class MaterialsTableSeeder extends Seeder
             "brand" => "Cadisun",
             "category_id" => 2,
         ]);
-        DB::table('materials')->insert([
+        Material::create([
             'uid' => "CADI003",
             "name" => "Cáp 1x30",
             "per" => "m",
