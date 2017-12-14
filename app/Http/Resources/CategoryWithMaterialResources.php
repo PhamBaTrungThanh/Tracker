@@ -19,6 +19,9 @@ class CategoryWithMaterialResources extends Resource
             'name' => $this->name,
             'children' => $this->when(count($this->children), self::collection($this->children)),
             'materials' => $this->when(count($this->materials), MaterialResources::collection($this->materials)),
+            'expanded' => ($this->depth == 0) ? true : false,
+            'depth' => $this->depth,
+            'type' => 'category',
         ];
     }
 }

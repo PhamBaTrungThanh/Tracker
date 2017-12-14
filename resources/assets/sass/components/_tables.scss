@@ -1,0 +1,35 @@
+table.trackers {
+    width: 100%;
+    & > thead.thead-light {
+        background: #eee;
+        
+        & > tr > th {
+            border: 1px solid #ddd;
+            padding: 2px 5px;
+            font-weight: 400;
+        }
+    }
+    & > tbody {
+        width: 100%;
+
+        & > tr {
+            border: 1px solid #ddd;
+        }
+    }
+}
+table.nested-table {
+    width: 100%;
+    .expandable {
+        cursor: pointer;
+    }
+    .depth-0 {
+        background: #ccefcc;
+        font-weight: 400;
+        padding: 2px 25px;
+    }
+    .depth-1 {
+        padding: 2px 45px;
+        background: #eecc
+   }
+}
+

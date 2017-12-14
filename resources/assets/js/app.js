@@ -9,9 +9,10 @@ import axios from 'axios';
 import routes from './routes';
 import store from './store';
 
+import MaterialRow from "./components/Rows/MaterialRow.vue";
 Vue.use(VueRouter);
 Vue.use(Vuex);
-
+Vue.component('material-row', MaterialRow);
 // Boostrap
 // First we make axios globaly accessible
 window.axios = axios;

@@ -1,19 +1,18 @@
 <template>
-    <div class="material-table">
-        <table class="table table-bordered table-hover table-sm">
-            <thead class="thead-light">
-                <tr>
-                    <th scope="col" class="col-1">#</th>
-                    <th scope="col" class="col-8">Tên</th>
-                    <th scope="col" class="col-1">Đơn vị</th>
-                    <th scope="col" class="col-2">Hãng</th>
-                </tr>
-            </thead>
-            <tbody>
-                <material-row v-for="(row, index) in rows" :row="row" :key="index"></material-row>
-            </tbody>
-        </table>
-    </div>
+    <table class="material-table trackers">
+        <thead class="thead-light">
+            <tr>
+                <th style="width: 40px;" class="text-center">#</th>
+                <th>Tên</th>
+                <th class="text-center" style="width: 80px;">Đơn vị</th>
+                <th class="text-center" style="width: 150px">Giá hiện tại</th>
+                <th class="text-center" style="width: 150px;">Hãng</th>
+            </tr>
+        </thead>
+        <tbody>
+            <material-row v-for="(row, index) in rows" :row="row" :key="index"></material-row>
+        </tbody>
+    </table>
 </template>
 
 <script>

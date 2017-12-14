@@ -11,7 +11,7 @@ class MaterialController extends Controller
 {
     public function index() 
     {
-        return \App\Http\Resources\CategoryWithMaterialResources::collection(Category::with('materials')->get()->toTree());
+        return \App\Http\Resources\CategoryWithMaterialResources::collection(Category::with('materials')->withDepth()->get()->toTree());
     }
 
     public function categories()

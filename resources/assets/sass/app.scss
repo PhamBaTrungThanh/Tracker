@@ -22,7 +22,9 @@
 // Components
 @import "node_modules/@riophae/vue-treeselect/dist/vue-treeselect.min";
 
+
 // Apps
 @import "./components/global";
+@import "./components/tables";
 @import "./components/dashboard";
 @import "./components/works";
