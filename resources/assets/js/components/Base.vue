@@ -41,6 +41,8 @@
 </template>
 <script>
 import { mapState } from 'vuex';
+import { getCookie } from 'tiny-cookie';
+
 
 export default {
     computed: {
@@ -52,7 +54,41 @@ export default {
         ]),
     },
     beforeRouteEnter(to, from, next) {
-        console.log('next');
+        
+        console.log("Getting token from cookie");
+        const cookieToken = getCookie('cookie-token');
+        if (!cookieToken) {
+            console.error("Cookies's empty, proceed to login");
+            next({name: "login"});
+        } else {
+            console.info("Token found from cookies");
+
+            // do a call to ./user
+            axios.get(`http://tracker.dev/api/v1/user`, {
+                    headers: {
+                        'Authorization': cookieToken
+                    }
+                }).then(response => {
+                    console.info("Token is legit");
+                    axios.defaults.headers.common['Authorization'] = cookieToken;
+                    next(vm => {
+                        vm.$store.commit('SET_USER', response.data.data);
+                        vm.$store.commit('SET_AUTHORIZATION_TOKEN', cookieToken);
+                    })
+
+                })
+                .catch(error => {
+                    if (error.response.status == 401) {
+                        console.error("Token ilegal, proceed to login");
+                        next({name: "login"});
+                    } else {
+                        console.log(error);
+                    }
+            });
+        }
+
+
+        
     },
 }
 </script>

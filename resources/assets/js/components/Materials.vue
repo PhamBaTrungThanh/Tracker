@@ -26,13 +26,13 @@ export default {
             rows: false,
         }
     },
-    mounted() {
-        this.axios.get(`${this.$store.state.apiBase}/material/categories`).then( response => {
+    created() {
+        axios.get(`${this.$store.state.apiBase}/material/categories`).then( response => {
                 this.$store.commit('UPDATE_CATEGORY_LIST', response.data.data);
             }).catch( error => {
                 console.log(error);
             });
-        this.axios.get(`${this.$store.state.apiBase}/material`).then( response => {
+        axios.get(`${this.$store.state.apiBase}/material`).then( response => {
                 this.rows = response.data.data;
             }).catch( error => {
                 console.log(error);

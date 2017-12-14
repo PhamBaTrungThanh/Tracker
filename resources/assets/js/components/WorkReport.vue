@@ -20,7 +20,7 @@ export default {
         }
     },
     created() {
-        this.axios.get(`${this.$store.state.apiBase}/work/${this.$route.params.id}`).then( response => {
+        axios.get(`${this.$store.state.apiBase}/work/${this.$route.params.id}`).then( response => {
             this.report = response.data.data;
         }).catch( error => {
             console.log(error);

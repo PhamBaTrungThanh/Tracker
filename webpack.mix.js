@@ -24,7 +24,7 @@ mix.webpackConfig({
 
 
 mix.js('resources/assets/js/app.js', 'public/js')
-   .extract(['vue', 'axios', 'vue-router', 'vuex', 'vue-cookie', 'vue-axios', 'vue-fullscreen']);
+   .extract(['vue', 'axios', 'vue-router', 'vuex', 'tiny-cookie', 'vue-axios', 'vue-fullscreen']);
     
 mix.sass('resources/assets/sass/app.scss', 'public/css');
 mix.sourceMaps();

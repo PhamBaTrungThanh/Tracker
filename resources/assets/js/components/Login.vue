@@ -33,6 +33,7 @@
 </template>
 
 <script>
+import { setCookie } from 'tiny-cookie';
 export default {
     data() {
         return {
@@ -47,7 +48,7 @@ export default {
         login() {
             if (this.username !== false && this.password !== false ) {
                 this.disabledForm = "disabled";
-                this.axios.post(`./oauth/token`, {
+                axios.post(`./oauth/token`, {
                     "grant_type": "password",
                     "client_id": "2",
                     "client_secret": "DRjEqkHVSWC2deWj3DudBoIVjRsowrC2pcSngpwB",
@@ -57,19 +58,11 @@ export default {
                 }).then( response => {
                     if (response.status === 200) {
                         this.$store.commit('SET_AUTHORIZATION_TOKEN', `Bearer ${response.data.access_token}`);
-                        this.axios.defaults.headers.common['Authorization'] =  `Bearer ${response.data.access_token}`;
+                        axios.defaults.headers.common['Authorization'] =  `Bearer ${response.data.access_token}`;
                         if (this.rememberMe) {
-                            this.$cookie.set('cookie-token', `Bearer ${response.data.access_token}`, "1Y");
+                            setCookie('cookie-token', `Bearer ${response.data.access_token}`, "1Y");
                         }
-                        this.axios.get(`${this.$store.state.apiBase}/user`)
-                            .then(response => {
-                                this.$store.commit('SET_USER', response.data.data);
-                                this.disabledForm = false;
-                                this.$router.push({name: "base.dashboard"});
-                            })
-                            .catch(error => {
-                                console.log(error);
-                            });
+                        this.$router.push({name: "base.dashboard"});
                     }
                 }).catch( error => {
                     console.log(error);
