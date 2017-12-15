@@ -19,6 +19,8 @@ class CreateMaterialsTable extends Migration
             $table->string('name');
             $table->integer('category_id');
             $table->string('brand')->nullable();
+            $table->string('currency')->default('vnđ');
+            $table->string('current_price')->default(0);
             $table->text('description')->nullable();
             $table->string('per');
             $table->timestamps();

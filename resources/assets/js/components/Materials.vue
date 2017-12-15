@@ -6,8 +6,9 @@
                     <th class="col1">#</th>
                     <th class="col2">Tên</th>
                     <th class="col3">Đơn vị</th>
-                    <th class="col4">Giá hiện tại</th>
-                    <th class="col5">Hãng</th>
+                    <th class="col4">Loại tiền</th>
+                    <th class="col5">Giá hiện tại</th>
+                    <th class="col6">Hãng</th>
                 </tr>
             </thead>            
         </table>

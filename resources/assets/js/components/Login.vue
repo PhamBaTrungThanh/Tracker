@@ -51,7 +51,7 @@ export default {
                 axios.post(`./oauth/token`, {
                     "grant_type": "password",
                     "client_id": "2",
-                    "client_secret": "DRjEqkHVSWC2deWj3DudBoIVjRsowrC2pcSngpwB",
+                    "client_secret": "au0qY591GBJypQknl1kodTQyMVcNn80FjRVKQaG0",
                     "scope": "",
                     "username": this.username,
                     "password": this.password,
