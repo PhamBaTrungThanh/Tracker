@@ -17,9 +17,8 @@ class CategoryWithMaterialResources extends Resource
         return [
             'id' => $this->id,
             'name' => $this->name,
-            'children' => $this->when(count($this->children), self::collection($this->children)),
-            'materials' => $this->when(count($this->materials), MaterialResources::collection($this->materials)),
-            'expanded' => ($this->depth == 0) ? true : false,
+            'children' => count($this->children) ? self::collection($this->children) : (count($this->materials) ? MaterialResources::collection($this->materials) : null),
+            'expanded' => (count($this->materials)) ? false : true,
             'depth' => $this->depth,
             'type' => 'category',
         ];

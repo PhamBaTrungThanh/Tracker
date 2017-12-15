@@ -1,18 +1,20 @@
 <template>
-    <table class="material-table trackers">
-        <thead class="thead-light">
-            <tr>
-                <th style="width: 40px;" class="text-center">#</th>
-                <th>Tên</th>
-                <th class="text-center" style="width: 80px;">Đơn vị</th>
-                <th class="text-center" style="width: 150px">Giá hiện tại</th>
-                <th class="text-center" style="width: 150px;">Hãng</th>
-            </tr>
-        </thead>
-        <tbody>
-            <material-row v-for="(row, index) in rows" :row="row" :key="index"></material-row>
-        </tbody>
-    </table>
+    <div class="wrapper tracker-table material-trackers">
+        <table class=" heading-table">
+            <thead class="thead-light">
+                <tr>
+                    <th class="col1">#</th>
+                    <th class="col2">Tên</th>
+                    <th class="col3">Đơn vị</th>
+                    <th class="col4">Giá hiện tại</th>
+                    <th class="col5">Hãng</th>
+                </tr>
+            </thead>            
+        </table>
+        <material-row v-for="(row, index) in rows" :row="row" :key="index"></material-row>
+    </div>
+
+            
 </template>
 
 <script>
@@ -24,6 +26,12 @@ export default {
         return {
             rows: false,
         }
+    },
+    methods: {
+
+    },
+    computed: {
+
     },
     created() {
         axios.get(`${this.$store.state.apiBase}/material/categories`).then( response => {

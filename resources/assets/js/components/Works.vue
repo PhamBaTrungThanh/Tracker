@@ -65,7 +65,7 @@ export default {
     methods: {
         viewReports(work_id) {
             this.$refs.fullscreen.enter();
-            this.axios.get(`${this.$store.state.apiBase}/work/${work_id}`).then( response => {
+            axios.get(`${this.$store.state.apiBase}/work/${work_id}`).then( response => {
                 this.report = response.data.data;
                 this.flattenData(this.report.categories);
             }).catch( error => {
@@ -79,7 +79,7 @@ export default {
         }
     },
     mounted() {
-        this.axios.get(`${this.$store.state.apiBase}/works`).then( response => {
+        axios.get(`${this.$store.state.apiBase}/works`).then( response => {
             this.works = response.data.data;
         }).catch( error => {
             console.log(error);

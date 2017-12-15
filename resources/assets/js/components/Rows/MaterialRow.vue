@@ -1,24 +1,21 @@
-<template v-if="is_category">
-    <tr>
-        <td scope="row" colspan="5">
-            <table class="nested-table">
-                <tbody v-if="row.children">
-                    <tr>
-                        <td :class="classes">{{row.name}}</td>
-                    </tr>
-                    <material-row v-for="(nested_row, index) in row.children" :key="index" :row="nested_row"></material-row>
-                </tbody>
-                <tbody v-if="!row.children">
-                    <tr>
-                        <td :class="classes">{{row.name}}</td>
-                    </tr>  
-                    <material-row v-for="(material, index) in row.materials" :key="index" :row="material"></material-row>             
-                </tbody>
-            </table>
-        </td>
-    </tr>
+<template>
+    <div class="table-row" >
+        <div :class="classes" v-if="row.type === 'category'" @click="expand_me">
+            {{ row.name }}
+        </div>
+        <div v-else class="row-inside">
+            <div class="col1">{{row.id}}</div>
+            <div class="col2">{{row.name}}</div>
+            <div class="col3">{{row.per}}</div>
+            <div class="col4">vnd</div>
+            <div class="col5">0</div>
+            <div class="col6">{{row.brand}}</div>
+        </div>
+        <template v-if="expading_status">
+            <material-row v-for="item in row.children" :key="item.id" :row="item"></material-row>
+        </template>
+    </div>
 </template>
-
 <script>
 
 export default {
@@ -33,7 +30,15 @@ export default {
             expading_status: false,
         }
     },
+    methods: {
+        expand_me() {
+            if (this.row.children !== null) {
+                this.expading_status = !this.expading_status;
+            }
+        }
+    },
     computed: {
+        
         is_category() {
             return this.row.type == "category";
         },
@@ -42,10 +47,15 @@ export default {
                 `depth-${this.row.depth}`,
                 {
                     expanded: this.expading_status,
-                    expandable: this.row.children == true || this.row.materials == true
+                    expandable: this.row.children !== null,
+                    category: this.row.type === 'category',
+                    'row-inside': this.row.type === 'category',
                 }
             ];
-        }
+        },
+    },
+    mounted() {
+        this.expading_status = this.row.expanded;
     }
 }
 </script>

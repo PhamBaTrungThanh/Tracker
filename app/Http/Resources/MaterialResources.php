@@ -22,6 +22,7 @@ class MaterialResources extends Resource
             'description' => $this->description,
             'per' => $this->per,
             'brand' => $this->brand,
+            'type' => 'material',
         ];
     }
 }
