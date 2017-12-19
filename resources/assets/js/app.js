@@ -4,15 +4,24 @@ import Vue from 'vue';
 import VueRouter from 'vue-router';
 import Vuex from 'vuex';
 
+import VueSwal from 'vue-swal'
+import Treeselect from '@riophae/vue-treeselect'
 
 import axios from 'axios';
+
 import routes from './routes';
 import store from './store';
 
 import MaterialRow from "./components/Rows/MaterialRow.vue";
+
+
+
 Vue.use(VueRouter);
 Vue.use(Vuex);
+Vue.use(VueSwal);
+
 Vue.component('material-row', MaterialRow);
+Vue.component('treeselect', Treeselect);
 // Boostrap
 // First we make axios globaly accessible
 window.axios = axios;

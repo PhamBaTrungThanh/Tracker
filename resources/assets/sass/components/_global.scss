@@ -72,3 +72,13 @@ main {
     margin-top: 50px;
 
 }
+
+
+
+.show-on-swal {
+    display: none;
+}
+
+.swal-content .show-on-swal {
+    display: block;
+}

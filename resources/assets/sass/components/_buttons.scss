@@ -1,0 +1,18 @@
+.btn {
+    display: inline-block;
+    border-radius: 1.25rem;
+    height: 2.5rem;
+    padding: 0 20px;
+    margin: 0 5px;
+    cursor: pointer;
+}
+.btn.primary:hover {
+    background: $brand-primary;
+    color: #ffffff;
+}
+.btn.primary {
+    background: transparent;
+    border: 1px solid $brand-primary;
+    color: $brand-primary;
+    transition: all 0.2s ease;
+}
