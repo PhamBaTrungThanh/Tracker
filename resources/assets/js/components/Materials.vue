@@ -12,30 +12,19 @@
                 </tr>
             </thead>            
         </table>
-        <material-row v-for="(row, index) in rows" :row="row" :key="index"></material-row>
+        <material-row v-for="(row, index) in rows" :row="row" :key="index" @new-category="newCategory"></material-row>
 
         <div class="controls text-center">
-            <button class="btn primary" @click="addCategory">Thêm danh mục</button>
-            <button class="btn primary">Thêm vật tư</button>
+            <button class="btn primary" @click="newCategory">Thêm danh mục gốc</button>
         </div>
-
         <div class="add-category show-on-swal" ref="addCategoryElement">
-            <h3 class="text-center">Thêm danh mục</h3>
-            <div class="form-group">
-                <input type="text" class="form-control" v-bind="newCategoryTitle" placeholder="Nhập tên danh mục">
-            </div>
-            <div class="form-group">
-                <label>Nhập danh mục cha</label>
-                  <treeselect
-                    :multiple="false"
-                    :load-root-options="ajaxLoadCategories"
-                    :searchable="true"
-                    :close-on-select="true"
-                    placeholder="Bỏ trống để làm danh mục gốc"
-                    v-model="selectedCategories"
-
-                />
-            </div>
+            <h3 class="text-center">Thêm vào <b>{{addCategoryTitle}}</b></h3>
+            <template v-for="i in looper">
+                <div class="form-group" :key="i">
+                    <input type="text" class="form-control new-category-name" placeholder="Nhập tên danh mục" >
+                </div>
+            </template>
+            <a href="#" @click="looper++">Thêm</a>
         </div>
     </div>
 
@@ -51,25 +40,59 @@ export default {
         return {
             rows: false,
             categories: [],
-            newCategoryTitle: null,
-            selectedCategories: null,
+            addCategoryTitle: "",
+            looper: 1,
         }
     },
     methods: {
-        addCategory() {
-            this.$swal({
-                content: this.$refs.addCategoryElement,
-            });
-        },
+
         ajaxLoadCategories(callback) {
             callback(null, this.categories);
         },
-        convertToArray(objects) {
-            let list = [];
-            for(let index in objects) {
-                list.push(objects[index]);
+        clearCategory() {
+            this.looper = 1;
+            this.addCategoryTitle = "";
+            document.querySelector('input.new-category-name').value ="";
+            
+        },
+        getData() {
+            axios.get(`${this.$store.state.apiBase}/material`).then( response => {
+                this.rows = response.data.data;
+            }).catch( error => {
+                console.log(error);
+            });
+        },
+        newCategory(parent) {
+            if (!parent) {
+                parent.name = "gốc";
+                parent.id = 0;
             }
-            return list;
+            this.addCategoryTitle = parent.name;
+            this.$swal({
+                content: this.$refs.addCategoryElement
+            }).then( result => {
+                
+                if (result) {
+                    let newCategories = [];
+                    document.querySelectorAll('input.new-category-name').forEach( node => {
+                        newCategories.push(node.value);
+                    });
+                    axios.post(`${this.$store.state.apiBase}/category`, {
+                        categories: newCategories,
+                        parent_id: parent.id,
+                    }, {
+                        headers: {
+                            ContentType: 'application/x-www-form-urlencoded',
+                        }
+                    }).then( response => {
+                        if (response.status === 200) {
+                            this.getData();
+                        }
+                    });
+                    
+                }
+                this.clearCategory();
+            });
         }
     },
     computed: {
@@ -78,20 +101,7 @@ export default {
         }
     },
     created() {
-        axios.get(`${this.$store.state.apiBase}/material/categories`).then( response => {
-            
-
-                this.$store.commit('UPDATE_CATEGORY_LIST', response.data.data);
-                this.categories = this.convertToArray(response.data.data);
-                return response.data.data;
-            }).catch( error => {
-                console.log(error);
-            });
-        axios.get(`${this.$store.state.apiBase}/material`).then( response => {
-                this.rows = response.data.data;
-            }).catch( error => {
-                console.log(error);
-            });
+        this.getData();
     },
     components: {
         MaterialRow,

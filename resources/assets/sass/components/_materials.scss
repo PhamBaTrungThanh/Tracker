@@ -41,6 +41,7 @@
 
    div.row-inside {
        display: flex;
+       position: relative;
        border-bottom: 1px solid #ddd;
        & > div {
            border-right: 1px solid #ddd;
@@ -52,5 +53,16 @@
 .material-trackers {
     .controls {
         margin-top: 2rem;
+    }
+    .inline-control {
+        position: absolute;
+        right: 15px;
+        font-size: 0.75rem;
+        top: 6px;
+        display: inline-block;
+        cursor: pointer;
+    }
+    .inline-control:hover {
+        text-decoration: underline;
     }
 }

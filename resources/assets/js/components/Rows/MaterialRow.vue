@@ -2,6 +2,8 @@
     <div class="table-row" >
         <div :class="classes" v-if="row.type === 'category'" @click="expand_me">
             {{ row.name }}
+            <span v-if="row.depth === 0" @click.stop="addChildCategory(row)" class="inline-control" >Thêm danh mục</span>
+             <span v-if="row.depth === 1" @click.stop="addMaterials(row)" class="inline-control" >Thêm vật tư</span>
         </div>
         <div v-else class="row-inside">
             <div class="col1">{{row.id}}</div>
@@ -35,6 +37,12 @@ export default {
             if (this.row.children !== null) {
                 this.expading_status = !this.expading_status;
             }
+        },
+        addChildCategory(row) {
+            this.$emit('new-category', {id: row.id, name: row.name});
+        },
+        addMaterials(row) {
+            this.$emit('new-materials', {id: row.id, name: row.name});
         }
     },
     computed: {

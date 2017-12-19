@@ -22,7 +22,7 @@ Route::prefix('v1')->middleware('auth:api')->namespace('Api_v1')->group(function
     Route::get('work/{work}', 'DataController@workTrackers')->name('work_trackers');
     Route::get('/user', 'UserController@index')->name('user.index');
 
-    Route::get('/material/categories', 'MaterialController@categories')->name('category_list');
+    Route::Resource('/category', 'CategoryController');
     Route::resource('/material', 'MaterialController');
     
 });
