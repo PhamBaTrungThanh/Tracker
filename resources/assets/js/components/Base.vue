@@ -24,14 +24,14 @@
                 </div>
 
                 <div id="main-content" class="col">
-                    <div id="navigation" class="container">
+                    <div id="navigation" class="container-fluid">
                         <div class="row align-items-center" style="height: 100%">
                             <div class="col">
                                 <span class="h4">{{ pageTitle }}</span>
                             </div>
                         </div>  
                     </div>
-                    <main class="container">
+                    <main class="container-fluid">
                         <router-view></router-view>
                     </main>
                 </div>

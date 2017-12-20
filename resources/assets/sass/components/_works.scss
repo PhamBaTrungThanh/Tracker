@@ -1,8 +1,15 @@
 #works {
-    .card.work {
-        cursor: pointer;
-        max-width: 30vw;
+    .work {
+        max-width: 25vw;
+        position: relative;
+        .work-detail {
+            position: absolute;
+            margin-top: 15px;
+            width: calc(100vw - 150px);
+            z-index: 999;
+        }
     }
+
 }
 .handsontable {
     table.htCore {
