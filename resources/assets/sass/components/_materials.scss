@@ -22,10 +22,7 @@
         width: 150px;
         text-align: center;       
     }
-}
-.table-row {
-    width: 100%;
-    
+
     .expandable {
         cursor: pointer;
     }
@@ -39,30 +36,23 @@
         background: #eecc
    }
 
-   div.row-inside {
-       display: flex;
-       position: relative;
-       border-bottom: 1px solid #ddd;
-       & > div {
-           border-right: 1px solid #ddd;
-           padding: 0 5px;
-       }
-   }
-}
+   .inline-control {
+        text-align: right;
+        
+        & > span {
+            font-size: 0.75rem;
+            display: inline-block;
+            cursor: pointer;
+        }
+
+        }
+        .inline-control
+            & > span:hover {
+            text-decoration: underline;
+        }
+    }
+
 
 .material-trackers {
-    .controls {
-        margin-top: 2rem;
-    }
-    .inline-control {
-        position: absolute;
-        right: 15px;
-        font-size: 0.75rem;
-        top: 6px;
-        display: inline-block;
-        cursor: pointer;
-    }
-    .inline-control:hover {
-        text-decoration: underline;
-    }
+    margin-bottom: 50px;
 }

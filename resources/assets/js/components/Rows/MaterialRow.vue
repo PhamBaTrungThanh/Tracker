@@ -1,22 +1,19 @@
 <template>
-    <div class="table-row" >
-        <div :class="classes" v-if="row.type === 'category'" @click="expand_me">
-            {{ row.name }}
-            <span v-if="row.depth === 0" @click.stop="addChildCategory(row)" class="inline-control" >Thêm danh mục</span>
-             <span v-if="row.depth === 1" @click.stop="addMaterials(row)" class="inline-control" >Thêm vật tư</span>
-        </div>
-        <div v-else class="row-inside">
-            <div class="col1">{{row.id}}</div>
-            <div class="col2">{{row.name}}</div>
-            <div class="col3">{{row.per}}</div>
-            <div class="col4">vnd</div>
-            <div class="col5">0</div>
-            <div class="col6">{{row.brand}}</div>
-        </div>
-        <template v-if="expading_status">
-            <material-row v-for="item in row.children" :key="item.id" :row="item"></material-row>
-        </template>
-    </div>
+    <tr v-if="row.type === 'category'" :class="classes" >
+        <td colspan="4" >{{row.name}} <span v-if="row.depth > 0 && row.children">( {{row.children.length}} )</span></td>
+        <td colspan="2" class="inline-control">
+            <span v-if="row.depth === 0" @click.stop="addChildCategory(row)">Thêm danh mục</span>
+            <span v-if="row.depth === 1" @click.stop="addMaterials(row)">Thêm vật tư</span>
+        </td>
+    </tr>
+    <tr v-else>
+        <td class="col1">{{row.id}}</td>
+        <td class="col2">{{row.name}}</td>
+        <td class="col3">{{row.per}}</td>
+        <td class="col4">vnd</td>
+        <td class="col5">0</td>
+        <td class="col6">{{row.brand}}</td>
+    </tr>
 </template>
 <script>
 
@@ -33,9 +30,11 @@ export default {
         }
     },
     methods: {
-        expand_me() {
-            if (this.row.children !== null) {
-                this.expading_status = !this.expading_status;
+        toggleExpand() {
+            if (this.row.expanded === true) {
+                this.$emit('expand', {id: this.row.id, expanded: false});
+            } else if (this.row.children) {
+                this.$emit('expand', {id: this.row.id, expanded: true});
             }
         },
         addChildCategory(row) {
@@ -43,6 +42,9 @@ export default {
         },
         addMaterials(row) {
             this.$emit('new-materials', {id: row.id, name: row.name});
+        },
+        newMaterials() {
+            console.log('aaa');
         }
     },
     computed: {
@@ -57,7 +59,6 @@ export default {
                     expanded: this.expading_status,
                     expandable: this.row.children !== null,
                     category: this.row.type === 'category',
-                    'row-inside': this.row.type === 'category',
                 }
             ];
         },

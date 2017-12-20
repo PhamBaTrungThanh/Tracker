@@ -1,5 +1,6 @@
-table.heading-table {
+table.trackers-table {
     width: 100%;
+    border: 1px solid #ddd;
     & > thead.thead-light {
         background: #eee;
         
@@ -12,10 +13,22 @@ table.heading-table {
     & > tbody {
         width: 100%;
 
-        & > tr {
+        & > tr > td {
             border: 1px solid #ddd;
+        }
+        & > tr.category{
+            & > td {
+                border: none;
+            }
         }
     }
 }
 
 
+table.table {
+    width: 100%;
+    border: 1px solid #ddd;
+    th, td {
+        border: 1px solid #ddd;
+    }
+}

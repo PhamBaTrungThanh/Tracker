@@ -82,3 +82,21 @@ main {
 .swal-content .show-on-swal {
     display: block;
 }
+.big-swal {
+    width: auto;
+}
+
+.nav.nav-pills {
+    margin: 15px 0;
+    .nav-link {
+        margin: 10px 5px;
+        padding: 10px 5px;
+        border-radius: 3px;
+        
+        color: $brand-primary;
+    }
+    .nav-link.active {
+        background: $brand-primary;
+        color: #ffffff;
+    }
+}
