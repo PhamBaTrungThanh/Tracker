@@ -9,8 +9,10 @@ class Category extends Model
 {
     use NodeTrait;
 
+    protected $fillable = ['name'];
+    
     public function materials()
     {
-        return $this->hasMany('App\Models\Material');
+        return $this->hasMany(Material::class);
     }
 }

@@ -7,7 +7,6 @@ use Illuminate\Database\Eloquent\Builder;
 class Contract extends Model
 {
 
-    protected $table = "trackers";
     protected static function boot()
     {
         parent::boot();
@@ -15,5 +14,10 @@ class Contract extends Model
         static::addGlobalScope('contract', function (Builder $builder) {
             $builder->where('type', 'contract');
         });
+    }
+
+    public function trackers()
+    {
+        return $this->hasMany(Tracker::class);
     }
 }

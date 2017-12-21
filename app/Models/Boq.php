@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Builder;
 
 class Boq extends Model
 {
-    protected $table = 'trackers';
+    protected $table = 'contracts';
     
     protected static function boot()
     {

@@ -10,7 +10,7 @@ const store = new Vuex.Store({
         apiBase: "http://tracker.dev/api/v1",
         user: {},
         categoryList: {},
-
+        currentWork: {},
     },
     mutations: {
         SET_AUTHORIZATION_TOKEN(state, token) {
@@ -21,6 +21,9 @@ const store = new Vuex.Store({
         },
         UPDATE_CATEGORY_LIST(state, list) {
             state.categoryList = list;
+        },
+        SET_CURRENT_WORK (state, work) {
+            state.currentWork = work;
         }
     },
 });

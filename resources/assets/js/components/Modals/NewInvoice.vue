@@ -1,6 +1,8 @@
 <template>
     <div class="text-left">
-        <h3 class="text-center">Hợp đồng nguyên tắc</h3>
+        <div class="form-group">
+            <input type="text" class="form-control form-control-lg text-center" v-model="form_name" v-focus>
+        </div>
         <div class="row">
             <div class="col">
                 <div class="form-group">
@@ -62,21 +64,25 @@
                     <th class="col-1">Thành tiền</th>
                 </thead>
                 <tbody>
-                    <tr v-for="node in list" :key="node.id" :class="node.type">
+                    <tr v-for="node in list" :key="node.keyid" :class="node.type">
                         <template v-if="node.type === 'category'">
                             <td colspan="5">
                                 <input type="text" class="inline-td" v-focus v-model="node.name"  @keyup.enter="addMaterial">
                             </td>
                         </template>
                         <template v-else>
-                            <td><input type="text" class="inline-td" v-focus v-model="node.name" @focus="$event.target.select()" @keyup.enter="addMaterial"><span class="delete" @click.prevent.stop="deleteMaterial(node.id)">Xóa</span></td>
+                            <td>
+                                <vue-autosuggest :suggestions="filteredOptions" 
+                                                 v-model="node.name" 
+                                                 :inputProps="{placeholder: 'Tên', id:'autosuggest__input', onInputChange: onInputChange}" 
+                                                 :onSelected="selectUsedMaterial"/>
+                            </td>
                             <td class="text-center"><input type="text" class="inline-td" v-model="node.per" @focus="$event.target.select()" @keyup.enter="addMaterial"></td>
                             <td class="text-center"><input type="text" class="inline-td" v-model="node.unit" @focus="$event.target.select()" @keyup.enter="addMaterial"></td>
                             <td class="text-center"><input type="text" class="inline-td" v-model="node.price" @focus="$event.target.select()" @keyup.enter="addMaterial"></td>
                             <td class="text-center">{{ node.unit * node.price }}</td>
 
                         </template>
-
                     </tr>
                     <tr>
                         <td colspan="6">
@@ -99,6 +105,7 @@
 <script>
 import Treeselect from '@riophae/vue-treeselect';
 export default {
+    props: ['work_id'],
     data() {
         return {
             providers: [],
@@ -112,6 +119,8 @@ export default {
             list: [],
             signed_at: "",
             contract_number: "",
+            form_name: "Đơn hàng số ",
+            filteredOptions: [],
         }
     },
     watch: {
@@ -170,6 +179,20 @@ export default {
             });
             callback(null, _data);
         },
+        selectUsedMaterial() {},
+        onInputChange(text) {
+            
+            const data = this.work.materials.filter(item => {
+                return item.name.toLowerCase().indexOf(text.toLowerCase()) > -1;
+            }).map( item => {
+                return item.name;
+            });
+            this.filteredOptions = [{
+                "name": "default",
+                "label": "default",
+                "data": data,
+            }];
+        },
         addCategory() {
             this.list.push({
                 type: "category",
@@ -181,24 +204,28 @@ export default {
             this.list.push({
                 type: "material",
                 "name": "",
-                "id": this.list.length,
+                "keyid": this.list.length,
                 "per": "",
                 "unit": "",
                 "price": "",
                 "total": 0,
+
             });
         },
+        addMaterialWithCategory() {},
+
         deleteMaterial(node_id) {
             this.list.splice(node_id, 1);
         },
         submit() {
-            axios.patch(`${this.$store.state.apiBase}/work/${this.work.id}`, {
-                action: "new_contract",
+            axios.patch(`${this.$store.state.apiBase}/work/${this.work_id}`, {
+                action: "new_invoice",
                 selected_provider_id: this.selected_provider_id,
                 new_provider: this.new_provider,
                 list: this.nested_list,
                 signed_at: this.signed_at,
                 contract_number: this.contract_number,
+                form_name: this.form_name,
             }).then( response => {
                 if (response.status === 200) {
                     this.providers = [];
@@ -212,6 +239,7 @@ export default {
                     this.list = [];
                     this.signed_at = "";
                     this.contract_number = "";
+                    this.form_name = "";
                     this.$swal("Hoàn tất", "Cập nhật thành công", "success").then( result => {
                         this.$emit('success');
                     });

@@ -17,7 +17,7 @@ class CategoryResources extends Resource
         return [
             'id' => $this->id,
             'label' => $this->name,
-            'children' => $this->when(count($this->children), self::collection($this->children)),
+            'name' => $this->name,
         ];
     }
 }

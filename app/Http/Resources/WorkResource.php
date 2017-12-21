@@ -23,6 +23,8 @@ class WorkResource extends Resource
             'created_at' => $this->created_at,
             'showDetail' => false,
             'image' => "http://via.placeholder.com/350x150",
+            'categories' => CategoryResources::collection($this->categories),
+            'materials' => MaterialResources::collection($this->materials),
         ];
     }
 }

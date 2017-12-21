@@ -19,6 +19,7 @@ class MaterialResources extends Resource
             'uid' => $this->uid,
             'category_id' => $this->category_id,
             'name' => $this->name,
+            'label' => $this->name,
             'description' => $this->description,
             'per' => $this->per,
             'brand' => $this->brand,

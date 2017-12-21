@@ -71,6 +71,7 @@ export default {
                 }).then(response => {
                     console.info("Token is legit");
                     axios.defaults.headers.common['Authorization'] = cookieToken;
+                    axios.defaults.headers.common['X-CSRF-TOKEN'] = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
                     next(vm => {
                         vm.$store.commit('SET_USER', response.data.data);
                         vm.$store.commit('SET_AUTHORIZATION_TOKEN', cookieToken);

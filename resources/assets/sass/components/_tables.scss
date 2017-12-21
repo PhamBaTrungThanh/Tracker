@@ -31,4 +31,48 @@ table.table {
     th, td {
         border: 1px solid #ddd;
     }
+
+    input.inline-td {
+        width: 100%;
+        padding: 0 5px;
+        border: none;
+        background: inherit;
+        text-align: inherit;
+    }
+    input.inline-td:focus {
+        border: 1px dashed $brand-primary;
+        background: #ffffff;
+    }
+
+    tr.category {
+        background: $brand-primary;
+
+    }
+    tr.material {
+        
+        td:first-child {
+            position: relative;
+            input {
+                padding-left: 25px;
+               
+            }
+            span.delete {
+                position: absolute;
+                right: 0;           
+                font-size: 0.8rem;            
+                cursor: pointer;            
+                color: red;           
+                padding: 0 7px;          
+                transform: translateY(-50%);
+                top: 50%;
+            }
+            span.delete:hover {
+                text-decoration: underline;
+            }
+        } 
+
+    }
+    tr.material:hover {
+        background: #fff9bc;
+    }
 }

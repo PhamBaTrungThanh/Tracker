@@ -17,13 +17,6 @@
                             <label for="inputPassword" class="sr-only">Mật khẩu</label>
                             <input v-model="password" type="password" id="inputPassword" class="form-control" placeholder="Mật khẩu" required>
                         </div>
-                        <div class="form-group">
-                            <div class="checkbox">
-                            <label>
-                                <input type="checkbox" value="remember-me" v-model="rememberMe"> Lưu tài khoản
-                            </label>
-                            </div>
-                        </div>
                         <button class="btn btn-lg btn-primary btn-block" type="submit" @click.prevent="login">Đăng nhập</button>
                     </fieldset>
                 </form>
@@ -37,7 +30,7 @@ import { setCookie } from 'tiny-cookie';
 export default {
     data() {
         return {
-            rememberMe: false,
+            rememberMe: true,
             username: "",
             password: "",
             formErrorMessage: false,
@@ -51,7 +44,7 @@ export default {
                 axios.post(`./oauth/token`, {
                     "grant_type": "password",
                     "client_id": "2",
-                    "client_secret": "au0qY591GBJypQknl1kodTQyMVcNn80FjRVKQaG0",
+                    "client_secret": "kcnzHOvmFLSTcVjVcP7iabWeIl2wbHr4wtloN9m3",
                     "scope": "",
                     "username": this.username,
                     "password": this.password,

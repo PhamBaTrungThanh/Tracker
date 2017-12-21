@@ -8,8 +8,15 @@ class Work extends Model
 {
     public function categories()
     {
-        return $this->morphMany('App\Models\Category', 'parent');
+        return $this->hasMany(Category::class);
     }
 
-    
+    public function trackers()
+    {
+        return $this->hasMany(Tracker::class);
+    }
+    public function materials()
+    {
+        return $this->hasManyThrough(Material::class, Category::class);
+    }
 }

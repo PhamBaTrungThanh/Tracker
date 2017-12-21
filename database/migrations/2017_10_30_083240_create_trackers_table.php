@@ -16,15 +16,12 @@ class CreateTrackersTable extends Migration
         Schema::create('trackers', function (Blueprint $table) {
             $table->increments('id');
             
-            $table->integer('work_id')->unsigned();
+            $table->integer('contract_id')->unsigned();
             $table->integer('material_id')->unsigned();
-
-            $table->string('type');
-            
-            $table->string('note')->nullable();
-
+           
             $table->date('bought_at')->nullable();
             $table->bigInteger('unit')->unsigned()->nullable();
+            $table->bigInteger('recieved_unit')->unsigned()->nullable();
             $table->bigInteger('cost')->unsigned()->nullable();
             $table->bigInteger('total')->unsigned()->nullable();
 
