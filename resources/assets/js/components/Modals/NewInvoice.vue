@@ -1,7 +1,7 @@
 <template>
     <div class="text-left">
         <div class="form-group">
-            <input type="text" class="form-control form-control-lg text-center" v-model="form_name" v-focus>
+            <input type="text" class="form-control form-control-lg text-center" v-model="form_name" v-focus placeholder="Đơn hàng số...">
         </div>
         <div class="row">
             <div class="col">
@@ -71,11 +71,15 @@
                             </td>
                         </template>
                         <template v-else>
-                            <td>
+                            <td v-if="node.autosuggest === true">
                                 <vue-autosuggest :suggestions="filteredOptions" 
                                                  v-model="node.name" 
                                                  :inputProps="{placeholder: 'Tên', id:'autosuggest__input', onInputChange: onInputChange}" 
                                                  :onSelected="selectUsedMaterial"/>
+                            </td>
+                            <td v-else>
+                                <input type="text" class="inline-td" v-focus v-model="node.name" @focus="$event.target.select()" @keyup.enter="addMaterial">
+                                <span class="delete" @click.prevent.stop="deleteMaterial(node.keyid)">Xóa</span>
                             </td>
                             <td class="text-center"><input type="text" class="inline-td" v-model="node.per" @focus="$event.target.select()" @keyup.enter="addMaterial"></td>
                             <td class="text-center"><input type="text" class="inline-td" v-model="node.unit" @focus="$event.target.select()" @keyup.enter="addMaterial"></td>
@@ -88,7 +92,6 @@
                         <td colspan="6">
                             <div class="nav nav-pills text-center">
                                 <a href="#" @click="addCategory">Thêm danh mục</a>
-                                <a href="#" @click="addMaterial">Thêm vật tư</a>
                             </div>
                         </td>
                     </tr>
@@ -179,7 +182,11 @@ export default {
             });
             callback(null, _data);
         },
-        selectUsedMaterial() {},
+        selectUsedMaterial(item) {
+            const _material = this.work.materials.find( material => material.name === item.label);
+            this.list[this.list.length - 1] = Object.assign({}, _material, {keyid: this.list.length - 1});
+            this.addMaterial();
+        },
         onInputChange(text) {
             
             const data = this.work.materials.filter(item => {
@@ -209,7 +216,7 @@ export default {
                 "unit": "",
                 "price": "",
                 "total": 0,
-
+                "autosuggest": true,
             });
         },
         addMaterialWithCategory() {},

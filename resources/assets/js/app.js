@@ -8,6 +8,7 @@ import VueSwal from 'vue-swal'
 import Treeselect from '@riophae/vue-treeselect'
 import VueInstant from 'vue-instant';
 import VueAutosuggest from 'vue-autosuggest';
+import ModalDialogs from 'vue-modal-dialogs';
 
 import axios from 'axios';
 
@@ -15,7 +16,7 @@ import routes from './routes';
 import store from './store';
 
 
-
+Vue.use(ModalDialogs);
 Vue.use(VueAutosuggest);
 Vue.use(VueRouter);
 Vue.use(Vuex);

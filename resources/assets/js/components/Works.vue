@@ -50,12 +50,10 @@
         <div ref="newWork" class="show-on-swal">
             <new-work id="new-work-container" @success="fetchData"></new-work>
         </div>
-        <div ref="newContract" class="show-on-swal">
+        <div ref="newContract" class="show-on-swal" >
             <new-contract id="new-contract-container"></new-contract>
         </div>  
-        <div ref="newInvoice" class="show-on-swal">
-            <new-invoice id="new-invoice-container"></new-invoice>
-        </div>  
+        <new-invoice ref="newInvoice" class="show-on-swal" id="new-invoice-container" v-if="action === 'new-invoice'"></new-invoice>
     </div>
 </template>
 
@@ -72,6 +70,7 @@ export default {
             report: false,
             fullscreen: true,
             current_work_id: false,
+            action: false,
         }
 
     },
@@ -137,6 +136,7 @@ export default {
             })
         },
         newInvoice() {
+            this.action = 'new-invoice';
             this.$swal({
                 content: this.$refs.newInvoice,
                 className: 'big-swal',

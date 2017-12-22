@@ -104,6 +104,31 @@ main {
     }
 }
 
-.sbx-google__submit {
-    display: none;
+.autosuggest__results {
+    position: absolute;
+    z-index: 999999;
+    background: #ffffff;
+    height: 250px;
+    overflow-y: scroll;
+    left: 0;
+    right: 0;
+    transform: translateY(3px);
+
+    ul[role="listbox"] {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+        
+        li.autosuggest__results_title {
+            display: none;
+
+        }
+        li.autosuggest__results_item {
+            padding: 2px 25px;
+            cursor: pointer;
+        }
+        li.autosuggest__results_item:hover {
+            background: $brand-secondary;
+        }
+    }
 }
