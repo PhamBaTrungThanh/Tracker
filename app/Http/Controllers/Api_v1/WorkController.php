@@ -8,6 +8,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Work;
 use App\Models\Provider;
 use App\Models\Contract;
+use App\Models\Invoice;
 use App\Models\Category;
 use App\Models\Tracker;
 
@@ -28,26 +29,32 @@ class WorkController extends Controller
             'message' => 'success',
         ]);
     }
-
+    private function findOrCreateProvider(Request $request) 
+    {
+        if (!$request->selected_provider_id) {
+            if (!$request->input('new_provider.name')) {
+                return response()->json(['error' => 'No provider name'], 400);
+            } else {
+                $provider = new Provider();
+                $provider->name = $request->input('new_provider.name');
+                $provider->description = $request->input('new_provider.description');
+                $provider->address = $request->input('new_provider.address');
+                $provider->tax_number = $request->input('new_provider.tax_number');
+                $provider->slug = str_slug($provider->name);
+                $provider->save();
+                $provider_id = $provider->id;
+            }
+        } else {
+            $provider_id = $request->selected_provider_id;
+        }
+        return $provider_id;
+    }
     public function update(Work $work, Request $request)
     {   
         if ($request->action === "new_contract") {
-            if (!$request->selected_provider_id) {
-                if (!$request->input('new_provider.name')) {
-                    return response()->json(['error' => 'No provider name'], 400);
-                } else {
-                    $provider = new Provider();
-                    $provider->name = $request->input('new_provider.name');
-                    $provider->description = $request->input('new_provider.description');
-                    $provider->address = $request->input('new_provider.address');
-                    $provider->tax_number = $request->input('new_provider.tax_number');
-                    $provider->slug = str_slug($provider->name);
-                    $provider->save();
-                    $provider_id = $provider->id;
-                }
-            } else {
-                $provider_id = $request->selected_provider_id;
-            }
+
+            $provider_id = $this->findOrCreateProvider();
+
             $contract = new Contract();
             $contract->name = "Hợp đồng nguyên tắc";
             $contract->work_id = $work->id;
@@ -72,6 +79,36 @@ class WorkController extends Controller
                 }
             }
         }
+        if ($request->action === "new_invoice") {
+            
+            $provider_id = $this->findOrCreateProvider($request);
+
+            $invoice = new Invoice();
+            $invoice->name = $request->form_name;
+            $invoice->work_id = $work->id;
+            $invoice->signed_at = $request->signed_at;
+            $invoice->slug = str_slug($invoice->name);
+            $invoice->type = "invoice";
+            $invoice->uid = $request->contract_number;
+            $invoice->provider_id = $provider_id;
+            $invoice->save();
+            
+            foreach ($request->list as $node) {
+                $category = $work->categories()->firstOrCreate(['name' => $node['name']]);
+                foreach ($node['children'] as $material) {
+                    $tracker = new Tracker();
+                    $tracker->contract_id = $invoice->id;
+                    $tracker->material_id = ($material['id']) ? $material['id'] : $category->materials()->create(['name' => $material['name'], 'per' => $material['per']]);
+                    $tracker->unit = $material['unit'];
+                    $tracker->cost = $material['price'];
+                    $tracker->total = $material['unit'] * $material['price'];
+                    $tracker->save();
+                }
+            }
+        }
+
+
+
         return response()->JSON(['success' => true]);
     }
 }

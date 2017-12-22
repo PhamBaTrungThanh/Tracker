@@ -16,7 +16,7 @@ class CategoryWithMaterialResources extends Resource
     {
         return [
             'id' => $this->id,
-            'name' => $this->name,
+            'label' => $this->name,
             'children' => MaterialResources::collection($this->materials),
             'expanded' => true,
             'depth' => $this->depth,

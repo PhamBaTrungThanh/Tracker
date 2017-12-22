@@ -20,4 +20,8 @@ class Contract extends Model
     {
         return $this->hasMany(Tracker::class);
     }
+    public function provider()
+    {
+        return $this->belongTo(Provider::class);
+    }
 }

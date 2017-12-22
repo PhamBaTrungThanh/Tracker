@@ -1525,7 +1525,7 @@ function collectProps(props, args) {
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_vue___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_vue__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__make_dialog__ = __webpack_require__("./node_modules/vue-modal-dialogs/dist/make-dialog.js");
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__dialogs_wrapper__ = __webpack_require__("./node_modules/vue-modal-dialogs/dist/dialogs-wrapper.js");
-/* unused harmony reexport makeDialog */
+/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "b", function() { return __WEBPACK_IMPORTED_MODULE_1__make_dialog__["a"]; });
 /* unused harmony reexport DialogsWrapper */
 /* unused harmony reexport DialogComponent */
 

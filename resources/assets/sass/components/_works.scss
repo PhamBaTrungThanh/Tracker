@@ -11,16 +11,25 @@
     }
 
 }
-.handsontable {
-    table.htCore {
-        tbody {
-            tr:nth-child(1), tr:nth-child(2), tr:nth-child(3) {
-                background: #eee;
-                td {
-                    vertical-align: middle;
-                    text-align: center;
-                }
-            }
+.work-report {
+    height: 100%;
+    width: 100%;
+    padding: 20px;
+    overflow: hidden;
+    .report {
+        height: 100%;
+        .top, .bottom {
+            width: 100%;
+            height: 50%;
+            float: left;
+            clear: both;
+            overflow-y: scroll;
         }
+        .top {
+            border-bottom: 3px solid #ccc;
+        }
+
     }
+
+ 
 }

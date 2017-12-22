@@ -2,41 +2,44 @@
     <div class="wrapper">
         <div class="row no-gutters">
             <div id="sidebar">
-                    <div class="userinfo">
-                        <div class="user-avatar">
-                        </div>
-                        <h5 class="text-center text-light">{{ user.username }}</h5>
+                <div class="userinfo">
+                    <div class="user-avatar">
                     </div>
-                    <div role="sections">
-                        <ul>
-
-                            <router-link tag="li" to="/dashboard">
-                                <a>Thông báo</a>
-                            </router-link>
-                            <router-link tag="li" to="/works">
-                                <a>Công trường</a>
-                            </router-link>
-                            <router-link tag="li" to="/materials">
-                                <a>Vật tư/Báo giá</a>
-                            </router-link>
-                        </ul>
-                    </div>
+                    <h5 class="text-center text-light">{{ user.username }}</h5>
                 </div>
+                <div role="sections">
+                    <ul>
 
-                <div id="main-content" class="col">
-                    <div id="navigation" class="container-fluid">
-                        <div class="row align-items-center" style="height: 100%">
-                            <div class="col">
-                                <span class="h4">{{ pageTitle }}</span>
-                            </div>
-                        </div>  
-                    </div>
-                    <main class="container-fluid">
-                        <router-view></router-view>
-                    </main>
+                        <router-link tag="li" to="/dashboard">
+                            <a>Thông báo</a>
+                        </router-link>
+                        <router-link tag="li" to="/works">
+                            <a>Dự án</a>
+                        </router-link>
+                        <router-link tag="li" to="/">
+                            <a>Kế toán/Kiểm toán</a>
+                        </router-link>
+                        <router-link tag="li" to="/materials">
+                            <a>Vật tư/Báo giá</a>
+                        </router-link>
+                    </ul>
                 </div>
             </div>
+
+            <div id="main-content" class="col">
+                <div id="navigation" class="container-fluid">
+                    <div class="row align-items-center" style="height: 100%">
+                        <div class="col">
+                            <span class="h4">{{ pageTitle }}</span>
+                        </div>
+                    </div>  
+                </div>
+                <main class="container-fluid">
+                    <router-view></router-view>
+                </main>
+            </div>
         </div>
+        <dialogs-wrapper></dialogs-wrapper>        
     </div>
 </template>
 <script>

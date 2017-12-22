@@ -16,5 +16,10 @@ class Invoice extends Model
             $builder->where('type', 'invoice');
         });
     }
+
+    public function provider()
+    {
+        return $this->belongsTo(Provider::class);
+    }
 }
 

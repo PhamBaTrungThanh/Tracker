@@ -19,4 +19,9 @@ class Work extends Model
     {
         return $this->hasManyThrough(Material::class, Category::class);
     }
+
+    public function invoices()
+    {
+        return $this->hasMany(Invoice::class);
+    }
 }

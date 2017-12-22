@@ -20,7 +20,8 @@ class CreateMaterialsTable extends Migration
             $table->integer('category_id');
             $table->string('brand')->nullable();
             $table->string('currency')->default('vnđ');
-            $table->string('current_price')->default(0);
+            $table->decimal('boq_price', 12, 4)->unsigned()->nullable();
+            $table->bigInteger('boq_unit')->unsigned()->nullable();
             $table->text('description')->nullable();
             $table->string('per');
             $table->timestamps();

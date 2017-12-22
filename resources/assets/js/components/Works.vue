@@ -17,7 +17,7 @@
                         <div class="card-body">
                             <div class="row">
                                 <div class="col"><p class="card-text text-center">Khởi công: {{ work.started_at }}</p></div>
-                                <div class="col"><p class="card-text text-center">Số đơn hàng: 0</p></div>
+                                <div class="col"><p class="card-text text-center">Số đơn hàng: {{work.invoice_count}}</p></div>
                                 <div class="col"><p class="card-text text-center">Số người công tác: Chưa có thông tin</p></div>
                             </div>
                             <br><br>
@@ -45,7 +45,9 @@
             </div>                
         </div>
         <fullscreen :fullscreen.sync="fullscreen" ref="fullscreen" background="#ffffff">
-            
+            <work-report v-if="fullscreen" >
+
+            </work-report>
         </fullscreen>
         <div ref="newWork" class="show-on-swal">
             <new-work id="new-work-container" @success="fetchData"></new-work>
@@ -53,26 +55,30 @@
         <div ref="newContract" class="show-on-swal" >
             <new-contract id="new-contract-container"></new-contract>
         </div>  
-        <new-invoice ref="newInvoice" class="show-on-swal" id="new-invoice-container" v-if="action === 'new-invoice'"></new-invoice>
+
     </div>
 </template>
 
 <script>
 import Fullscreen from "vue-fullscreen/src/component.vue";
+import ModalDialogs from 'vue-modal-dialogs';
+
+
 import NewWork from "./Modals/NewWork.vue";
 import NewContract from "./Modals/NewContract.vue";
 import newInvoice from "./Modals/NewInvoice.vue";
+import WorkReport from "./Reports/WorkReport";
+
 
 export default {
     data() {
         return {
             works: [],
             report: false,
-            fullscreen: true,
+            fullscreen: false,
             current_work_id: false,
             action: false,
         }
-
     },
     watch: {
         current_work_id() {
@@ -90,19 +96,25 @@ export default {
         fetchData() {
             this.current_work_id = false;
             axios.get(`${this.$store.state.apiBase}/work`).then( response => {
-                this.works = response.data.data;
+
+                this.works = response.data.data.map( work => {
+                    let _flatten = [];
+                    work.nested_categories.forEach( _category => {
+                        let _children = _category.children.map( (material, index) => Object.assign({}, material, {"index": ++index}));
+                        delete _category['children'];
+                        _flatten.push(_category, ..._children);
+                    });
+                    return Object.assign({}, work, {flatten_list: _flatten});
+                    
+                });
             }).catch( error => {
                 console.log(error);
             });
         },
         viewReports(work_id) {
+            this.current_work_id = work_id;
             this.$refs.fullscreen.enter();
-            axios.get(`${this.$store.state.apiBase}/work/${work_id}`).then( response => {
-                this.report = response.data.data;
-                this.flattenData(this.report.categories);
-            }).catch( error => {
-                console.log(error);
-            });
+
         },
 
         newWork() {
@@ -136,12 +148,11 @@ export default {
             })
         },
         newInvoice() {
-            this.action = 'new-invoice';
-            this.$swal({
-                content: this.$refs.newInvoice,
-                className: 'big-swal',
-                buttons: false,
-            })
+            Promise.resolve(ModalDialogs.makeDialog(newInvoice)()).then( result => {
+                if (result) {
+                    this.fetchData();
+                }
+            });
         }
     },
     mounted() {
@@ -151,7 +162,7 @@ export default {
         "fullscreen" :Fullscreen,
         "new-work": NewWork,
         "new-contract": NewContract,
-        'new-invoice': newInvoice,
+        'work-report': WorkReport,
     }
 }
 </script>
