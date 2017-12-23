@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Builder;
 class Contract extends Model
 {
 
+    protected $table = "invoices";
     protected static function boot()
     {
         parent::boot();

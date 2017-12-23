@@ -13,11 +13,11 @@ class CreateTableContracts extends Migration
      */
     public function up()
     {
-        Schema::create('contracts', function (Blueprint $table) {
+        Schema::create('invoices', function (Blueprint $table) {
             $table->increments('id');
             $table->integer('work_id')->unsigned();
             $table->integer('provider_id')->unsigned();
-            $table->string('type');
+            $table->string('type')->default('invoice');
             $table->string('name');
             $table->string('slug');
             $table->date('signed_at')->nullable();

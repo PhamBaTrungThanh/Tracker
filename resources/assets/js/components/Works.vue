@@ -24,8 +24,8 @@
                             <div class="row">
                                 <div class="col">
                                     <p class="text-center">
-                                        <button class="btn btn-primary" @click="newContract()">Tạo hợp đồng nguyên tắc</button>
-                                        <button class="btn btn-primary" @click="newBOQ()">Tạo BOQ</button>
+                                        <button class="btn btn-primary" @click="BOQ()">BOQ</button>
+                                        <button class="btn btn-primary" @click="Contract()">Hợp đồng nguyên tắc</button> 
                                         <button class="btn btn-primary" @click="newInvoice()">Tạo đơn hàng</button>
                                         <button class="btn btn-primary" @click="payInvoice()">Thanh toán đơn hàng</button>
                                     </p>
@@ -66,7 +66,8 @@ import ModalDialogs from 'vue-modal-dialogs';
 
 import NewWork from "./Modals/NewWork.vue";
 import NewContract from "./Modals/NewContract.vue";
-import newInvoice from "./Modals/NewInvoice.vue";
+import NewInvoice from "./Modals/NewInvoice.vue";
+import NewBOQ from "./Modals/NewBOQ.vue";
 import WorkReport from "./Reports/WorkReport";
 
 
@@ -139,7 +140,14 @@ export default {
                 }
             });
         },
-        newContract() {
+        BOQ() {
+            Promise.resolve(ModalDialogs.makeDialog(NewBOQ)()).then( result => {
+                if (result) {
+                    this.fetchData();
+                }
+            });
+        },
+        Contract() {
             
             this.$swal({
                 content: this.$refs.newContract,
@@ -148,7 +156,7 @@ export default {
             })
         },
         newInvoice() {
-            Promise.resolve(ModalDialogs.makeDialog(newInvoice)()).then( result => {
+            Promise.resolve(ModalDialogs.makeDialog(NewInvoice)()).then( result => {
                 if (result) {
                     this.fetchData();
                 }

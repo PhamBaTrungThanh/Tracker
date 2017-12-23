@@ -21,7 +21,7 @@ class Material extends Model
             "id",
             "id",
             "id",
-            "contract_id"
+            "invoice_id"
         );
     }
 }

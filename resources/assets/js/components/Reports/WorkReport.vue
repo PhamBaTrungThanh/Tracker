@@ -31,7 +31,7 @@
             <div class="bottom" v-if="material">
                 <h4 class="text-center">{{material.name}}</h4>
                 <table class="table">
-                    <thead class="thead-light">
+                    <thead class="thead-light text-center">
                         <th>STT</th>
                         <th>Ngày lập đơn</th>
                         <th>Ngày giao hàng</th>
@@ -41,14 +41,28 @@
                         <th>Số lượng còn lại</th>
                         <th>Giá trị đặt hàng</th>
                         <th>Giá trị đã nhận</th>
-                        <th>Đã thanh toán</th>
+                        <th>Ghi chú</th>
                     </thead>
-                    <tbody>
+                    <tbody class="text-center">
                         <tr v-for="(row, index) in material.invoices" :key="index">
-                            <td>{{index + 1}}</td>
-                            <td></td>
+                            <td>{{index}}</td>
+                            <td>{{row.signed_at}}</td>
+                            <td>{{row.recieved_at}}</td>
+                            <td>{{row.provider_name}}</td>
+                            <td>{{row.unit}}</td>
+                            <td>{{row.recieved_unit}}</td>
+                            <td>{{row.unit - row.recieved_unit}}</td>
+                            <td>{{row.cost * row.unit}}</td>
+                            <td>{{row.cost * row.recieved_unit}}
+                            <td>{{row.notes}}</td>
                         </tr>
                     </tbody>
+                    <tfoot>
+                        <tr>
+                            <td colspan="4">Tổng cộng</td>
+                            <td>{{totalUnit}}</td>
+                        </tr>
+                    </tfoot>
                 </table>
             </div>
         </div>
@@ -68,8 +82,8 @@ export default {
         work() {
             return this.$store.state.currentWork;
         },
-        invoices() {
-            return this.material.trackers.filter( material => material.invoices != null);
+        totalUnit() {
+            return this.material.invoices.reduce( (sum, item) => sum + item.unit );
         }
     },
     methods: {

@@ -24,12 +24,11 @@ class MaterialDetails extends Resource
             'per' => $this->per,
             'boq_price' => 0,
             'boq_unit' => 0,
-            
-            'invoices' =>  TrackerAndInvoiceResources::collection($this->trackers->filter(function ($tracker) {
-                return $tracker->invoices !== null;
+            'invoices' =>  Trackers\WithInvoiceResources::collection($this->trackers->filter(function ($tracker) {
+                return $tracker->invoice !== null;
             })),
-            'contracts' => $this->trackers->filter(function ($tracker) {
-                return $tracker->contracts !== null;
+            'contract' => $this->trackers->filter(function ($tracker) {
+                return $tracker->contract !== null;
             }),
         ];
     }

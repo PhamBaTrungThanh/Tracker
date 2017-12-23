@@ -7,16 +7,27 @@ use Illuminate\Database\Eloquent\Builder;
 
 class Tracker extends Model
 {
-    public function contracts()
+    public function contract()
     {
-        return $this->belongsTo(Contract::class, 'contract_id');
+        return $this->belongsTo(Contract::class, 'invoice_id');
     }
-    public function invoices()
+    public function invoice()
     {
-        return $this->belongsTo(Invoice::class, 'contract_id');
+        return $this->belongsTo(Invoice::class, 'invoice_id');
     }
     public function material()
     {
         return $this->belongsTo(Material::class);
+    }
+    public function provider()
+    {
+        return $this->hasManyThrough(
+            Provider::class,
+            Invoice::class,
+            'id1',
+            'id2',
+            'id3',
+            'id4' 
+        );
     }
 }

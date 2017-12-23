@@ -6,8 +6,6 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
 class Invoice extends Model
 {
-
-    protected $table = "contracts";
     protected static function boot()
     {
         parent::boot();
