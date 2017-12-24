@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateMaterialsTable extends Migration
+class CreateBoqTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,15 +13,12 @@ class CreateMaterialsTable extends Migration
      */
     public function up()
     {
-        Schema::create('materials', function (Blueprint $table) {
+        Schema::create('boq', function (Blueprint $table) {
             $table->increments('id');
-            $table->string('uid')->nullable();
+            $table->bigInteger('material_id');
             $table->string('name');
-            $table->integer('category_id');
-            $table->string('brand')->nullable();
-            $table->string('currency')->default('vnđ');
-            $table->text('description')->nullable();
-            $table->string('per');
+            $table->string('description');
+            
             $table->timestamps();
         });
     }
@@ -33,6 +30,6 @@ class CreateMaterialsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('materials');
+        Schema::dropIfExists('boq');
     }
 }

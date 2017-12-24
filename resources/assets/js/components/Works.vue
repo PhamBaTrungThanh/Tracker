@@ -24,10 +24,7 @@
                             <div class="row">
                                 <div class="col">
                                     <p class="text-center">
-                                        <button class="btn btn-primary" @click="BOQ()">BOQ</button>
-                                        <button class="btn btn-primary" @click="Contract()">Hợp đồng nguyên tắc</button> 
                                         <button class="btn btn-primary" @click="newInvoice()">Tạo đơn hàng</button>
-                                        <button class="btn btn-primary" @click="payInvoice()">Thanh toán đơn hàng</button>
                                     </p>
                                 </div>
                             </div>
@@ -49,12 +46,6 @@
 
             </work-report>
         </fullscreen>
-        <div ref="newWork" class="show-on-swal">
-            <new-work id="new-work-container" @success="fetchData"></new-work>
-        </div>
-        <div ref="newContract" class="show-on-swal" >
-            <new-contract id="new-contract-container"></new-contract>
-        </div>  
 
     </div>
 </template>
@@ -65,9 +56,7 @@ import ModalDialogs from 'vue-modal-dialogs';
 
 
 import NewWork from "./Modals/NewWork.vue";
-import NewContract from "./Modals/NewContract.vue";
 import NewInvoice from "./Modals/NewInvoice.vue";
-import NewBOQ from "./Modals/NewBOQ.vue";
 import WorkReport from "./Reports/WorkReport";
 
 
@@ -140,21 +129,6 @@ export default {
                 }
             });
         },
-        BOQ() {
-            Promise.resolve(ModalDialogs.makeDialog(NewBOQ)()).then( result => {
-                if (result) {
-                    this.fetchData();
-                }
-            });
-        },
-        Contract() {
-            
-            this.$swal({
-                content: this.$refs.newContract,
-                className: 'big-swal',
-                buttons: false,
-            })
-        },
         newInvoice() {
             Promise.resolve(ModalDialogs.makeDialog(NewInvoice)()).then( result => {
                 if (result) {
@@ -168,9 +142,7 @@ export default {
     },
     components: {
         "fullscreen" :Fullscreen,
-        "new-work": NewWork,
-        "new-contract": NewContract,
-        'work-report': WorkReport,
+        "work-report": WorkReport,
     }
 }
 </script>

@@ -40,6 +40,13 @@ const routes = [
                 meta: {
                     title: "Danh sách vật tư"
                 }
+            }, {
+                path: "accounting",
+                name: "base.accounting",
+                component: () => import("./components/Materials.vue"),
+                meta: {
+                    title: "Kế toán / Kiểm toán"
+                }
             }
         ],
     },

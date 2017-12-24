@@ -31,7 +31,7 @@ class WorkController extends Controller
     }
     private function findOrCreateProvider(Request $request) 
     {
-        if (!$request->selected_provider_id) {
+        if (!$request->provider_id === 0) {
             if (!$request->input('new_provider.name')) {
                 return response()->json(['error' => 'No provider name'], 400);
             } else {
@@ -45,7 +45,7 @@ class WorkController extends Controller
                 $provider_id = $provider->id;
             }
         } else {
-            $provider_id = $request->selected_provider_id;
+            $provider_id = $request->provider_id;
         }
         return $provider_id;
     }
@@ -68,7 +68,7 @@ class WorkController extends Controller
             foreach ($request->list as $node) {
                 $category = $work->categories()->firstOrCreate(['name' => $node['name']]);
                 foreach ($node['children'] as $material) {
-                    $material_eloquent = $category->materials()->firstOrCreate(['name' => $material['name']], ['per' => $material['per']]);
+                    $material_eloquent = ($material->is_new) ? $category->materials()->create(['name' => $material['name'], 'per' => $material['per']]) : $material;
                     $tracker = new Tracker();
                     $tracker->contract_id = $contract->id;
                     $tracker->material_id = $material_eloquent->id;

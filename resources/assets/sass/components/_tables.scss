@@ -1,7 +1,7 @@
 table.table {
     width: 100%;
     border: 1px solid #ddd;
-    th, td {
+    tr, th, td {
         border: 1px solid #ddd;
         padding: 1px 3px;
     }
@@ -19,37 +19,14 @@ table.table {
         background: #ffffff;
     }
 
-    tr.category {
+    tr.category-row {
         background: $brand-primary;
+        color: #ffffff;
+        td {
+            color: #ffffff;
+        }
+    }
 
-    }
-    tr.material {
-        
-        td:first-child {
-            position: relative;
-            input {
-                padding-left: 25px;
-               
-            }
-            span.delete {
-                position: absolute;
-                right: 0;           
-                font-size: 0.8rem;            
-                cursor: pointer;            
-                color: red;           
-                padding: 0 7px;          
-                transform: translateY(-50%);
-                top: 50%;
-            }
-            span.delete:hover {
-                text-decoration: underline;
-            }
-        } 
-
-    }
-    tr.material:hover {
-        background: #fff9bc;
-    }
 }
 
 
@@ -90,16 +67,17 @@ table.trackers-table {
         text-align: center;
     }
     .name-col {
-        width: calc(40% - 30px);
+        width: auto;
+        text-align: left;
     }
     .per-col {
-        width: 10%;
+        width: 9%;
     }
     .currency-col {
-        width: 10%;
+        width: 9%;
     }
     .brand-col, .boq-unit-col, .boq-price-col, .boq-total-col, .notes-col {
-        width: 10%;
+        width: 8%;
     }
 
     tr.add-more {

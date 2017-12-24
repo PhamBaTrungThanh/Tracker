@@ -18,7 +18,6 @@
                             <input type="text" class="form-control" id="contract_number" v-model="contract_number">
                         </div>
                     </div>
-                    
                 </div>
             </div>
             <div class="col">
