@@ -24,7 +24,7 @@ class WorkResource extends Resource
             'showDetail' => false,
             'image' => "http://via.placeholder.com/350x150",
             'invoice_count' => $this->invoices()->count(),
-            'nested_categories' => CategoryWithMaterialResources::collection($this->categories()->with('materials')->get())
+            'nested_categories' => CategoryWithMaterialResources::collection($this->categories)
         ];
     }
 }

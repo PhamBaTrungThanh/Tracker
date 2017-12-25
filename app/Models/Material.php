@@ -6,13 +6,16 @@ use Illuminate\Database\Eloquent\Model;
 
 class Material extends Model
 {
-    protected $fillable = ['name', 'per'];
+    protected $fillable = ['name', 'per', 'currency', 'description'];
 
     public function trackers()
     {
         return $this->hasMany(Tracker::class);
     }
-
+    public function boq() 
+    {
+        return $this->hasOne(Boq::class);
+    }
     public function contracts()
     {
         return $this->hasManyThrough(

@@ -35,7 +35,7 @@ class MaterialController extends Controller
 
     public function show(Material $material)
     {
-        $material->load(['trackers', 'trackers.invoice', 'trackers.contract', 'trackers.invoice.provider']);
+        $material->load(['trackers', 'trackers.invoice', 'trackers.invoice.provider']);
         return new \App\Http\Resources\MaterialDetails($material);
     }
 }

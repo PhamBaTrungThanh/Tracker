@@ -43,7 +43,7 @@ const routes = [
             }, {
                 path: "accounting",
                 name: "base.accounting",
-                component: () => import("./components/Materials.vue"),
+                component: () => import("./components/Accounting.vue"),
                 meta: {
                     title: "Kế toán / Kiểm toán"
                 }

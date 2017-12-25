@@ -16,7 +16,7 @@ class WorkController extends Controller
 {
     public function index()
     {
-        return \App\Http\Resources\WorkResource::collection(Work::all());
+        return \App\Http\Resources\WorkResource::collection(Work::with(['categories', 'categories.materials', 'categories.materials.boq'])->get());
     }
     public function store(Request $request)
     {
@@ -31,7 +31,7 @@ class WorkController extends Controller
     }
     private function findOrCreateProvider(Request $request) 
     {
-        if (!$request->provider_id === 0) {
+        if ($request->provider_id === 0) {
             if (!$request->input('new_provider.name')) {
                 return response()->json(['error' => 'No provider name'], 400);
             } else {
@@ -51,64 +51,64 @@ class WorkController extends Controller
     }
     public function update(Work $work, Request $request)
     {   
-        if ($request->action === "new_contract") {
+        if ($request->action === "new_contract" || $request->action === "new_invoice") {
 
-            $provider_id = $this->findOrCreateProvider();
+            $provider_id = $this->findOrCreateProvider($request);
+           
+            $invoice = new Invoice();
+            $invoice->name = ($request->action === 'new_contract') ? "Hợp đồng nguyên tắc" : "Đơn hàng";
+            $invoice->work_id = $work->id;
+            $invoice->signed_at = $request->signed_at;
+            $invoice->slug = str_slug($invoice->name);
+            $invoice->type = ($request->action === 'new_contract') ? "contract" : "invoice";
+            $invoice->uid = $request->contract_number;
+            $invoice->provider_id = $provider_id;
+            $invoice->save();
 
-            $contract = new Contract();
-            $contract->name = "Hợp đồng nguyên tắc";
-            $contract->work_id = $work->id;
-            $contract->signed_at = $request->signed_at;
-            $contract->slug = str_slug($contract->name);
-            $contract->type = "contract";
-            $contract->uid = $request->contract_number;
-            $contract->provider_id = $provider_id;
-            $contract->save();
-            
             foreach ($request->list as $node) {
-                $category = $work->categories()->firstOrCreate(['name' => $node['name']]);
+                if ($node["id"] === 0) {
+                    $category = $work->categories()->create(['name' => $node['name']]);
+                } else {
+                    $category = $work->categories()->find($node["id"]);
+                }
+                
                 foreach ($node['children'] as $material) {
-                    $material_eloquent = ($material->is_new) ? $category->materials()->create(['name' => $material['name'], 'per' => $material['per']]) : $material;
+                    if ($material['is_new']) {
+                        $material_eloquent = $category->materials()->create([
+                            'name' => $material['name'],
+                            'per' => ($material['per']) ? $material['per'] : "m",
+                            'currency' => $material['currency'],
+                        ]);
+                        $material_eloquent->boq()->create([
+                            'price' => $material['boq_price'],
+                            'unit' => $material['boq_unit'],
+                            'description' => "",
+                            'name' => "BOQ",
+                            'brand' => $material['brand'],
+                            'total' => (int) $material['boq_unit'] * (float) $material['boq_unit'],
+                        ]);
+                    } else {
+                        $material_eloquent = $category->materials()->find($material['id']);
+                    }
+
+                    
                     $tracker = new Tracker();
-                    $tracker->contract_id = $contract->id;
+                    $tracker->invoice_id = $invoice->id;
                     $tracker->material_id = $material_eloquent->id;
                     $tracker->unit = $material['unit'];
                     $tracker->cost = $material['price'];
                     $tracker->total = $material['unit'] * $material['price'];
                     $tracker->save();
+
+                    if ($request->action === "new_invoice") {
+                        $material_eloquent->invoice_count += 1;
+                        $material_eloquent->total_unit += $material['unit'];
+                        $material_eloquent->total_price += $tracker->total;
+                        $material_eloquent->save();
+                    }
                 }
             }
         }
-        if ($request->action === "new_invoice") {
-            
-            $provider_id = $this->findOrCreateProvider($request);
-
-            $invoice = new Invoice();
-            $invoice->name = $request->form_name;
-            $invoice->work_id = $work->id;
-            $invoice->signed_at = $request->signed_at;
-            $invoice->slug = str_slug($invoice->name);
-            $invoice->type = "invoice";
-            $invoice->uid = $request->contract_number;
-            $invoice->provider_id = $provider_id;
-            $invoice->save();
-            
-            foreach ($request->list as $node) {
-                $category = $work->categories()->firstOrCreate(['name' => $node['name']]);
-                foreach ($node['children'] as $material) {
-                    $tracker = new Tracker();
-                    $tracker->contract_id = $invoice->id;
-                    $tracker->material_id = ($material['id']) ? $material['id'] : $category->materials()->create(['name' => $material['name'], 'per' => $material['per']]);
-                    $tracker->unit = $material['unit'];
-                    $tracker->cost = $material['price'];
-                    $tracker->total = $material['unit'] * $material['price'];
-                    $tracker->save();
-                }
-            }
-        }
-
-
-
-        return response()->JSON(['success' => true]);
+        return response()->json(['message' => 'success']);
     }
 }

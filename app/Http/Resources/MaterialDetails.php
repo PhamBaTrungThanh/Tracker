@@ -22,13 +22,17 @@ class MaterialDetails extends Resource
             'name' => $this->name,
             'description' => $this->description,
             'per' => $this->per,
-            'boq_price' => 0,
-            'boq_unit' => 0,
-            'invoices' =>  Trackers\WithInvoiceResources::collection($this->trackers->filter(function ($tracker) {
-                return $tracker->invoice !== null;
+            'boq_price' => $this->boq->price,
+            'boq_unit' => $this->boq->unit,
+            'brand' => $this->brand,
+            'total_unit' => $this->total_unit,
+            'total_price' => $this->total_price,
+
+            'invoices' => Trackers\WithInvoiceResources::collection($this->trackers->filter(function ($tracker) {
+                return $tracker->invoice->type === 'invoice';
             })),
             'contract' => $this->trackers->filter(function ($tracker) {
-                return $tracker->contract !== null;
+                return $tracker->invoice->type === 'contract';
             }),
         ];
     }

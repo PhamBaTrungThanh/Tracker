@@ -57,7 +57,7 @@
             <hr>
             <h5>Danh sách vật tư</h5>
             <div class="form-group">
-                 <treeselect :mutiple="true" :options="work.nested_categories" placeholder="Chọn vật tư theo danh sách"></treeselect>
+                 <treeselect v-model="selected_materials" :multiple="true" :options="work.nested_categories" :open-on-focus="true" :close-on-select="false" :disableBranchNodes="true" placeholder="Chọn vật tư theo danh sách"></treeselect>
             </div>
             <div class="form-group">
                 <table class="table boq-table">
@@ -67,6 +67,7 @@
                             <th rowspan="2" class="text-left name-col" >Tên vật tư / Danh mục</th>
                             <th rowspan="2" class="per-col">Đơn vị tính</th>
                             <th rowspan="2" class="currency-col">Loại tiền</th>
+                            <th rowspan="2" class="brand-col">Hãng</th>
                             <th colspan="3" class="invoice-col"><span v-if="invoice_type === 'invoice'">Đơn hàng</span><span v-else>Hợp đồng</span></th>
                             <th colspan="2" class="boq-col">BOQ</th>
                             <th rowspan="2" class="notes-col">Ghi chú</th>
@@ -82,14 +83,15 @@
                     <tbody>
                         <tr v-for="row in list" :key="row.uid" :class="{'category-row': row.type === 'category', 'material-row': row.type === 'material'}">
                             <template v-if="row.type === 'category'">
-                                <td class="controls-col">+</td>
-                                <td colspan="9"><input type="text" class="inline-td" v-model="row.name" @focus="$event.target.select()" v-focus @keyup.enter="addMaterial(row.keyid)"></td>
+                                <td class="controls-col" @click.self="addMaterialTo(row.id, row.keyid)">+</td>
+                                <td colspan="9"><input type="text" class="inline-td" v-model="row.name" @focus="$event.target.select()" @keyup.enter="addMaterial(row.keyid)"></td>
                             </template>
                             <template v-else>
                                 <td class="controls-col">-</td>
-                                <td><input type="text" class="inline-td" v-model="row.name" @focus="$event.target.select()" v-focus @keyup.enter="addMaterial(row.keyid)"></td>
-                                <td><input type="text" class="inline-td" v-model="row.per" @focus="$event.target.select()" @keyup.enter="addMaterial(row.keyid)"></td>
-                                <td><input type="text" class="inline-td" v-model="row.currency" @focus="$event.target.select()" @keyup.enter="addMaterial(row.keyid)"></td>
+                                <td><input type="text" class="inline-td" v-model="row.name" @focus="$event.target.select()" @keyup.enter="addMaterial(row.keyid)"></td>
+                                <td><input type="text" class="inline-td" :disabled="!row.is_new" v-model="row.per" @focus="$event.target.select()" @keyup.enter="addMaterial(row.keyid)"></td>
+                                <td><input type="text" class="inline-td" :disabled="!row.is_new" v-model="row.currency" @focus="$event.target.select()" @keyup.enter="addMaterial(row.keyid)"></td>
+                                <td><input type="text" class="inline-td" :disabled="!row.is_new" v-model="row.brand" @focus="$event.target.select()" @keyup.enter="addMaterial(row.keyid)"></td>
                                 <td><input type="text" class="inline-td" v-model="row.unit" @focus="$event.target.select()" @keyup.enter="addMaterial(row.keyid)"></td>
                                 <td><input type="text" class="inline-td" v-model="row.price" @focus="$event.target.select()" @keyup.enter="addMaterial(row.keyid)"></td>
                                 <td>{{ row.price * row.unit }}</td>
@@ -98,9 +100,9 @@
                                 <td></td>
                             </template>
                         </tr>
-                        <tr class="add-more" @click="addCategory">
+                        <tr class="add-more" @click.self="addCategory">
                             <td class="controls-col">+</td>
-                            <td colspan="9">Thêm</td>
+                            <td colspan="9">Thêm danh mục</td>
                         </tr>
 
                     </tbody>
@@ -122,7 +124,8 @@ export default {
     props: ['work_id'],
     data() {
         return {
-            list: [],
+            new_list: [],
+            new_materials_in_category: [],
             invoice_type_options: [
                 {
                     id: "invoice",
@@ -142,7 +145,8 @@ export default {
                 tax_number: "",
                 description: "",
                 address: "",
-            }
+            },
+            selected_materials: [],
         }
     },
 
@@ -153,6 +157,7 @@ export default {
                 if (node.type === "category") {
                     _nestedList.push({
                         name: node.name,
+                        id: node.id,
                         children: [],
                     });
                 }
@@ -168,16 +173,72 @@ export default {
         work() {
             return this.$store.state.currentWork;
         },
-
+        list() {
+            let index = 1;
+            let _list = [];
+            const _materials = this.work.flatten_list.filter( material => { return ((this.selected_materials.indexOf(material.id) !== -1) && (material.type === "material")) });
+            const _categories = [...new Set(_materials.map( material => material.category_id ))];
+            
+            for (let i = 0; i < _categories.length; i++) {
+                const _category = this.work.flatten_list.filter( category => { return category.type === "category" && category.id === _categories[i]})[0];
+                _list.push( {
+                    "type": "category",
+                    "name": _category.label,
+                    "uid": this.uid(),
+                    "keyid": index++,
+                    "is_new": false,      
+                    "id": _category.id,              
+                });
+                const _childMaterials = _materials.filter( material => { return material.type === "material" && material.category_id === _categories[i]}).map( material => {
+                    return {
+                        "name": material.name,
+                        "type": "material",
+                        "currency": material.currency,
+                        "per": material.per,
+                        "uid": this.uid(),
+                        "keyid": index++,
+                        "boq_unit": material.boq_unit,
+                        "boq_price": material.boq_price,
+                        "brand": material.brand,
+                        "is_new": false,
+                        "unit":  0,
+                        "price": 0,   
+                        "id": material.id,
+                    }
+                });
+                const _extra = this.new_materials_in_category.filter( material => material.category_id === _categories[i]).map( material => {
+                    return {
+                        "name": "",
+                        "type": "material",
+                        "currency": "vnđ",
+                        "per": "",
+                        "uid": this.uid(),
+                        "keyid": index++,
+                        "boq_unit": 0,
+                        "boq_price": 0,
+                        "is_new": true,
+                        "brand": "",
+                        "unit":  0,
+                        "price": 0,   
+                    }
+                });
+                _list.push(..._childMaterials, ..._extra);
+            }
+            for (let i = 0; i < this.new_list.length; i++) {
+                this.new_list[i].keyid = index++;
+            }
+            return _list.concat(this.new_list);
+        },
     },
     methods: {
         addCategory() {
-            this.list.push({
+            this.new_list.push({
                 "type": "category",
                 "name": "",
                 "uid": this.uid(),
                 "keyid": this.list.length,
                 "is_new": true,
+                "id": 0,
             });
         },
         addMaterial(keyid) {
@@ -190,7 +251,7 @@ export default {
                     }
                 }
             }
-            this.list.splice(_index, 0, {
+            this.new_list.splice(_index, 0, {
                 "name": "",
                 "type": "material",
                 "currency": "vnđ",
@@ -201,15 +262,19 @@ export default {
                 "is_new": true,
                 "unit":  0,
                 "price": 0,
-
+                "brand": "",
             });
-            this.updateIndex();
         },
-        updateIndex() {
-            for (let i = 0; i < this.list.length; i++) {
-                this.list[i].keyid = i;
+        addMaterialTo(category_id, key_id) {
+            if (category_id === 0) {
+                this.addMaterial(key_id);
+            } else {
+                this.new_materials_in_category.push({
+                    "category_id": category_id,             
+                });
             }
         },
+
         uid() {
             return Math.random().toString(36).substring(2) 
                + (new Date()).getTime().toString(36).substring(10);

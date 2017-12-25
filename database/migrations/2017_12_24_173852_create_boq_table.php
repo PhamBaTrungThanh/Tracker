@@ -13,12 +13,14 @@ class CreateBoqTable extends Migration
      */
     public function up()
     {
-        Schema::create('boq', function (Blueprint $table) {
+        Schema::create('boqs', function (Blueprint $table) {
             $table->increments('id');
             $table->bigInteger('material_id');
             $table->string('name');
             $table->string('description');
-            
+            $table->bigInteger('unit')->unsigned();
+            $table->decimal('price', 20,4)->unsigned();
+            $table->decimal('total', 40,10)->unsigned();
             $table->timestamps();
         });
     }

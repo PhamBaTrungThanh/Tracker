@@ -24,5 +24,5 @@ Route::prefix('v1')->middleware('auth:api')->namespace('Api_v1')->group(function
     Route::Resource('/work', 'WorkController');
     Route::Resource('/category', 'CategoryController');
     Route::resource('/material', 'MaterialController');
-    
+    Route::resource('/invoice', 'InvoiceController');
 });

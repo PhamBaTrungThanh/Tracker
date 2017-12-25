@@ -91,7 +91,6 @@ export default {
                     let _flatten = [];
                     work.nested_categories.forEach( _category => {
                         let _children = _category.children.map( (material, index) => Object.assign({}, material, {"index": ++index}));
-                        delete _category['children'];
                         _flatten.push(_category, ..._children);
                     });
                     return Object.assign({}, work, {flatten_list: _flatten});
@@ -108,24 +107,9 @@ export default {
         },
 
         newWork() {
-            this.$swal({
-                content: this.$refs.newWork,
-                className: 'medium-swal',
-            }).then( result => {
+            Promise.resolve(ModalDialogs.makeDialog(NewWork)()).then( result => {
                 if (result) {
-                    const $id = document.getElementById('new-work-container');
-                    const data = $id.getElementsByClassName('form-control');
-                    axios.post(`${this.$store.state.apiBase}/work`, {
-                        name: data[0].value,
-                        description: data[2].value,
-                        client: data[1].value,
-                    }).then( response => {
-                        if (response.status === 200) {
-                            data[0].value = "";
-                            data[1].value = "";
-                            this.fetchData();
-                        }
-                    })
+                    this.fetchData();
                 }
             });
         },
