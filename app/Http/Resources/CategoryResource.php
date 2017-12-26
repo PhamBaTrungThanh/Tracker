@@ -4,7 +4,7 @@ namespace App\Http\Resources;
 
 use Illuminate\Http\Resources\Json\Resource;
 
-class CategoryWithMaterialResources extends Resource
+class CategoryResource extends Resource
 {
     /**
      * Transform the resource into an array.
@@ -17,9 +17,10 @@ class CategoryWithMaterialResources extends Resource
         return [
             'id' => $this->id,
             'label' => $this->name,
-            'children' => MaterialResources::collection($this->materials),
+            'name' => $this->name,
+            'children' => MaterialResource::collection($this->whenLoaded('materials')),
             'expanded' => true,
-            'depth' => $this->depth,
+            'depth' => ($this->depth) ? $this->depth : 0,
             'type' => 'category',
         ];
     }

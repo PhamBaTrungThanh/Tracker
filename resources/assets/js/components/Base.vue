@@ -16,8 +16,8 @@
                         <router-link tag="li" to="/works">
                             <a>Dự án</a>
                         </router-link>
-                        <router-link tag="li" to="/accounting">
-                            <a>Kế toán/Kiểm toán</a>
+                        <router-link tag="li" to="/invoice">
+                            <a>Hóa đơn</a>
                         </router-link>
                         <router-link tag="li" to="/materials">
                             <a>Vật tư/Báo giá</a>

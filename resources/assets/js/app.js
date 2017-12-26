@@ -32,7 +32,7 @@ window.commafly = commafly;
 // Next we do some vue router, states, and app init
 const router = new VueRouter({
     routes: routes,
-    mode: 'history',
+    mode: 'hash',
 });
 
 router.afterEach((to, from) => {

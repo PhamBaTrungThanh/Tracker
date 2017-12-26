@@ -69,7 +69,7 @@ div#navigation {
 }
 main {
     background: #f3f5f6;
-    margin-top: 50px;
+    margin-top: 20px;
 
 }
 
@@ -170,3 +170,33 @@ input.hide-border {
     }
 }
 
+.back-to-index {
+    position: absolute;
+    top: 120px;
+    left: 40px;
+    text-transform: uppercase;
+    font-weight: 300;
+    padding: 3px 15px 3px 20px;
+    border-radius: 3px;
+    transition: all 0.2s ease; 
+}
+.back-to-index:before {
+    display: block;
+    content: "<";
+    position: absolute;
+    left: 12px;
+    font-weight: 400;
+    line-height: 1.5rem;
+    transition: 0.2s ease 0s;
+}
+.back-to-index:hover {
+    background: $brand-secondary;
+    color: #ffffff;
+    &:before {
+        left: 6px;
+    }
+}
+
+.scrollable-y {
+    overflow-y: scroll;
+}

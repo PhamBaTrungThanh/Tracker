@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\DB;
 use App\Models\Invoice;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use App\Http\Resources\Invoices\InvoiceResources;
+use App\Http\Resources\InvoiceResource;
 class InvoiceController extends Controller
 {
     /**
@@ -20,8 +20,8 @@ class InvoiceController extends Controller
         $invoices = Invoice::where([
             ['work_id', '=', $request->query('work_id')],
             ['provider_id', '=', $request->query('provider_id')]
-        ])->orderBy('signed_at')->get();
-        return InvoiceResources::collection($invoices);
+        ])->orderBy('signed_at')->withCount('receives')->with('payments')->get();
+        return InvoiceResource::collection($invoices);
     }
 
     /**
@@ -53,7 +53,24 @@ class InvoiceController extends Controller
      */
     public function show(Invoice $invoice)
     {
-        return new InvoiceResources($invoice->loadMissing(['trackers', 'trackers.material', 'payments']));
+        
+        $invoice->load(['work', 'provider', 'trackers', 'trackers.material', 'payments', 'receives', 'trackers.receives']);
+        $received = $invoice->receives->map( function($receive) {
+
+            $trackers = $receive->trackers->map( function($tracker) {
+                return [
+                    "tracker_id" => $tracker->pivot->tracker_id,
+                    "unit" => $tracker->pivot->unit                   
+                ];
+            });
+            return [
+                'receive_id' => $receive->id,
+                'trackers' => $trackers,
+            ];
+        });
+        return (new InvoiceResource($invoice))->additional(['meta' => [
+            'received_list' => $received,
+        ]]);
     }
 
     /**

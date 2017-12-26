@@ -25,6 +25,10 @@ class Invoice extends Model
     {
         return $this->belongsTo(Provider::class);
     }
+    public function work()
+    {
+        return $this->belongsTo(Work::class);
+    }
     public function payments() 
     {
         return $this->hasMany(Payment::class);
@@ -32,6 +36,11 @@ class Invoice extends Model
     public function trackers()
     {
         return $this->hasMany(Tracker::class);
+    }
+
+    public function receives()
+    {
+        return $this->hasMany(Receive::class);
     }
 }
 

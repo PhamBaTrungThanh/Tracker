@@ -4,21 +4,21 @@ namespace App\Http\Resources;
 
 use Illuminate\Http\Resources\Json\Resource;
 
-class CategoryResources extends Resource
+class ReceiveResource extends Resource
 {
     /**
      * Transform the resource into an array.
      *
-     * @param  \Illuminate\Http\Request
+     * @param  \Illuminate\Http\Request  $request
      * @return array
      */
     public function toArray($request)
     {
         return [
             'id' => $this->id,
-            'label' => $this->name,
             'name' => $this->name,
-            'type' => 'category',
+            'description' => $this->description,
+            'received_at' => $this->received_at->format('d/m/Y'),
         ];
     }
 }

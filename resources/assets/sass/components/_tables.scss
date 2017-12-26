@@ -192,12 +192,24 @@ table.invoices-table {
         text-align: center;
     }
     .date-col {
-        width: 150px;
+        width: 120px;
         text-align: center;
     }
-    .percent-col {
-        width: 200px;
+    .receives-col {
         text-align: center;
+        width: 120px;
+    }
+    .payments-col {
+        text-align: center;
+        width: 130px;
+    }
+    .total-col {
+        text-align: center;
+        width: 200px;        
+    }
+    .payment-total-col {
+        text-align: center;
+        width: 200px;         
     }
     tbody > tr {
         cursor: pointer;
@@ -205,4 +217,8 @@ table.invoices-table {
             background: rgb(250, 252, 179);
         }
     }
+}
+
+.table.receive-table {
+
 }

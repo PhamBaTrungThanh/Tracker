@@ -7,6 +7,13 @@ use Illuminate\Database\Eloquent\Builder;
 
 class Tracker extends Model
 {
+    protected $appends = [
+        'total_received'
+    ];
+    public function receives()
+    {
+        return $this->belongsToMany(Receive::class);
+    }
     public function contract()
     {
         return $this->belongsTo(Contract::class, 'invoice_id');
@@ -29,5 +36,14 @@ class Tracker extends Model
             'id3',
             'id4' 
         );
+    }
+
+
+    public function getTotalReceivedAttribute()
+    {
+        $this->loadMissing('receives');
+        return $this->receives->sum( function ($recieve) {
+            return $recieve->pivot->unit;
+        });
     }
 }

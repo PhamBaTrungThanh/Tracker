@@ -24,7 +24,10 @@
                                 <th class="number-col">#</th>
                                 <th class="date-col">Ngày</th>
                                 <th class="name-col">Tên</th>
-                                <th class="percent-col">% thanh toán</th>
+                                <th class="receives-col">Số lần nhận hàng</th>
+                                <th class="payments-col">Số lần thanh toán</th>
+                                <th class="total-col">Tổng tiền</th>
+                                <th class="payment-total-col">Đã thanh toán</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -32,7 +35,10 @@
                                 <td class="number-col">{{ (index + 1) }}</td>
                                 <td class="date-col">{{row.signed_at}}</td>
                                 <td class="name-col">{{row.name}}</td>
-                                <td class="percent-col">{{row.percent_complete}}</td>
+                                <td class="receives-col">{{row.receives_count}}</td>
+                                <td class="payments-col">{{row.payment_count}}</td>
+                                <td class="total-col">{{commafly(row.total)}}</td>          
+                                <td class="payment-total-col">{{commafly(row.payment_total)}}</td>
                             </tr>
                         </tbody>
                     </table>
@@ -43,8 +49,8 @@
 </template>
 
 <script>
-import InvoiceDetail from "./Modals/InvoiceDetail.vue";
-import ModalDialogs from 'vue-modal-dialogs';
+
+
 export default {
     data() {
         return {
@@ -71,6 +77,9 @@ export default {
         }
     },
     methods: {
+        commafly(number) {
+            return window.commafly(number);
+        },
         loadWorks(callback) {
             axios.get(`${this.$store.state.apiBase}/work`).then( response => {
 
@@ -100,10 +109,9 @@ export default {
             });
         },
         showDetail(invoice_id) {
-            Promise.resolve(ModalDialogs.makeDialog(InvoiceDetail, "invoice_id")(invoice_id)).then( result => {
-                if (result) {
-                    //this.fetchData();
-                }
+            this.$router.push({
+                name: "invoice.show",
+                params: { id: invoice_id },
             });
         }
     }

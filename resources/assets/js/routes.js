@@ -41,13 +41,30 @@ const routes = [
                     title: "Danh sách vật tư"
                 }
             }, {
-                path: "accounting",
-                name: "base.accounting",
-                component: () => import("./components/Accounting.vue"),
+                path: "invoice",
+                name: "invoice.base",
+                component: () => import("./components/Invoice/Base.vue"),
                 meta: {
-                    title: "Kế toán / Kiểm toán"
-                }
-            }
+                    title: "Hóa Đơn",
+                },
+                children: [
+                    {
+                        path: ":id",
+                        name: "invoice.show",
+                        component: () => import("./components/Invoice/Show.vue"),
+                        meta: {
+                            title: "Chi tiết hóa đơn",
+                        },
+                    }, {
+                        path: "",
+                        name: "invoice.index",
+                        component: () => import("./components/Invoice/Index.vue"),
+                        meta: {
+                            title: "Hóa đơn",
+                        }, 
+                    }
+                ]
+            },
         ],
     },
 
