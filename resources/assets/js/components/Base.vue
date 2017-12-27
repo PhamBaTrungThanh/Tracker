@@ -67,7 +67,7 @@ export default {
             console.info("Token found from cookies");
 
             // do a call to ./user
-            axios.get(`http://tracker.dev/api/v1/user`, {
+            axios.get(`${window.location.origin}/api/v1/user`, {
                     headers: {
                         'Authorization': cookieToken
                     }

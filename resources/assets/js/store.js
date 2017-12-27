@@ -7,7 +7,7 @@ Vue.use(Vuex);
 const store = new Vuex.Store({
     state: {
         authorizationToken: "",
-        apiBase: "http://tracker.dev/api/v1",
+        apiBase:`${window.location.protocol}//${window.location.host}/api/v1`,
         user: {},
         categoryList: {},
         currentWork: {},
