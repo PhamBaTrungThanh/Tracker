@@ -34,6 +34,6 @@ class CreateTableInvoices extends Migration
      */
     public function down()
     {
-        //
+        Schema::dropIfExists('invoices');
     }
 }

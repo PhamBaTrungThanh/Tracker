@@ -16,11 +16,21 @@
                     <div class="card">
                         <div class="card-body">
                             <div class="row">
-                                <div class="col"><p class="card-text text-center">Khởi công: {{ work.started_at }}</p></div>
-                                <div class="col"><p class="card-text text-center">Số đơn hàng: {{work.invoice_count}}</p></div>
-                                <div class="col"><p class="card-text text-center">Số người công tác: Chưa có thông tin</p></div>
+                                <div class="col">
+                                    <p class="card-text"><b>Khởi công: </b>{{ work.started_at }}</p>
+                                    <p class="card-text"><b>Tổng giá trị BOQ: </b>{{ comma(work.boq_sum) }}</p>
+                                </div>
+                                <div class="col">
+                                    <p class="card-text"><b>Số đơn hàng: </b>{{work.invoice_count}}</p>
+                                    <p class="card-text"><b>Giá trị đơn hàng: </b>{{comma(work.total_sum)}}</p>
+                                </div>
+                                <div class="col">
+                                    <p class="card-text"><b>Số người công tác: </b>Chưa có thông tin</p>
+                                    <p class="card-text"><b>Giá trị thanh toán: </b>{{comma(work.paid_sum)}}</p>
+                                </div>
                             </div>
-                            <br><br>
+                        </div>
+                        <div class="card-body">
                             <div class="row">
                                 <div class="col">
                                     <p class="text-center">
@@ -89,11 +99,17 @@ export default {
 
                 this.works = response.data.data.map( work => {
                     let _flatten = [];
+                    let boq_sum = 0;
                     work.nested_categories.forEach( _category => {
-                        let _children = _category.children.map( (material, index) => Object.assign({}, material, {"index": ++index}));
+                        let _children = _category.children.map( (material, index) => {
+                            boq_sum += parseFloat(material.boq_total);
+                            return Object.assign({}, material, {"index": ++index})
+                        });
                         _flatten.push(_category, ..._children);
                     });
-                    return Object.assign({}, work, {flatten_list: _flatten});
+                    
+                    
+                    return Object.assign({}, work, {flatten_list: _flatten, boq_sum: boq_sum});
                     
                 });
             }).catch( error => {
@@ -105,7 +121,7 @@ export default {
             this.$refs.fullscreen.enter();
 
         },
-
+        comma: (number) => window.commafly(number),
         newWork() {
             Promise.resolve(ModalDialogs.makeDialog(NewWork)()).then( result => {
                 if (result) {

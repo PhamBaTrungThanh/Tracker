@@ -54,9 +54,9 @@ class WorkController extends Controller
         if ($request->action === "new_contract" || $request->action === "new_invoice") {
 
             $provider_id = $this->findOrCreateProvider($request);
-           
+            $total = 0;
             $invoice = new Invoice();
-            $invoice->name = ($request->action === 'new_contract') ? "Hợp đồng nguyên tắc" : "Đơn hàng";
+            $invoice->name = ($request->action === 'new_contract') ? "Hợp đồng " . ($work->contracts()->count() + 1) : "Đơn hàng " . ($wokr->invoices()->count() + 1);
             $invoice->work_id = $work->id;
             $invoice->signed_at = $request->signed_at;
             $invoice->slug = str_slug($invoice->name);
@@ -73,6 +73,7 @@ class WorkController extends Controller
                 }
                 
                 foreach ($node['children'] as $material) {
+                    $total += ($material['unit'] * $material['price']);
                     if ($material['is_new']) {
                         $material_eloquent = $category->materials()->create([
                             'name' => $material['name'],
@@ -85,7 +86,7 @@ class WorkController extends Controller
                             'description' => "",
                             'name' => "BOQ",
                             'brand' => $material['brand'],
-                            'total' => (int) $material['boq_unit'] * (float) $material['boq_unit'],
+                            'total' => (int) $material['boq_unit'] * (float) $material['boq_price'],
                         ]);
                     } else {
                         $material_eloquent = $category->materials()->find($material['id']);
@@ -108,6 +109,8 @@ class WorkController extends Controller
                     }
                 }
             }
+            $invoice->total = $total;
+            $invoice->save();
         }
         return response()->json(['message' => 'success']);
     }

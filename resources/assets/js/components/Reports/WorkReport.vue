@@ -3,7 +3,7 @@
         <h3 class="text-center">Báo cáo vật tư công trình {{work.name}}</h3>
         <div class="report">
             <div class="top">
-                <table class=" trackers-table report-table">
+                <table class=" trackers-table report-table table">
                     <thead class="thead-light">
                         <tr>
                             <th class="index-col" rowspan="2">#</th>
@@ -14,17 +14,18 @@
                             <th class="total_unit-col child-col">Số lượng đặt hàng</th>
                             <th class="total_price-col child-col">Giá trị đặt hàng</th>
                             <th class="boq_unit-col child-col">Số lượng BOQ</th>
+                            <th class="boq_unit-col child-col">Đơn giá BOQ</th>
                             <th class="boq_total-col child-col">Giá trị BOQ</th>
                             <th class="real_unit-col child-col">Số lượng chưa thực hiện</th>
                             <th class="real_count-col child-col">Giá trị chưa thực hiện</th>
-                            <th class="percent-col child-col">% chênh lệch</th>
+                            <th class="percent-col child-col">% chưa thực hiện</th>
                         </tr>
                     </thead>    
                     <tbody>
                         <template v-for="(row, key) in work.flatten_list">
                             <tr v-if="row.type === 'category'" :class="{category: row.type === 'category'}" :key="key">
                                 <td></td>
-                                <td colspan="11" >{{row.label}} <span v-if="row.depth > 0 && row.children">( {{row.children.length}} )</span></td>
+                                <td colspan="12" >{{row.label}} <span v-if="row.depth > 0 && row.children">( {{row.children.length}} )</span></td>
                             </tr>
                             <tr v-else :key="key" @click="showMaterialDetail(row.id)" :class="{'material': row.type === 'material'}">
                                 <td class="index-col">{{row.index}}</td>
@@ -35,13 +36,22 @@
                                 <td class="total_unit-col child-col">{{row.total_unit}}</td>
                                 <td class="total_price-col child-col">{{commafly(row.total_price)}}</td>
                                 <td class="boq_unit-col child-col">{{row.boq_unit}}</td>
-                                <td class="boq_total-col child-col">{{commafly(row.boq_price)}}</td>
-                                <td class="real_unit-col child-col">{{ row.total_unit - row.boq_unit}}</td>
-                                <td class="real_count-col child-col">{{commafly(row.total_price - row.boq_price)}}</td>
-                                <td class="percent-col child-col">{{(row.total_unit - row.boq_unit) / 100}} %</td>
+                                <td class="boq_unit-col child-col">{{commafly(row.boq_price)}}</td>
+                                <td class="boq_total-col child-col">{{commafly(row.boq_price * row.boq_unit)}}</td>
+                                <td class="real_unit-col child-col">{{ row.boq_unit - row.total_unit}}</td>
+                                <td class="real_count-col child-col">{{commafly((row.boq_price * row.boq_unit) - row.total_price)}}</td>
+                                <td class="percent-col child-col">{{ parseFloat(((row.boq_price * row.boq_unit) - row.total_price) / (row.boq_price * row.boq_unit) * 100).toFixed(2)}} %</td>
                             </tr>                            
                         </template>
-                    </tbody>        
+                    </tbody> 
+                    <tfoot>
+                        <tr>
+                            <td colspan="4">Tổng cộng</td>
+                            <td colspan="1">{{work.invoice_count}}</td>
+                            
+                        </tr>
+                    </tfoot>
+
                 </table>
             </div>
             <div class="bottom" v-if="material">
@@ -56,7 +66,7 @@
                             <th rowspan="2">Ngày giao hàng</th>
                             <th rowspan="2">Nhà cung cấp</th>
                             <th colspan="3">Số lượng</th>
-                            <th colspan="2">Giá trị</th>
+                            <th colspan="3">Giá trị</th>
                             <th rowspan="2">Ghi chú</th>
                         </tr>
 
@@ -64,6 +74,7 @@
                             <th>Số lượng đặt</th>
                             <th>Số lượng đã nhận</th>
                             <th>Số lượng còn lại</th>
+                            <th>Đơn giá</th>
                             <th>Giá trị đặt hàng</th>
                             <th>Giá trị đã nhận</th>
                         
@@ -78,6 +89,7 @@
                             <td>{{row.unit}}</td>
                             <td>{{row.recieved_unit}}</td>
                             <td>{{row.unit - row.recieved_unit}}</td>
+                            <td>{{commafly(row.cost)}}</td>
                             <td>{{commafly(row.cost * row.unit)}}</td>
                             <td>{{commafly(row.cost * row.recieved_unit)}}
                             <td>{{row.notes}}</td>
@@ -87,19 +99,19 @@
                         <tr>
                             <td colspan="4" class="tfoot-title">Tổng cộng</td>
                             <td class="tfoot-content" colspan="3">{{material.total_unit}}</td>
-                            <td class="tfoot-content" colspan="2">{{commafly(material.total_price)}}</td>
+                            <td class="tfoot-content" colspan="3">{{commafly(material.total_price)}}</td>
                             <td></td>
                         </tr>
                         <tr>
                             <td colspan="4" class="tfoot-title">BOQ</td>
                             <td class="tfoot-content" colspan="3">{{material.boq_unit}}</td>
-                            <td class="tfoot-content" colspan="2">{{commafly(material.boq_price)}}</td>
+                            <td class="tfoot-content" colspan="3">{{commafly(material.boq_price*material.boq_unit)}}</td>
                             <td></td>
                         </tr>
                         <tr>
                             <td colspan="4" class="tfoot-title">Chênh lệch</td>
-                            <td class="tfoot-content" colspan="3">{{material.total_unit - material.boq_unit}}</td>
-                            <td class="tfoot-content" colspan="2">{{commafly(material.total_price - material.boq_price)}}</td>
+                            <td class="tfoot-content" colspan="3">{{material.boq_unit - material.total_unit}}</td>
+                            <td class="tfoot-content" colspan="3">{{commafly((material.boq_price * material.boq_unit) - material.total_price)}}</td>
                             <td></td>
                         </tr>
                     </tfoot>

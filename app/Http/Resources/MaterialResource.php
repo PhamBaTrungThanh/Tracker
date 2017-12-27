@@ -27,6 +27,7 @@ class MaterialResource extends Resource
             'currency' => $this->currency,
             'boq_unit' => ($this->boq) ? $this->boq->unit : 0,
             'boq_price' => ($this->boq) ? $this->boq->price : 0,
+            'boq_total' => ($this->boq) ? $this->boq->unit * $this->boq->price : 0,
             'invoice_count' => $this->invoice_count,
             'total_unit' => $this->total_unit,
             'total_price' => $this->total_price,

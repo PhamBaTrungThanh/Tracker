@@ -113,6 +113,14 @@ export default {
                 name: "invoice.show",
                 params: { id: invoice_id },
             });
+        },
+        mounted(){
+            if (this.$route.query.work_id) {
+                this.work_id = this.$route.query.work_id;
+            }
+            if (this.$route.query.provider_id) {
+                this.provider_id = this.$route.query.provider_id;
+            }
         }
     }
 }

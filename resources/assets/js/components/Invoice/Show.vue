@@ -1,5 +1,6 @@
 <template>
     <div v-if="invoice">
+        <a @click="goBack">Về danh mục</a>
         <h3 class="text-center">{{invoice.name}}</h3>
         <div class="row">
             <div class="col">
@@ -25,8 +26,12 @@
                             </div>
                             <div class="col">
                                 <p class="card-text">
-                                    <b>Tổng giá trị:</b> <a>{{invoice.total}}</a>
-                                </p>                      
+                                    <b>Tổng số tiền:</b> <a>{{comma(invoice.total)}} </a>
+                                </p>    
+                                <p class="card-text">
+                                    <b>Đã thanh toán:</b> <a>{{comma(invoice.payment_total)}} </a>
+                                </p>          
+
                             </div>
                         </div>                                              
                     </div>
@@ -49,21 +54,25 @@
                                     <td class="name-col">{{row.name}}</td>
                                     <td class="date-col">{{row.pay_at}}</td>
                                     <td class="method-col">{{row.method}}</td>
-                                    <td class="pay-col">{{row.amount}}</td>
+                                    <td class="pay-col">{{comma(row.amount)}}</td>
                                     <td class="note-col">{{row.note}}</td>
                                 </tr>
                             </tbody>
                             <tfoot>
                                 <tr>
                                     <td colspan="4">Tổng cộng</td>
-                                    <td colspan="2"></td> 
+                                    <td colspan="2">{{comma(invoice.payment_total)}}</td> 
                                 </tr>
                                 <tr>
                                     <td colspan="4">Còn lại</td>
-                                    <td colspan="2"></td> 
+                                    <td colspan="2">{{comma(invoice.total - invoice.payment_total)}}</td> 
                                 </tr>
                             </tfoot>
                         </table>
+                        <br>
+                        <div class="form-group text-center">
+                            <button class="btn btn-primary" @click="newPayment">Thêm thanh toán</button>
+                        </div>
                     </div>
                     <div class="card-body">
                         <h5 class="card-title">Vật tư</h5>
@@ -88,44 +97,20 @@
                                      <template v-for="(receive) in invoice.receives">
                                         <td class="received-col" :key="receive.id">{{getFromMatrix(receive.id, row.id)}}</td>
                                     </template>      
-                                    <td class="total-received-col">{{row.total_received}}</td>
-                                    <td class="left-col">{{ row.unit - row.total_received}}</td>                                                                 
+                                    <td class="total-received-col">{{row.received_unit}}</td>
+                                    <td class="left-col">{{ row.unit - row.received_unit}}</td>                                                                 
                                 </tr>
                             </tbody>
                         </table>
+                        <br>
+                        <div class="form-group text-center">
+                            <button class="btn btn-primary" @click="newReceive">Nhận hàng</button>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
-        <div class="row" v-if="on === 'new_receive'">
-            <div class="col">
-                <div class="payment--container">
-                    <div class="form-group">
-                        <input type="input" v-model="new_receive.name" class="form-control hide-border">
-                    </div>
-                    <div class="form-row">
-                        <div class="form-group col-6">
-                            <label for="receive_date">Ngày nhận</label>
-                            <input type="date" v-model="new_receive.date" class="form-control" id="receive_date">
-                        </div>
-                        <div class="form-group col-6">
-                            <label for="receive_note">Ghi chú</label>
-                            <input type="input" v-model="new_receive.note" class="form-control" id="receive_note" placeholder="Nhập ghi chú">
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        
-                    </div>
-                    <div class="form-group">
-                        <h5>Chi tiết vật tư</h5>
 
-                    </div>
-                    <div class="form-group text-center">
-                        <button class="btn btn-primary" @click="submitInvoice">Cập nhật</button>
-                    </div>
-                </div>
-            </div>
-        </div>   
     </div>
 </template>
 
@@ -134,13 +119,8 @@ export default {
     data() {
         return {
             invoice: null,
-            on: false,
-            new_receive: {
-                name: "",
-                date: "",
-                note: "",
-            },
             received_list: [],
+            total_paid: 0,
             mew_payment: false,
             payment_methods: [
                 {
@@ -165,6 +145,7 @@ export default {
             axios.get(`${this.$store.state.apiBase}/invoice/${this.$route.params.id}`).then( result => {
                 this.invoice = result.data.data;
                 this.received_list = result.data.meta.received_list;
+                this.total_paid = this.invoice.payments.reduce( payment => payment.amount );
             });
         },
         comma(number) {
@@ -172,7 +153,9 @@ export default {
         },
         getFromMatrix(receive_id, tracker_id) {
             const receive = this.received_list.find( r => r.receive_id === receive_id);
+            console.log(receive);
             const content = receive.trackers.find( t => t.tracker_id === tracker_id);
+            console.log(content)
             if (!content) {
                 return "-";
             } else {
@@ -186,20 +169,29 @@ export default {
         submit() {
 
         },
+        goBack() {
+            this.$router.push({
+                name: "invoice.index",
+
+            });
+        },
         newReceive() {
-            this.on = 'new_receive';
-            this.new_receive = {
-                date: new Date().toLocaleDateString("vi-VN"),
-                name: `Nhận hàng đợt ${this.invoice.receives_count + 1}`,
-                note: "",
-                receiving_list: [].fill(0, 0, this.invoice.trackers.length),
-            };
+            this.$router.push({
+                name: "invoice.edit",
+                query: {
+                    action: "new_receive",
+                    index: this.invoice.receives.length + 1,
+                }
+            })
         },
         newPayment() {
-            this.new_payment = {
-                name: `Thanh toán đợt ${this.invoice.payment_count + 1}`,
-                type: "",
-            }
+            this.$router.push({
+                name: "invoice.edit",
+                query: {
+                    action: "new_payment",
+                    index: this.invoice.payments.length + 1,
+                }
+            })
         }
     },
     created() {

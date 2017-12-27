@@ -21,7 +21,7 @@ class WithInvoiceResources extends Resource
             'invoice_uid' => $this->invoice_uid,
             'provider_name' => $this->invoice->provider->name,
             'provider_id' => $this->invoice->provider->id,
-            'signed_at' => $this->invoice->signed_at,
+            'signed_at' => $this->invoice->signed_at->format('d/m/Y'),
             'unit' => $this->unit,
             'recieved_unit' => ($this->recieved_unit) ? $this->recieved_unit : $this->unit,
             'recieved_at' => $this->recieved_at,

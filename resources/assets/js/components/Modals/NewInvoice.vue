@@ -100,7 +100,7 @@
                                 <td></td>
                             </template>
                         </tr>
-                        <tr class="add-more" @click.self="addCategory">
+                        <tr class="add-more" @click="addCategory">
                             <td class="controls-col">+</td>
                             <td colspan="9">Thêm danh mục</td>
                         </tr>
@@ -243,10 +243,11 @@ export default {
         },
         addMaterial(keyid) {
             let _index = keyid + 1;
-            if (this.list.length > 1) {
-                for (let i = keyid + 1; i < this.list.length; i++) {
-                    if (this.list[i].type === "category" || i === this.list.length) {
-                        _index = i;
+            let length = this.list.length;
+            if (length > 1) {
+                for (let i = keyid + 1; i < length; i++) {
+                    if (this.list[i].type === "category" || i === length - 1) {
+                        _index = i + 1;
                         break;
                     }
                 }
@@ -293,7 +294,6 @@ export default {
                 list: this.nested_list,
                 signed_at: this.signed_at,
                 contract_number: this.contract_number,
-
             }).then( response => {
                 if (response.status === 200) {
                     this.$swal("Hoàn tất", "Cập nhật thành công", "success").then( result => {

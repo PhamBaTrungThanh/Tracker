@@ -22,6 +22,10 @@ class Work extends Model
 
     public function invoices()
     {
-        return $this->hasMany(Invoice::class);
+        return $this->hasMany(Invoice::class)->where('type', 'invoice');
+    }
+    public function contracts()
+    {
+        return $this->hasMany(Contract::class);
     }
 }

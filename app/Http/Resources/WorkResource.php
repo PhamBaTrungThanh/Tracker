@@ -24,6 +24,8 @@ class WorkResource extends Resource
             'showDetail' => false,
             'image' => "http://via.placeholder.com/350x150",
             'invoice_count' => $this->invoices()->count(),
+            'total_sum' => $this->invoices()->sum('total'),
+            'paid_sum' => $this->invoices()->sum('payment_total'),
             'nested_categories' => CategoryResource::collection($this->whenLoaded('categories'))
         ];
     }

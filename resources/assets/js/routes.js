@@ -62,9 +62,17 @@ const routes = [
                         meta: {
                             title: "Hóa đơn",
                         }, 
+                    }, {
+                        path: ":id/edit",
+                        name: "invoice.edit",
+                        component: () => import("./components/Invoice/Edit.vue"),
+                        meta: {
+                            title: "Chỉnh sửa"
+                        }
                     }
                 ]
             },
+
         ],
     },
 

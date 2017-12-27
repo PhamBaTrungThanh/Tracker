@@ -20,8 +20,7 @@ class TrackerResource extends Resource
         return [
             'id' => $this->id,
             'unit' => $this->unit,
-            'recieved_unit' => $this->recieved_unit,
-            'recieved_at' => $this->recieved_at,
+            'received_unit' => $this->received_unit,
             'cost' => $this->cost,
             'total' => $this->total,
             'notes' => "",

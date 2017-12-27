@@ -8,6 +8,10 @@ use App\Models\Invoice;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\InvoiceResource;
+
+use App\Models\Payment;
+use App\Models\Receive;
+use App\Models\Tracker;
 class InvoiceController extends Controller
 {
     /**
@@ -51,9 +55,9 @@ class InvoiceController extends Controller
      * @param  \App\Models\Invoice  $invoice
      * @return \Illuminate\Http\Response
      */
-    public function show(Invoice $invoice)
+    public function show(Invoice $invoice, Request $request)
     {
-        
+
         $invoice->load(['work', 'provider', 'trackers', 'trackers.material', 'payments', 'receives', 'trackers.receives']);
         $received = $invoice->receives->map( function($receive) {
 
@@ -79,9 +83,13 @@ class InvoiceController extends Controller
      * @param  \App\Models\Invoice  $invoice
      * @return \Illuminate\Http\Response
      */
-    public function edit(Invoice $invoice)
+    public function edit(Invoice $invoice, Request $request)
     {
-        //
+        if ($request->query('action') === 'new_receive') {
+            $invoice->load(['trackers', 'trackers.material']);
+
+            return response()->json($invoice);
+        }
     }
 
     /**
@@ -93,7 +101,36 @@ class InvoiceController extends Controller
      */
     public function update(Request $request, Invoice $invoice)
     {
-        //
+        if ($request->type === "new_payment") {
+            $payment = new Payment;
+            $payment->name = $request->input('name');
+            $payment->pay_at = $request->input('pay_at');
+            $payment->note = $request->input('note');
+            $payment->amount = $request->input('amount');
+            $payment->method = $request->input('method');
+            $invoice->payments()->save($payment);
+            $invoice->payment_total += $payment->amount;
+            $invoice->save();
+        }
+        
+        if ($request->type === "new_receive") {
+            $receive = new Receive;
+            $receive->name = $request->input('name');
+            $receive->received_at = $request->receive_at;
+            $invoice->receives()->save($receive);
+            foreach ($request->receive_list as $item) {
+                if ($item['value'] > 0) {
+                    $tracker = Tracker::find($item['id']);
+                    if ($tracker) {
+                        $tracker->received_unit += $item['value'];
+                        $tracker->save();
+                        $receive->trackers()->save($tracker, ['unit' => $item['value']]);
+                        
+                    }
+                }
+
+            }
+        }
     }
 
     /**

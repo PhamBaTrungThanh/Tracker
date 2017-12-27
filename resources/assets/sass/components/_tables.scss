@@ -1,9 +1,11 @@
 table.table {
     width: 100%;
     border: 1px solid #ddd;
+    table-layout: auto;
     tr, th, td {
         border: 1px solid #ddd;
         padding: 1px 3px;
+        width: auto;
     }
     & > thead.thead-light {
         background: #eee;
@@ -46,7 +48,8 @@ table.trackers-table {
     }
     & > tbody {
         width: 100%;
-
+        height: 300px;
+        overflow-y: auto;
         & > tr > td {
             border: 1px solid #ddd;
         }
