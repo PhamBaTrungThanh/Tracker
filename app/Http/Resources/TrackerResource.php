@@ -14,18 +14,17 @@ class TrackerResource extends Resource
      */
     public function toArray($request)
     {
-        if ($this->recieves) {
-            dd($this->recieves);
-        }
         return [
             'id' => $this->id,
+            'invoice' => new InvoiceResource($this->whenLoaded('invoice')),
+            'material' => new MaterialResource($this->whenLoaded('material')),
             'unit' => $this->unit,
-            'received_unit' => $this->received_unit,
+            'received_unit' => $this->received_unit,           
             'cost' => $this->cost,
+            'unreceive' => $this->unit - $this->received_unit,
             'total' => $this->total,
-            'notes' => "",
-            'total_received' => $this->total_received,
-            'material' => new Material($this->whenLoaded('material')),
+            'unreceive_sum' => ($this->unit - $this->received_unit) * $this->cost,
+            'note' => "",
         ];
     }
 }

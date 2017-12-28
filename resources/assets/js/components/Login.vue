@@ -55,7 +55,7 @@ export default {
                         if (this.rememberMe) {
                             setCookie('cookie-token', `Bearer ${response.data.access_token}`, "1Y");
                         }
-                        this.$router.push({name: "base.dashboard"});
+                        this.$router.push({name: "root.dashboard"});
                     }
                 }).catch( error => {
                     console.log(error);

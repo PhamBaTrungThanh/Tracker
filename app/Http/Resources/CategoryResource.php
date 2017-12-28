@@ -18,7 +18,7 @@ class CategoryResource extends Resource
             'id' => $this->id,
             'label' => $this->name,
             'name' => $this->name,
-            'children' => MaterialResource::collection($this->whenLoaded('materials')),
+            
             'expanded' => true,
             'depth' => ($this->depth) ? $this->depth : 0,
             'type' => 'category',

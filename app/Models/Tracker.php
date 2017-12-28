@@ -7,6 +7,11 @@ use Illuminate\Database\Eloquent\Builder;
 
 class Tracker extends Model
 {
+    protected $dates = [
+        'updated_at',
+        'created_at',
+        'received_at',
+    ];
     public function receives()
     {
         return $this->belongsToMany(Receive::class);
@@ -23,16 +28,6 @@ class Tracker extends Model
     {
         return $this->belongsTo(Material::class);
     }
-    public function provider()
-    {
-        return $this->hasManyThrough(
-            Provider::class,
-            Invoice::class,
-            'id1',
-            'id2',
-            'id3',
-            'id4' 
-        );
-    }
+
 
 }

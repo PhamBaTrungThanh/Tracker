@@ -7,6 +7,9 @@ use App\Http\Controllers\Controller;
 
 use App\Models\Category;
 use App\Models\Material;
+
+use App\Http\Resources\TrackerResource;
+use App\Http\Resources\MaterialResource;
 class MaterialController extends Controller
 {
     public function index() 
@@ -36,6 +39,9 @@ class MaterialController extends Controller
     public function show(Material $material)
     {
         $material->load(['trackers', 'trackers.invoice', 'trackers.invoice.provider']);
-        return new \App\Http\Resources\MaterialDetails($material);
+        $material->invoice_trackers = TrackerResource::collection($material->trackers->filter( function ($tracker) {
+            return $tracker->invoice->type === "invoice";
+        }));
+        return new MaterialResource($material);
     }
 }

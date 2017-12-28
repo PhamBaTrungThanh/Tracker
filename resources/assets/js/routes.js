@@ -9,45 +9,75 @@ const routes = [
     },
     {
         path: "/",
-        name: "base",
-        component: () => import('./components/Base.vue'),
+        component: () => import('./components/Wrapper.vue'),
         children: [
             {
                 path: "dashboard",
-                name: "base.dashboard",
+                name: "root.dashboard",
                 component: () => import('./components/Dashboard.vue'),
                 meta: {
                     title: "Bảng thông báo"
                 }
             }, {
-                path: "works",
-                name: "base.works",
-                component: () => import('./components/Works.vue'),
+                path: "work",
+                component: () => import('./components/Work/Base.vue'),
                 meta: {
-                    title: "Danh sách công trường",
-                }
-            }, {
-                path: "work/:id",
-                name: "base.workReport",
-                component: () => import('./components/WorkReport.vue'),
-                meta: {
-                    title: "Báo cáo chi tiết",
-                }
-            }, {
-                path: "materials",
-                name: "base.materials",
-                component: () => import("./components/Materials.vue"),
-                meta: {
-                    title: "Danh sách vật tư"
-                }
+                    title: "Công trường",
+                },
+                children: [
+                    {
+                        path: ":id",
+                        name: "work.show",
+                        component: () => import('./components/Work/Show.vue'),
+                        meta: {
+                            title: "Chi tiết công trình",
+                        }
+                    }, {
+                        path: ":id/edit",
+                        name: "work.edit",
+                        component: () => import('./components/Work/Edit.vue'),
+                        meta: {
+                            title: "Chi tiết công trình",
+                        }
+                    }, {
+                        path: ":id/report",
+                        name: "work.report",
+                        component: () => import("./components/Work/Report.vue"),
+                        meta: {
+                            title: "Báo cáo công trình"
+                        }
+                    }, {
+                        path: "",
+                        name: "work.index",
+                        component: () => import('./components/Work/Index.vue'),
+                        meta: {
+                            title: "Danh sách công trình"
+                        }
+                    }
+                ],
             }, {
                 path: "invoice",
-                name: "invoice.base",
                 component: () => import("./components/Invoice/Base.vue"),
                 meta: {
                     title: "Hóa Đơn",
                 },
                 children: [
+                    {
+                        path: "",
+                        name: "invoice.index",
+                        component: () => import("./components/Invoice/Index.vue"),
+                        meta: {
+                            title: "Hóa đơn",
+                        }, 
+                    }, 
+                    {
+                        path: "create",
+                        name: "invoice.create",
+                        component: () => import("./components/Invoice/Create.vue"),
+                        meta: {
+                            title: "Tạo hóa đơn",
+                        }, 
+                    },
                     {
                         path: ":id",
                         name: "invoice.show",
@@ -55,21 +85,15 @@ const routes = [
                         meta: {
                             title: "Chi tiết hóa đơn",
                         },
-                    }, {
-                        path: "",
-                        name: "invoice.index",
-                        component: () => import("./components/Invoice/Index.vue"),
-                        meta: {
-                            title: "Hóa đơn",
-                        }, 
-                    }, {
+                    },
+                    {
                         path: ":id/edit",
                         name: "invoice.edit",
                         component: () => import("./components/Invoice/Edit.vue"),
                         meta: {
                             title: "Chỉnh sửa"
                         }
-                    }
+                    },
                 ]
             },
 

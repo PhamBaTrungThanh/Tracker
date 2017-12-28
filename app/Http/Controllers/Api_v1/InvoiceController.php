@@ -72,6 +72,13 @@ class InvoiceController extends Controller
                 'trackers' => $trackers,
             ];
         });
+        foreach($invoice->trackers as $index => $tracker) {
+            $tracker->invoice = [
+                'signed_at' => $invoice->signed_at,
+                'provider' => ['name' => $invoice->provider->name],
+            ];
+        }
+
         return (new InvoiceResource($invoice))->additional(['meta' => [
             'received_list' => $received,
         ]]);

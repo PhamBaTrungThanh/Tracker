@@ -30,7 +30,10 @@ table.table {
             color: #ffffff;
         }
     }
-
+    tbody > tr:hover {
+        background: #ececc8;
+        cursor: pointer;
+    }
 }
 
 

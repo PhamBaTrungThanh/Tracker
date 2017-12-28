@@ -13,13 +13,13 @@
                         <router-link tag="li" to="/dashboard">
                             <a>Thông báo</a>
                         </router-link>
-                        <router-link tag="li" to="/works">
+                        <router-link tag="li" to="/work">
                             <a>Dự án</a>
                         </router-link>
                         <router-link tag="li" to="/invoice">
                             <a>Hóa đơn</a>
                         </router-link>
-                        <router-link tag="li" to="/materials">
+                        <router-link tag="li" to="/material">
                             <a>Vật tư/Báo giá</a>
                         </router-link>
                     </ul>

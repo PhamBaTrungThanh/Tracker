@@ -3,7 +3,7 @@
 namespace App\Http\Resources;
 
 use Illuminate\Http\Resources\Json\Resource;
-
+use App\Http\Resources\Trackers\TrackerResource;
 class MaterialDetails extends Resource
 {
     /**
@@ -27,13 +27,6 @@ class MaterialDetails extends Resource
             'brand' => $this->brand,
             'total_unit' => $this->total_unit,
             'total_price' => $this->total_price,
-
-            'invoices' => Trackers\WithInvoiceResources::collection($this->trackers->filter(function ($tracker) {
-                return $tracker->invoice->type === 'invoice';
-            })),
-            'contract' => $this->trackers->filter(function ($tracker) {
-                return $tracker->invoice->type === 'contract';
-            }),
         ];
     }
 }

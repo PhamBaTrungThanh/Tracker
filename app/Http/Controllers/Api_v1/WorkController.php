@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api_v1;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 
+
 use App\Models\Work;
 use App\Models\Provider;
 use App\Models\Contract;
@@ -12,11 +13,15 @@ use App\Models\Invoice;
 use App\Models\Category;
 use App\Models\Tracker;
 
+use App\Http\Resources\WorkResource;
+use App\Http\Resources\CategoryResource;
+use App\Http\Resources\MaterialResource;
 class WorkController extends Controller
 {
     public function index()
     {
-        return \App\Http\Resources\WorkResource::collection(Work::with(['categories', 'categories.materials', 'categories.materials.boq'])->get());
+        return response()->json(Work::all());
+        
     }
     public function store(Request $request)
     {
@@ -29,6 +34,33 @@ class WorkController extends Controller
             'message' => 'success',
         ]);
     }
+    public function show(Work $work)
+    {
+        $work->load(['categories', 'categories.materials', 'categories.materials.boq', 'contracts'])->load(['invoices' => function ($query) {
+            $query->orderBy('signed_at', 'desc')->with(['payments', 'provider', 'receives']);
+        }]);
+        $flatten_categories = [];
+        $category_count = 0;
+        $material_count = 0;
+        foreach($work->categories as $category) {
+            $category_count++;
+            $flatten_categories[] = new CategoryResource($category);
+            $children = isset($category['materials']) ? $category['materials'] : false;
+            unset($category['materials']);
+
+            if ($children !== false) {
+                foreach( $children as $child ) {
+                    $flatten_categories[] = new MaterialResource($child);
+                }
+                $material_count += count($children);
+            }
+        }
+        $work->flatten = $flatten_categories;
+        $work->category_count = $category_count;
+        $work->material_count = $material_count;
+        return new WorkResource($work);
+    }
+
     private function findOrCreateProvider(Request $request) 
     {
         if ($request->provider_id === 0) {

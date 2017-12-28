@@ -18,6 +18,8 @@ class CreateWorksTable extends Migration
             $table->string('name');
             $table->text('description');
             $table->string('client');
+            $table->string('image_cover')->nullable();
+            $table->date('started_at');
             $table->timestamps();
         });
     }

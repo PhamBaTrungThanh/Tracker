@@ -42,5 +42,6 @@ class Invoice extends Model
     {
         return $this->hasMany(Receive::class);
     }
+
 }
 

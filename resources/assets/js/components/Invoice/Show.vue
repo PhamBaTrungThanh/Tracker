@@ -1,6 +1,5 @@
 <template>
     <div v-if="invoice">
-        <a @click="goBack">Về danh mục</a>
         <h3 class="text-center">{{invoice.name}}</h3>
         <div class="row">
             <div class="col">
@@ -10,7 +9,7 @@
                         <div class="row">
                             <div class="col">
                                 <p class="card-text">
-                                    <b>Dự án:</b> <a>{{invoice.work.name}}</a>
+                                    <b>Dự án:</b> <router-link :to="{name: 'work.show', params: {id: invoice.work.id}}">{{invoice.work.name}}</router-link>
                                 </p>
                                 <p class="card-text">
                                     <b>Nhà cung cấp:</b> <a>{{invoice.provider.name}}</a>
@@ -26,10 +25,10 @@
                             </div>
                             <div class="col">
                                 <p class="card-text">
-                                    <b>Tổng số tiền:</b> <a>{{comma(invoice.total)}} </a>
+                                    <b>Tổng số tiền:</b> <a>{{$comma(invoice.total)}} </a>
                                 </p>    
                                 <p class="card-text">
-                                    <b>Đã thanh toán:</b> <a>{{comma(invoice.payment_total)}} </a>
+                                    <b>Đã thanh toán:</b> <a>{{$comma(invoice.payment_total)}} </a>
                                 </p>          
 
                             </div>
@@ -54,18 +53,18 @@
                                     <td class="name-col">{{row.name}}</td>
                                     <td class="date-col">{{row.pay_at}}</td>
                                     <td class="method-col">{{row.method}}</td>
-                                    <td class="pay-col">{{comma(row.amount)}}</td>
+                                    <td class="pay-col">{{$comma(row.amount)}}</td>
                                     <td class="note-col">{{row.note}}</td>
                                 </tr>
                             </tbody>
                             <tfoot>
                                 <tr>
                                     <td colspan="4">Tổng cộng</td>
-                                    <td colspan="2">{{comma(invoice.payment_total)}}</td> 
+                                    <td colspan="2">{{$comma(invoice.payment_total)}}</td> 
                                 </tr>
                                 <tr>
                                     <td colspan="4">Còn lại</td>
-                                    <td colspan="2">{{comma(invoice.total - invoice.payment_total)}}</td> 
+                                    <td colspan="2">{{$comma(invoice.total - invoice.payment_total)}}</td> 
                                 </tr>
                             </tfoot>
                         </table>
@@ -147,9 +146,6 @@ export default {
                 this.received_list = result.data.meta.received_list;
                 this.total_paid = this.invoice.payments.reduce( payment => payment.amount );
             });
-        },
-        comma(number) {
-            return window.commafly(number);
         },
         getFromMatrix(receive_id, tracker_id) {
             const receive = this.received_list.find( r => r.receive_id === receive_id);

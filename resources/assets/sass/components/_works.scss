@@ -1,21 +1,26 @@
 #works {
     .work {
-        max-width: 25vw;
         position: relative;
-        .work-detail {
-            position: absolute;
-            margin-top: 15px;
-            width: calc(100vw - 150px);
-            z-index: 999;
-        }
+        cursor: pointer;
     }
-
+}
+.show_work--container {
+    .card-img.limit-img {
+        overflow: hidden;
+        height: 200px;
+        object-fit: cover;
+        object-position: top center;
+    }
+    .card-img-overlay{
+        bottom: unset;
+    }
 }
 .work-report {
     height: 100%;
     width: 100%;
     padding: 20px;
     overflow: hidden;
+    background: #ffffff;
     .report {
         height: 100%;
         .top, .bottom {
@@ -27,6 +32,7 @@
         }
         .top {
             border-bottom: 3px solid #ccc;
+            max-height: calc(50vh - 100px);
         }
 
     }

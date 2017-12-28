@@ -23,6 +23,7 @@ class CreateTrackersTable extends Migration
             $table->bigInteger('unit')->unsigned()->nullable();
 
             $table->bigInteger('received_unit')->unsigned()->nullable();
+            $table->date('received_at')->nullable();
             
             $table->decimal('cost', 20, 4)->unsigned()->nullable();
             $table->decimal('total', 40, 10)->unsigned()->nullable();

@@ -17,10 +17,9 @@ class CreatePaymentsTable extends Migration
             $table->increments('id');
             $table->bigInteger('invoice_id')->unsigned();
             $table->string('method');
-            $table->decimal('amount', 40, 10);
             $table->string('name');
-            $table->string('note');
-            $table->decimal('total', 40, 10);
+            $table->string('note')->nullable()->default("");
+            $table->decimal('total', 40, 10)->default(0);
             $table->date('pay_at');
 
             $table->timestamps();

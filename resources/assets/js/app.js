@@ -15,7 +15,7 @@ import axios from 'axios';
 import routes from './routes';
 import store from './store';
 
-import {commafly} from './bootstrap';
+import { Tracker } from './bootstrap';
 
 Vue.use(ModalDialogs);
 
@@ -23,12 +23,13 @@ Vue.use(VueRouter);
 Vue.use(Vuex);
 Vue.use(VueSwal);
 Vue.use(AsyncComputed);
+Vue.use(Tracker);
 
 Vue.component('treeselect', Treeselect);
 // Boostrap
 // First we make axios globaly accessible
 window.axios = axios;
-window.commafly = commafly;
+
 // Next we do some vue router, states, and app init
 const router = new VueRouter({
     routes: routes,

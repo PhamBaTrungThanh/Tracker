@@ -21,7 +21,8 @@ class CreateTableInvoices extends Migration
             $table->string('name');
             $table->string('slug');
             $table->date('signed_at')->nullable();
-            $table->decimal('total', 40, 10)->nullable()->unsigned();
+            $table->decimal('total', 40, 10)->nullable()->unsigned()->default(0);
+            $table->decimal('payment_total', 40, 10)->nullable()->unsigned()->default(0);
             $table->string('uid')->nullable();
             $table->timestamps();
         });
