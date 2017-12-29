@@ -149,9 +149,7 @@ export default {
         },
         getFromMatrix(receive_id, tracker_id) {
             const receive = this.received_list.find( r => r.receive_id === receive_id);
-            console.log(receive);
             const content = receive.trackers.find( t => t.tracker_id === tracker_id);
-            console.log(content)
             if (!content) {
                 return "-";
             } else {

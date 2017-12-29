@@ -67,7 +67,7 @@
                 <div class="card-body">
                     <h5>Danh sách vật tư</h5>
                     <div class="form-group">
-                            <treeselect v-model="selected_materials" :multiple="true" :options="nested_categories" :open-on-focus="true" :close-on-select="false" :disableBranchNodes="false" placeholder="Chọn vật tư theo danh sách"></treeselect>
+                            <treeselect v-model="selected_materials" :multiple="true" :options="nested_categories" :open-on-focus="true" :close-on-select="false" :disableBranchNodes="false" placeholder="Chọn vật tư theo danh sách" @close="chooseMaterials"></treeselect>
                     </div>
                     <div class="form-group">
                         <table class="table boq-table">
@@ -137,6 +137,7 @@ export default {
         return {
             is_ready: false,
             new_list: [],
+            automated_list: [],
             new_materials_in_category: [],
             invoice_type_options: [
                 {
@@ -170,7 +171,15 @@ export default {
                 return {
                     id: `${category.id}--cat`,
                     label: category.name,
-                    children: this.work.flatten.filter( material => material.category_id == category.id),
+                    children: this.work.flatten.reduce( (_children, material) => {
+                        if (material.category_id == category.id) {
+                            _children.push({
+                                id: `${material.id}--mat`,
+                                label: material.name,
+                            });
+                        }
+                        return _children;
+                    }, []),
                 }
             });
         },
@@ -252,6 +261,78 @@ export default {
         },
     },
     methods: {
+        chooseMaterials(values) {
+            console.log(values);
+            let _list = [];
+            let addedCategories = [];
+            const get = (str) => { 
+                const t = str.split("--");
+                return {
+                    id: parseInt(t[0]),
+                    type: t[1],
+                }
+            };
+            const materialResource = (material = false) => {
+                return {
+                    "name": (material) ? material.name : "",
+                    "type": "material",
+                    "currency": (material) ? material.currency : "vnđ",
+                    "per": (material) ? material.per : "m",
+                    "uid": this.uid(),
+                    "keyid": 0,
+                    "boq_unit": (material) ? material.boq_unit : "-",
+                    "boq_price": (material) ? material.boq_price : "-",
+                    "brand": (material) ? material.brand : "",
+                    "is_new": (material) ? false : true,
+                    "unit":  0,
+                    "price": 0,   
+                    "id": (material) ? material.id : 0,
+                }
+            }
+            const categoryResource = (id = 0) => {
+                let _category = false;
+                if (typeof id === "number" && id !== 0) {
+                    _category = this.work.flatten.find( category => category.id === id );
+                } else if (typeof id === "object") {
+                    _category = id;
+                }
+                return {
+                    "type": "category",
+                    "name": (_category) ? _category.name : "",
+                    "uid": this.uid(),
+                    "keyid": 0,
+                    "is_new": (_category) ? false : true,      
+                    "id": (_category) ? _category.id : 0,              
+                }
+            }
+
+            values.forEach( value => {
+                const t = get(value);
+                if (t.type === "cat") {
+                    _list.push(categoryResource(t.id));
+                    
+                   addedCategories.push(t.id);
+                    _list.push(...this.work.flatten.reduce( (materials, material) => {
+                        if (material.category_id === t.id) {
+                            materials.push(materialResource(material));
+                        }
+                        return materials;
+                    }, []));
+                }
+                if (t.type === "mat") {
+                    // Get material
+                    const _material = this.work.flatten.find( material => material.id === t.id );
+                    // First we check if the category of this material is already added
+                    // If not found, add it first
+                    if (addedCategories.indexOf( _material.category_id ) === -1) {
+                        _list.push(categoryResource(_material.category_id));
+                        addedCategories.push(_material.category_id);
+                    }
+                    _list.push(materialResource(_material));
+                }
+            });
+            this.automated_list = _list;
+        },
         addCategory() {
             this.new_list.push({
                 "type": "category",
@@ -305,11 +386,17 @@ export default {
             callback(null, [{id: 0, label: "Tạo nhà cung cấp mới"}].concat(this.providers.map( provider => { return {id: provider.id, label: provider.name} })));
         },
         ready() {
-            this.is_ready = true;
+            
             this.invoice_name = `Hóa đơn ${this.work.invoices.length}`;
+            this.is_ready = true;
         },
         cancel() {
-            this.$close(false);
+            this.$router.push({
+                name: "work.show",
+                params: {
+                    id: this.work.id
+                }
+            });
         },
         submit() {
             axios.patch(`${this.$store.state.apiBase}/work/${this.work.id}`, {
@@ -334,11 +421,14 @@ export default {
         });
         if (this.$route.query.work_id) {
             if (parseInt(this.$route.query.work_id) === this.$store.state.currentWork.id) {
-                this.work = this.$store.state.currentWork.id;
+                console.log('get from $store');
+                this.work = this.$store.state.currentWork;
                 this.ready();
 
             } else {
+                console.log('REST get');
                 axios.get(`${this.$store.state.apiBase}/work/${this.$route.query.work_id}`).then (response => {
+
                     this.work = response.data.data;
                     this.ready();
                 }); 
