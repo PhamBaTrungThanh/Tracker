@@ -168,7 +168,7 @@ export default {
         nested_categories() {
             return this.work.categories.map( category => {
                 return {
-                    id: `${category.name}--cat`,
+                    id: `${category.id}--cat`,
                     label: category.name,
                     children: this.work.flatten.filter( material => material.category_id == category.id),
                 }
