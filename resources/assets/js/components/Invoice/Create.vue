@@ -67,7 +67,7 @@
                 <div class="card-body">
                     <h5>Danh sách vật tư</h5>
                     <div class="form-group">
-                            <treeselect v-model="selected_materials" :multiple="true" :options="nested_categories" :open-on-focus="true" :close-on-select="false" :disableBranchNodes="false" placeholder="Chọn vật tư theo danh sách" @close="chooseMaterials"></treeselect>
+                            <treeselect :multiple="true" :options="nested_categories" :open-on-focus="true" :close-on-select="false" :disableBranchNodes="false" placeholder="Chọn vật tư theo danh sách" @close="chooseMaterials"></treeselect>
                     </div>
                     <div class="form-group">
                         <table class="table boq-table">
@@ -91,30 +91,39 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr v-for="row in list" :key="row.uid" :class="{'category-row': row.type === 'category', 'material-row': row.type === 'material'}">
+                                <template v-for="(row, index) in rows">
                                     <template v-if="row.type === 'category'">
-                                        <td class="controls-col" @click.self="addMaterialTo(row.id, row.keyid)">+</td>
-                                        <td colspan="10"><input type="text" class="inline-td" v-model="row.name" @focus="$event.target.select()" @keyup.enter="addMaterial(row.keyid)"></td>
-                                    </template>
+                                        <tr :key="row.uid" class="category-row">
+                                            <td class="controls-col" @click.self="addMaterial(row.id)">+</td>
+                                            <td colspan="10"><input type="text" class="inline-td" v-model="row.name" @focus="$event.target.select()" @keyup.enter="addMaterial(row.keyid)"></td>
+                                        </tr>
+                                    </template>                                    
                                     <template v-else>
-                                        <td class="controls-col">-</td>
-                                        <td><input type="text" class="inline-td" v-model="row.name" @focus="$event.target.select()" @keyup.enter="addMaterial(row.keyid)"></td>
-                                        <td><input type="text" class="inline-td" :disabled="!row.is_new" v-model="row.per" @focus="$event.target.select()" @keyup.enter="addMaterial(row.keyid)"></td>
-                                        <td><input type="text" class="inline-td" :disabled="!row.is_new" v-model="row.currency" @focus="$event.target.select()" @keyup.enter="addMaterial(row.keyid)"></td>
-                                        <td><input type="text" class="inline-td" :disabled="!row.is_new" v-model="row.brand" @focus="$event.target.select()" @keyup.enter="addMaterial(row.keyid)"></td>
-                                        <td><input type="text" class="inline-td" v-model="row.unit" @focus="$event.target.select()" @keyup.enter="addMaterial(row.keyid)"></td>
-                                        <td><input type="text" class="inline-td" v-model="row.price" @focus="$event.target.select()" @keyup.enter="addMaterial(row.keyid)"></td>
-                                        <td>{{ row.price * row.unit }}</td>
-                                        <td><input type="text" class="inline-td" :disabled="!row.is_new" v-model="row.boq_unit" @focus="$event.target.select()" @keyup.enter="addMaterial(row.keyid)"></td>
-                                        <td><input type="text" class="inline-td" :disabled="!row.is_new" v-model="row.boq_price" @focus="$event.target.select()" @keyup.enter="addMaterial(row.keyid)"></td>                               
-                                        <td></td>
+                                        <tr :key="row.uid" class="material-row">
+                                            <td class="controls-col">-</td>
+                                            <td><input type="text" class="inline-td" :disabled="!row.is_new" v-model="row.name" @focus="$event.target.select()" @keyup.enter="addMaterial(row.keyid)"></td>
+                                            <td><input type="text" class="inline-td" :disabled="!row.is_new" v-model="row.per" @focus="$event.target.select()"></td>
+                                            <td><input type="text" class="inline-td" :disabled="!row.is_new" v-model="row.currency" @focus="$event.target.select()"></td>
+                                            <td><input type="text" class="inline-td" :disabled="!row.is_new" v-model="row.brand" @focus="$event.target.select()"></td>
+                                            <td><input type="text" class="inline-td" v-model="row.unit" @focus="$event.target.select()"></td>
+                                            <td><input type="text" class="inline-td" v-model="row.price" @focus="$event.target.select()"></td>
+                                            <td>{{ row.price * row.unit }}</td>
+                                            <td><input type="text" class="inline-td" :disabled="!row.is_new" v-model="row.boq_unit" @focus="$event.target.select()"></td>
+                                            <td><input type="text" class="inline-td" :disabled="!row.is_new" v-model="row.boq_price" @focus="$event.target.select()"></td>                               
+                                            <td></td>
+                                        </tr>
                                     </template>
-                                </tr>
+                                    <template v-if="whatsAhead(index)">
+                                        <tr :key="index + Math.random()" class="new-material">
+                                            <td class="controls-col">∗</td>
+                                            <td colspan="10"><input type="text" placeholder="Thêm vật tư" class="inline-td" @focus="$event.target.select()" @keyup.enter="newMaterial(index, $event)"></td>
+                                        </tr>
+                                    </template>
+                                </template>
                                 <tr class="add-more" @click="addCategory">
                                     <td class="controls-col">+</td>
                                     <td colspan="10">Thêm danh mục</td>
                                 </tr>
-
                             </tbody>
                         </table>
                     </div>
@@ -137,8 +146,10 @@ export default {
         return {
             is_ready: false,
             new_list: [],
-            automated_list: [],
-            new_materials_in_category: [],
+            rows: [],
+            categorized_list: [],
+            materials_in_existing_category: [],
+            new_materials_list: [],
             invoice_type_options: [
                 {
                     id: "invoice",
@@ -160,7 +171,6 @@ export default {
                 description: "",
                 address: "",
             },
-            selected_materials: [],
             work: false,
         }
     },
@@ -185,7 +195,7 @@ export default {
         },
         nested_list() {
             let _nestedList = [];
-            this.list.forEach( node => {
+            this.rows.forEach( node => {
                 if (node.type === "category") {
                     _nestedList.push({
                         name: node.name,
@@ -202,67 +212,17 @@ export default {
             });
             return _nestedList;
         },
-        list() {
-            let index = 1;
-            let _list = [];
-            const _materials = this.work.flatten.filter( material => { return ((this.selected_materials.indexOf(material.id) !== -1) && (material.type === "material")) });
-            const _categories = [...new Set(_materials.map( material => material.category_id ))];
-            
-            for (let i = 0; i < _categories.length; i++) {
-                const _category = this.work.flatten.filter( category => { return category.type === "category" && category.id === _categories[i]})[0];
-                _list.push( {
-                    "type": "category",
-                    "name": _category.label,
-                    "uid": this.uid(),
-                    "keyid": index++,
-                    "is_new": false,      
-                    "id": _category.id,              
-                });
-                const _childMaterials = _materials.filter( material => { return material.type === "material" && material.category_id === _categories[i]}).map( material => {
-                    return {
-                        "name": material.name,
-                        "type": "material",
-                        "currency": material.currency,
-                        "per": material.per,
-                        "uid": this.uid(),
-                        "keyid": index++,
-                        "boq_unit": material.boq_unit,
-                        "boq_price": material.boq_price,
-                        "brand": material.brand,
-                        "is_new": false,
-                        "unit":  0,
-                        "price": 0,   
-                        "id": material.id,
-                    }
-                });
-                const _extra = this.new_materials_in_category.filter( material => material.category_id === _categories[i]).map( material => {
-                    return {
-                        "name": "",
-                        "type": "material",
-                        "currency": "vnđ",
-                        "per": "",
-                        "uid": this.uid(),
-                        "keyid": index++,
-                        "boq_unit": 0,
-                        "boq_price": 0,
-                        "is_new": true,
-                        "brand": "",
-                        "unit":  0,
-                        "price": 0,   
-                    }
-                });
-                _list.push(..._childMaterials, ..._extra);
-            }
-            for (let i = 0; i < this.new_list.length; i++) {
-                this.new_list[i].keyid = index++;
-            }
-            return _list.concat(this.new_list);
-
-        },
+    },
+    watch: {
+        categorized_list() {
+            this.updateRows();
+        }, 
+        new_list() {
+            this.updateRows();
+        }
     },
     methods: {
         chooseMaterials(values) {
-            console.log(values);
             let _list = [];
             let addedCategories = [];
             const get = (str) => { 
@@ -272,49 +232,16 @@ export default {
                     type: t[1],
                 }
             };
-            const materialResource = (material = false) => {
-                return {
-                    "name": (material) ? material.name : "",
-                    "type": "material",
-                    "currency": (material) ? material.currency : "vnđ",
-                    "per": (material) ? material.per : "m",
-                    "uid": this.uid(),
-                    "keyid": 0,
-                    "boq_unit": (material) ? material.boq_unit : "-",
-                    "boq_price": (material) ? material.boq_price : "-",
-                    "brand": (material) ? material.brand : "",
-                    "is_new": (material) ? false : true,
-                    "unit":  0,
-                    "price": 0,   
-                    "id": (material) ? material.id : 0,
-                }
-            }
-            const categoryResource = (id = 0) => {
-                let _category = false;
-                if (typeof id === "number" && id !== 0) {
-                    _category = this.work.flatten.find( category => category.id === id );
-                } else if (typeof id === "object") {
-                    _category = id;
-                }
-                return {
-                    "type": "category",
-                    "name": (_category) ? _category.name : "",
-                    "uid": this.uid(),
-                    "keyid": 0,
-                    "is_new": (_category) ? false : true,      
-                    "id": (_category) ? _category.id : 0,              
-                }
-            }
 
             values.forEach( value => {
                 const t = get(value);
                 if (t.type === "cat") {
-                    _list.push(categoryResource(t.id));
+                    _list.push(this.categoryResource(t.id));
                     
                    addedCategories.push(t.id);
                     _list.push(...this.work.flatten.reduce( (materials, material) => {
                         if (material.category_id === t.id) {
-                            materials.push(materialResource(material));
+                            materials.push(this.materialResource(material));
                         }
                         return materials;
                     }, []));
@@ -325,57 +252,97 @@ export default {
                     // First we check if the category of this material is already added
                     // If not found, add it first
                     if (addedCategories.indexOf( _material.category_id ) === -1) {
-                        _list.push(categoryResource(_material.category_id));
+                        _list.push(this.categoryResource(_material.category_id));
                         addedCategories.push(_material.category_id);
                     }
-                    _list.push(materialResource(_material));
+                    _list.push(this.materialResource(_material));
                 }
             });
-            this.automated_list = _list;
+            this.categorized_list = _list;
+
+        },
+        whatsAhead(index) {
+            if (typeof this.rows[index + 1] !== "object") {
+                return true;
+            } else if (this.rows[index + 1].type === "category") {
+                return true;
+            }
+            return false;
+        },
+        updateRows() {
+            this.rows = this.categorized_list.concat(...this.new_list);
         },
         addCategory() {
-            this.new_list.push({
-                "type": "category",
-                "name": "",
-                "uid": this.uid(),
-                "keyid": this.list.length,
-                "is_new": true,
-                "id": 0,
-            });
+            this.new_list.push(this.categoryResource());
         },
-        addMaterial(keyid) {
-            let _index = keyid + 1;
-            let length = this.list.length;
-            if (length > 1) {
-                for (let i = keyid + 1; i < length; i++) {
-                    if (this.list[i].type === "category" || i === length - 1) {
-                        _index = i + 1;
-                        break;
+        
+        categoryResource(id = 0) {
+            let _category = false;
+            if (typeof id === "number" && id !== 0) {
+                _category = this.work.flatten.find( category => category.id === id );
+            } else if (typeof id === "object") {
+                _category = id;
+            }
+            return {
+                "type": "category",
+                "name": (_category) ? _category.name : "",
+                "uid": this.uid(),
+                "is_new": (_category) ? false : true,      
+                "id": (_category) ? _category.id : 0,              
+            }
+        },
+        materialResource(material = false, override = {}) {
+            const _material = {
+                "name": (material) ? material.name : "",
+                "type": "material",
+                "currency": (material) ? material.currency : "vnđ",
+                "per": (material) ? material.per : "m",
+                "uid": this.uid(),
+                "boq_unit": (material) ? material.boq_unit : "-",
+                "boq_price": (material) ? material.boq_price : "-",
+                "brand": (material) ? material.brand : "",
+                "is_new": (material) ? false : true,
+                "unit":  0,
+                "price": 0,   
+                "id": (material) ? material.id : 0,
+                "category_id": (material) ? material.category_id : 0,
+            }
+            return Object.assign({}, _material, {});
+        },
+        addMaterial(category_id) {
+            let found = false;
+            let inserted = false;
+            console.log("begin looking");
+            for (let i = 0; i < this.categorized_list.length; i++) {
+                if (this.categorized_list[i].type === "category") {
+                    if (this.categorized_list[i].id === category_id) {
+                        found = true;
+                        console.log("found at", i);
+                        continue;
                     }
                 }
+                if (found) {
+                    console.log(this.categorized_list[i].type);
+                    if (this.categorized_list[i].type === "category") {
+                        // Stop and insert
+                        console.log("insert at", i);
+                        inserted = true;
+                        this.categorized_list.splice(i, 0, this.materialResource(false, {"category_id":  category_id}));
+                        break;
+                    } else {
+                        continue;
+                    }
+                }
+                
             }
-            this.new_list.splice(_index, 0, {
-                "name": "",
-                "type": "material",
-                "currency": "vnđ",
-                "uid": this.uid(),
-                "keyid": "",
-                "boq_unit": 0,
-                "boq_price": 0,
-                "is_new": true,
-                "unit":  0,
-                "price": 0,
-                "brand": "",
-            });
+            if (found && !inserted) {
+                console.log("eof reached");
+                this.categorized_list.splice(this.categorized_list.length, 0, this.materialResource(false, {"category_id":  category_id}));
+            }
+
         },
-        addMaterialTo(category_id, key_id) {
-            if (category_id === 0) {
-                this.addMaterial(key_id);
-            } else {
-                this.new_materials_in_category.push({
-                    "category_id": category_id,             
-                });
-            }
+        newMaterial(index) {
+
         },
 
         uid() {
