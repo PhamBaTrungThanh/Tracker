@@ -91,28 +91,34 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <template v-for="(category, index) in materials_list">
-                                    <tr :key="category.uid" class="category-row">
-                                        <td class="controls-col" @click.self="addMaterial(category.id)">+</td>
-                                        <td colspan="10"><input type="text" class="inline-td" v-model="category.name" @focus="$event.target.select()" @keyup.enter="addMaterial(category.uid, null)"></td>
-                                    </tr>                                 
-                                    <tr v-for="(material, mat_index) in category.children" :key="material.uid" class="material-row">
-                                        <td class="controls-col"><span class="index">{{ (mat_index + 1) }}</span><span class="control">-</span></td>
-                                        <td><input type="text" class="inline-td" :disabled="!material.is_new" v-model="material.name" @focus="$event.target.select()"></td>
-                                        <td><input type="text" class="inline-td" :disabled="!material.is_new" v-model="material.per" @focus="$event.target.select()"></td>
-                                        <td><input type="text" class="inline-td" :disabled="!material.is_new" v-model="material.currency" @focus="$event.target.select()"></td>
-                                        <td><input type="text" class="inline-td" :disabled="!material.is_new" v-model="material.brand" @focus="$event.target.select()"></td>
-                                        <td><input type="text" class="inline-td" v-model="material.unit" @focus="$event.target.select()"></td>
-                                        <td><input type="text" class="inline-td" v-model="material.price" @focus="$event.target.select()"></td>
-                                        <td>{{ material.price * material.unit }}</td>
-                                        <td><input type="text" class="inline-td" :disabled="!material.is_new" v-model="material.boq_unit" @focus="$event.target.select()"></td>
-                                        <td><input type="text" class="inline-td" :disabled="!material.is_new" v-model="material.boq_price" @focus="$event.target.select()"></td>                               
-                                        <td></td>
-                                    </tr>
-                                    <tr :key="category.uid + 1" class="new-material">
-                                        <td class="controls-col">∗</td>
-                                        <td colspan="10"><input type="text" placeholder="Thêm vật tư" class="inline-td" @focus="$event.target.select()" @keyup.enter="addMaterial(category.uid, $event)"></td>
-                                    </tr>
+                                <template v-for="(row, index) in rows">
+                                    <template v-if="row.type === 'category'">
+                                        <tr :key="row.uid" class="category-row">
+                                            <td class="controls-col" @click.self="addMaterial(row.id)">+</td>
+                                            <td colspan="10"><input type="text" class="inline-td" v-model="row.name" @focus="$event.target.select()" @keyup.enter="addMaterial(row.keyid)"></td>
+                                        </tr>
+                                    </template>                                    
+                                    <template v-else>
+                                        <tr :key="row.uid" class="material-row">
+                                            <td class="controls-col">-</td>
+                                            <td><input type="text" class="inline-td" :disabled="!row.is_new" v-model="row.name" @focus="$event.target.select()" @keyup.enter="addMaterial(row.keyid)"></td>
+                                            <td><input type="text" class="inline-td" :disabled="!row.is_new" v-model="row.per" @focus="$event.target.select()"></td>
+                                            <td><input type="text" class="inline-td" :disabled="!row.is_new" v-model="row.currency" @focus="$event.target.select()"></td>
+                                            <td><input type="text" class="inline-td" :disabled="!row.is_new" v-model="row.brand" @focus="$event.target.select()"></td>
+                                            <td><input type="text" class="inline-td" v-model="row.unit" @focus="$event.target.select()"></td>
+                                            <td><input type="text" class="inline-td" v-model="row.price" @focus="$event.target.select()"></td>
+                                            <td>{{ row.price * row.unit }}</td>
+                                            <td><input type="text" class="inline-td" :disabled="!row.is_new" v-model="row.boq_unit" @focus="$event.target.select()"></td>
+                                            <td><input type="text" class="inline-td" :disabled="!row.is_new" v-model="row.boq_price" @focus="$event.target.select()"></td>                               
+                                            <td></td>
+                                        </tr>
+                                    </template>
+                                    <template v-if="whatsAhead(index)">
+                                        <tr :key="index + Math.random()" class="new-material">
+                                            <td class="controls-col">∗</td>
+                                            <td colspan="10"><input type="text" placeholder="Thêm vật tư" class="inline-td" @focus="$event.target.select()" @keyup.enter="newMaterial(index, $event)"></td>
+                                        </tr>
+                                    </template>
                                 </template>
                                 <tr class="add-more" @click="addCategory">
                                     <td class="controls-col">+</td>
@@ -141,7 +147,9 @@ export default {
             is_ready: false,
             new_list: [],
             rows: [],
-            materials_list: [],
+            categorized_list: [],
+            materials_in_existing_category: [],
+            new_materials_list: [],
             invoice_type_options: [
                 {
                     id: "invoice",
@@ -206,7 +214,12 @@ export default {
         },
     },
     watch: {
-
+        categorized_list() {
+            this.updateRows();
+        }, 
+        new_list() {
+            this.updateRows();
+        }
     },
     methods: {
         chooseMaterials(values) {
@@ -223,58 +236,60 @@ export default {
             values.forEach( value => {
                 const t = get(value);
                 if (t.type === "cat") {
+                    _list.push(this.categoryResource(t.id));
                     
-                    const children = this.work.flatten.reduce( (materials, material) => {
+                   addedCategories.push(t.id);
+                    _list.push(...this.work.flatten.reduce( (materials, material) => {
                         if (material.category_id === t.id) {
                             materials.push(this.materialResource(material));
                         }
                         return materials;
-                    }, []);
-                    _list.push(this.categoryResource(t.id, {"children": children}));
-                    addedCategories.push(t.id)
+                    }, []));
                 }
                 if (t.type === "mat") {
                     // Get material
                     const _material = this.work.flatten.find( material => material.id === t.id );
                     // First we check if the category of this material is already added
                     // If not found, add it first
-                    let _index = addedCategories.indexOf( _material.category_id );
-                    if (_index === -1) {
+                    if (addedCategories.indexOf( _material.category_id ) === -1) {
                         _list.push(this.categoryResource(_material.category_id));
-
-                        _index = addedCategories.push(_material.category_id) - 1;
+                        addedCategories.push(_material.category_id);
                     }
-                    _list[ _index ].children.push(this.materialResource(_material));
+                    _list.push(this.materialResource(_material));
                 }
             });
-            this.materials_list = _list;
+            this.categorized_list = _list;
 
         },
-
+        whatsAhead(index) {
+            if (typeof this.rows[index + 1] !== "object") {
+                return true;
+            } else if (this.rows[index + 1].type === "category") {
+                return true;
+            }
+            return false;
+        },
+        updateRows() {
+            this.rows = this.categorized_list.concat(...this.new_list);
+        },
         addCategory() {
-            this.materials_list.push(this.categoryResource());
+            this.new_list.push(this.categoryResource());
         },
         
-        categoryResource(id = 0, merge = {}) {
+        categoryResource(id = 0) {
             let _category = false;
             if (typeof id === "number" && id !== 0) {
                 _category = this.work.flatten.find( category => category.id === id );
             } else if (typeof id === "object") {
                 _category = id;
             }
-            let _return  = {
+            return {
                 "type": "category",
                 "name": (_category) ? _category.name : "",
                 "uid": this.uid(),
                 "is_new": (_category) ? false : true,      
-                "id": (_category) ? _category.id : 0,    
-                "children": [],
-            };
-            if (merge) {
-                _return  = Object.assign({}, _return, merge);
-
+                "id": (_category) ? _category.id : 0,              
             }
-            return _return;
         },
         materialResource(material = false, override = {}) {
             const _material = {
@@ -292,18 +307,38 @@ export default {
                 "id": (material) ? material.id : 0,
                 "category_id": (material) ? material.category_id : 0,
             }
-            return Object.assign({}, _material, override);
+            return Object.assign({}, _material, {});
         },
-        addMaterial(category_uid, event = false) {
-            const index = this.materials_list.findIndex( category => category.uid === category_uid);
-            let merge = {
-                "category_id": this.materials_list[index].id,
-                "name": (event) ? event.target.value : "",
+        addMaterial(category_id) {
+            let found = false;
+            let inserted = false;
+            console.log("begin looking");
+            for (let i = 0; i < this.categorized_list.length; i++) {
+                if (this.categorized_list[i].type === "category") {
+                    if (this.categorized_list[i].id === category_id) {
+                        found = true;
+                        console.log("found at", i);
+                        continue;
+                    }
+                }
+                if (found) {
+                    console.log(this.categorized_list[i].type);
+                    if (this.categorized_list[i].type === "category") {
+                        // Stop and insert
+                        console.log("insert at", i);
+                        inserted = true;
+                        this.categorized_list.splice(i, 0, this.materialResource(false, {"category_id":  category_id}));
+                        break;
+                    } else {
+                        continue;
+                    }
+                }
+                
             }
-
-            
-            this.materials_list[index].children.push(this.materialResource(false, merge));
-            if (event) event.target.value = "";
+            if (found && !inserted) {
+                console.log("eof reached");
+                this.categorized_list.splice(this.categorized_list.length, 0, this.materialResource(false, {"category_id":  category_id}));
+            }
 
         },
         newMaterial(index) {
