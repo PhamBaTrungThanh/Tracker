@@ -15,7 +15,7 @@
                         </div>
                         <div class="form-group">
                             <label for="inputPassword" class="sr-only">Mật khẩu</label>
-                            <input v-model="password" type="password" id="inputPassword" class="form-control" placeholder="Mật khẩu" required>
+                            <input v-model="password" type="password" id="inputPassword" :class="[formErrorMessage ? 'is-invalid' : '', 'form-control']" placeholder="Mật khẩu" required>
                         </div>
                         <button class="btn btn-lg btn-primary btn-block" type="submit" @click.prevent="login">Đăng nhập</button>
                     </fieldset>
@@ -51,7 +51,7 @@ export default {
                 }).then( response => {
                     if (response.status === 200) {
                         this.$store.commit('SET_AUTHORIZATION_TOKEN', `Bearer ${response.data.access_token}`);
-                        axios.defaults.headers.common['Authorization'] =  `Bearer ${response.data.access_token}`;
+                        //axios.defaults.headers.common['Authorization'] =  `Bearer ${response.data.access_token}`;
                         if (this.rememberMe) {
                             setCookie('cookie-token', `Bearer ${response.data.access_token}`, "1Y");
                         }
@@ -61,6 +61,7 @@ export default {
                     console.log(error);
                     this.formErrorMessage = error.response.data.message;
                     this.password = "";
+                    this.disabledForm = "";
                 });
             }
         }

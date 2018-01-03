@@ -55,7 +55,7 @@
                                     <td>{{ invoice.name }}</td>
                                     <td>{{ invoice.signed_at }}</td>
                                     <td>{{ invoice.provider.name }}</td>
-                                    <td>{{ $comma(invoice.total) }}</td>
+                                    <td>{{ $comma(invoice.total * 1.1) }}</td>
                                     <td>{{ invoice.receives.length }}</td>
                                     <td>{{ invoice.payments.length }}</td>
                                     <td>{{ $comma(invoice.payment_total) }}</td>
@@ -65,8 +65,8 @@
                         </tbody>
                     </table>
                     <br>
-                    <p class="card-text text-center">
-                        <button class="btn btn-primary" @click="newInvoice()">Thêm hóa đơn</button>
+                    <p class="card-text text-center" v-if="user.can_add_invoice">
+                        <button class="btn btn-primary" @click="newInvoice()">Thêm đơn hàng</button>
                     </p>
                 </div>
             </div>
@@ -104,10 +104,14 @@ export default {
             });
         }
     },
+    computed: {
+        user() {
+            return this.$store.state.user;
+        }
+    },
     created() {
         if (typeof this.$store.state.currentWork.id === "number") {
             if (this.$store.state.currentWork.id === this.$route.params.id) {
-                console.log("match",this.$store.state.currentWork.id,this.$route.params.id);
                 this.work = this.$store.state.currentWork;
             }
         }
@@ -121,7 +125,7 @@ export default {
                 console.log(error)
             });
         }
-    }
+    },
 }
 </script>
 

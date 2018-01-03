@@ -24,6 +24,7 @@ class WorkResource extends Resource
             'updated_at' => $this->updated_at->diffForHumans(),
             'image_cover' => $this->image_cover,
             'total_sum' => $this->invoices->sum('total'),
+            'boq_sum' => $this->boq_sum,
             'paid_sum' => $this->invoices->sum('payment_total'),
             'categories' => CategoryResource::collection($this->whenLoaded('categories')),
             'flatten' => $this->when($this->flatten, $this->flatten),

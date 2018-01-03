@@ -20,7 +20,7 @@
                                     <th class="total_unit-col child-col">Số lượng đặt hàng</th>
                                     <th class="total_price-col child-col">Giá trị đặt hàng</th>
                                     <th class="boq_unit-col child-col">Số lượng BOQ</th>
-                                    <th class="boq_unit-col child-col">Đơn giá BOQ</th>
+                                    <th class="boq_total-col child-col">Số lượng đã nhận</th>
                                     <th class="boq_total-col child-col">Giá trị BOQ</th>
                                     <th class="real_unit-col child-col">Số lượng chưa thực hiện</th>
                                     <th class="real_count-col child-col">Giá trị chưa thực hiện</th>
@@ -42,11 +42,11 @@
                                         <td class="total_unit-col child-col">{{row.total_unit}}</td>
                                         <td class="total_price-col child-col">{{$comma(row.total_sum)}}</td>
                                         <td class="boq_unit-col child-col">{{row.boq_unit}}</td>
-                                        <td class="boq_unit-col child-col">{{$comma(row.boq_price)}}</td>
+                                        <td class="boq_unit-col child-col">{{row.received_unit}}</td>
                                         <td class="boq_total-col child-col">{{$comma(row.boq_price * row.boq_unit)}}</td>
                                         <td class="real_unit-col child-col">{{ row.boq_unit - row.total_unit}}</td>
-                                        <td class="real_count-col child-col">{{$comma((row.boq_price * row.boq_unit) - row.total_sum)}}</td>
-                                        <td class="percent-col child-col">{{ parseFloat(((row.boq_price * row.boq_unit) - row.total_sum) / (row.boq_price * row.boq_unit) * 100).toFixed(2)}} %</td>
+                                        <td class="real_count-col child-col">{{$comma((row.boq_unit - row.total_unit)*row.boq_price)}}</td>
+                                        <td class="percent-col child-col">{{ parseFloat((row.boq_unit - row.total_unit)/row.boq_unit * 100).toFixed(2) }} %</td>
                                     </tr>                            
                                 </template>
                             </tbody> 
@@ -72,7 +72,7 @@
                                     <th rowspan="2">Ngày giao hàng</th>
                                     <th rowspan="2">Đơn hàng <br> Nhà cung cấp</th>
                                     <th colspan="3">Số lượng</th>
-                                    <th colspan="3">Giá trị</th>
+                                    <th colspan="4">Giá trị</th>
                                     <th rowspan="2">Ghi chú</th>
                                 </tr>
 
@@ -81,6 +81,7 @@
                                     <th>Số lượng đã nhận</th>
                                     <th>Số lượng còn lại</th>
                                     <th>Đơn giá</th>
+                                    <th>Đơn giá BOQ</th>
                                     <th>Giá trị đặt hàng</th>
                                     <th>Giá trị đã nhận</th>
                                 
@@ -93,11 +94,12 @@
                                     <td>{{tracker.received_at}}</td>
                                     <td>{{tracker.invoice.name}} <br> <small>{{tracker.invoice.provider.name}}</small></td>
                                     <td>{{tracker.unit}}</td>
-                                    <td>{{tracker.recieved_unit}}</td>
+                                    <td>{{tracker.received_unit}}</td>
                                     <td>{{tracker.unreceive}}</td>
-                                    <td>{{tracker.cost}}</td>
-                                    <td>{{tracker.sum}}</td>
-                                    <td>{{tracker.unreceive_sum}}
+                                    <td>{{$comma(tracker.cost)}}</td>
+                                    <td>{{$comma(material.boq_price)}}</td>
+                                    <td>{{$comma(tracker.sum)}}</td>
+                                    <td>{{$comma(tracker.unreceive_sum)}}
                                     <td>{{tracker.note}}</td>
                                 </tr>
                             </tbody>
@@ -105,19 +107,19 @@
                                 <tr>
                                     <td colspan="4" class="tfoot-title">Tổng cộng</td>
                                     <td class="tfoot-content" colspan="3">{{material.total_unit}}</td>
-                                    <td class="tfoot-content" colspan="3">{{$comma(material.total_sum)}}</td>
+                                    <td class="tfoot-content" colspan="4">{{$comma(material.total_sum)}}</td>
                                     <td></td>
                                 </tr>
                                 <tr>
                                     <td colspan="4" class="tfoot-title">BOQ</td>
                                     <td class="tfoot-content" colspan="3">{{material.boq_unit}}</td>
-                                    <td class="tfoot-content" colspan="3">{{$comma(material.boq_price*material.boq_unit)}}</td>
+                                    <td class="tfoot-content" colspan="4">{{$comma(material.boq_price*material.boq_unit)}}</td>
                                     <td></td>
                                 </tr>
                                 <tr>
                                     <td colspan="4" class="tfoot-title">Chênh lệch</td>
                                     <td class="tfoot-content" colspan="3">{{material.boq_unit - material.total_unit}}</td>
-                                    <td class="tfoot-content" colspan="3">{{$comma((material.boq_price * material.boq_unit) - material.total_sum)}}</td>
+                                    <td class="tfoot-content" colspan="4">{{$comma((material.boq_price * material.boq_unit) - material.total_sum)}}</td>
                                     <td></td>
                                 </tr>
                             </tfoot>

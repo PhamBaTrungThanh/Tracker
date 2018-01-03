@@ -17,6 +17,7 @@ table.table {
         background: inherit;
         text-align: inherit;
         border: 1px dashed transparent;
+        color: inherit;
     }
     input.inline-td:focus {
         border-color: $brand-primary;
@@ -25,15 +26,42 @@ table.table {
 
     tr.category-row {
         background: $brand-primary;
-        color: #ffffff;
+        
         td {
-            color: #ffffff;
+            //color: #ffffff;
+        }
+    }
+    td.controls-col > span.delete-this {
+        display: none;
+        color: #000000;
+    }
+    tbody > tr.material-row > td {
+        background: #eff4fc;
+        &.editable {
+            background: #ffffff;
         }
     }
     tbody > tr:hover {
         background: #ececc8;
         cursor: pointer;
+        color: #000000;
     }
+    tbody > tr:not(.new-material):hover {
+        td.controls-col:hover {
+            background: #f82c2c;
+        }
+        td.controls-col > span.index {
+            display: none;
+        }
+        td.controls-col > span.delete-this {
+            display: block;
+        }
+        td.controls-col:hover > span.delete-this {
+            color: #ffffff;
+        }
+    }
+
+
 }
 
 
@@ -90,8 +118,11 @@ table.trackers-table {
 
     tr.add-more {
         cursor: pointer;
-        td {
-            border-color: transparent;
+        td.controls-col {
+            border-right-color: transparent;
+        }
+        td.controls-col + td {
+            border-left-color: transparent;
         }
     }
     tr.add-more:hover {

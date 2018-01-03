@@ -18,6 +18,13 @@ class UserResource extends Resource
         [
             "user_id" => $this->id,
             "username" => $this->username,    
+            "label" => $this->label,
+            "name" => $this->name,
+            "can_see_reports" => $this->can_see_reports,
+            "can_add_invoice" => $this->can_add_invoice,
+            "can_add_payment" => $this->can_add_payment,
+            "can_add_receive" => $this->can_add_receive,
+            "can_add_user" => $this->can_add_user,
         ];
     }
 }

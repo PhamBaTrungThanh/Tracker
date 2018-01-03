@@ -95,6 +95,13 @@ const routes = [
                         }
                     },
                 ]
+            }, {
+                path: "option",
+                name: "option.index",
+                component: () => import("./components/Option/Index.vue"),
+                meta: {
+                    title: "Tùy chỉnh",
+                }
             },
 
         ],

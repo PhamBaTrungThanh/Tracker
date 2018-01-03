@@ -70,7 +70,7 @@
                         </table>
                         <br>
                         <div class="form-group text-center">
-                            <button class="btn btn-primary" @click="newPayment">Thêm thanh toán</button>
+                            <button class="btn btn-primary" @click="newPayment" v-if="user.can_add_payment">Thêm thanh toán</button>
                         </div>
                     </div>
                     <div class="card-body">
@@ -102,8 +102,8 @@
                             </tbody>
                         </table>
                         <br>
-                        <div class="form-group text-center">
-                            <button class="btn btn-primary" @click="newReceive">Nhận hàng</button>
+                        <div class="form-group text-center" >
+                            <button class="btn btn-primary" @click="newReceive" v-if="user.can_add_receive">Nhận hàng</button>
                         </div>
                     </div>
                 </div>
@@ -136,6 +136,9 @@ export default {
     computed: {
         percentComplete() {
             return parseFloat(this.invoice.payment_total/this.invoice.total*100).toFixed(2);
+        },
+        user() {
+            return this.$store.state.user;
         },
     },
 

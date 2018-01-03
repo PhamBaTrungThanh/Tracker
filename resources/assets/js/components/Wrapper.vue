@@ -5,7 +5,8 @@
                 <div class="userinfo">
                     <div class="user-avatar">
                     </div>
-                    <h5 class="text-center text-light">{{ user.username }}</h5>
+                    <h6 class="text-center text-light">{{ user.name }}</h6>
+                    <p class="small text-center text-muted">{{ user.label }}</p>
                 </div>
                 <div role="sections">
                     <ul>
@@ -19,8 +20,8 @@
                         <router-link tag="li" to="/invoice">
                             <a>Hóa đơn</a>
                         </router-link>
-                        <router-link tag="li" to="/material">
-                            <a>Vật tư/Báo giá</a>
+                        <router-link tag="li" to="/option">
+                            <a>Tùy chỉnh</a>
                         </router-link>
                     </ul>
                 </div>

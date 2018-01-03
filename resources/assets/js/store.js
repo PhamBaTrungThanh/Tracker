@@ -16,6 +16,9 @@ const store = new Vuex.Store({
         SET_AUTHORIZATION_TOKEN(state, token) {
             state.authorizationToken = token;
         },
+        REMOVE_AUTHORIZATION_TOKEN(state) {
+            state.authorizationToken = '';
+        },
         SET_USER(state, userObject) {
             state.user = userObject;
         },

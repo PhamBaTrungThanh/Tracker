@@ -30,6 +30,7 @@ class MaterialResource extends Resource
             'boq_total' => ($this->boq) ? $this->boq->unit * $this->boq->price : 0,
             'total_unit' => $this->total_unit,
             'total_sum' => $this->total_price,
+            'received_unit' => $this->received_unit,
             'invoice_trackers' => $this->when($this->invoice_trackers, $this->invoice_trackers)
         ];
     }

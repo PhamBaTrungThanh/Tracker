@@ -15,7 +15,7 @@ use Illuminate\Http\Request;
 
 
 Route::prefix('v1')->middleware('auth:api')->namespace('Api_v1')->group(function() {
-    Route::get('/user', 'UserController@index')->name('user.index');
+    Route::Resource('/user', 'UserController');
 
     Route::Resource('/provider', 'ProviderController');
     Route::Resource('/work', 'WorkController');

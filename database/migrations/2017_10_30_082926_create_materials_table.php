@@ -21,6 +21,7 @@ class CreateMaterialsTable extends Migration
             $table->string('brand')->nullable();
             $table->string('currency')->default('vnđ');
             $table->bigInteger('total_unit')->default(0);
+            $table->bigInteger('received_unit')->default(0);
             $table->decimal('total_price', 50, 10)->default(0);
             $table->bigInteger('invoice_count')->default(0);
             $table->text('description')->nullable();

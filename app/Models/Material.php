@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Material extends Model
 {
-    protected $fillable = ['name', 'per', 'currency', 'description'];
+    protected $fillable = ['name', 'per', 'currency', 'description', 'brand'];
 
     public function trackers()
     {

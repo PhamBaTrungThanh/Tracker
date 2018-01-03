@@ -33,8 +33,14 @@
                         <div class="col">
                             <h5 class="text-center">Nhà cung cấp</h5>
                             <div class="form-group">
-                                <label for="">Chọn nhà cung cấp</label>
-                                <treeselect :load-root-options="fetchProviders"  v-model="provider_id" placeholder="Chọn nhà cung cấp"></treeselect>
+                                <div class="form-control"  :class="{'is-invalid': !validation.provider_id, 'form-control': true}">
+                                    <label for="">Chọn nhà cung cấp</label>
+                                    <treeselect :load-root-options="fetchProviders"  v-model="provider_id" placeholder="Chọn nhà cung cấp" ></treeselect>
+                                    <div class="invalid-feedback">
+                                        Hãy chọn nhà cung cấp
+                                    </div>
+                                </div>
+
                             </div>
                             
                             <div v-if="provider_id === 0">
@@ -93,21 +99,21 @@
                             <tbody>
                                 <template v-for="(category, index) in materials_list">
                                     <tr :key="category.uid" class="category-row">
-                                        <td class="controls-col" @click.self="addMaterial(category.id)">+</td>
-                                        <td colspan="10"><input type="text" class="inline-td" v-model="category.name" @focus="$event.target.select()" @keyup.enter="addMaterial(category.uid, null)"></td>
+                                        <td class="controls-col" @click.self="addMaterial(category.id)"><span class="index">{{ $romanize(index + 1) }}</span><span class="delete-this">-</span></td>
+                                        <td colspan="10"><input type="text" class="inline-td" v-model="category.name" @focus="$event.target.select()"></td>
                                     </tr>                                 
                                     <tr v-for="(material, mat_index) in category.children" :key="material.uid" class="material-row">
-                                        <td class="controls-col"><span class="index">{{ (mat_index + 1) }}</span><span class="control">-</span></td>
-                                        <td><input type="text" class="inline-td" :disabled="!material.is_new" v-model="material.name" @focus="$event.target.select()"></td>
-                                        <td><input type="text" class="inline-td" :disabled="!material.is_new" v-model="material.per" @focus="$event.target.select()"></td>
-                                        <td><input type="text" class="inline-td" :disabled="!material.is_new" v-model="material.currency" @focus="$event.target.select()"></td>
-                                        <td><input type="text" class="inline-td" :disabled="!material.is_new" v-model="material.brand" @focus="$event.target.select()"></td>
-                                        <td><input type="text" class="inline-td" v-model="material.unit" @focus="$event.target.select()"></td>
-                                        <td><input type="text" class="inline-td" v-model="material.price" @focus="$event.target.select()"></td>
-                                        <td>{{ material.price * material.unit }}</td>
-                                        <td><input type="text" class="inline-td" :disabled="!material.is_new" v-model="material.boq_unit" @focus="$event.target.select()"></td>
-                                        <td><input type="text" class="inline-td" :disabled="!material.is_new" v-model="material.boq_price" @focus="$event.target.select()"></td>                               
-                                        <td></td>
+                                        <td class="controls-col"><span class="index">{{ (mat_index + 1) }}</span><span class="delete-this" @click.self="deleteFrom(category.uid, material.uid)">-</span></td>
+                                        <td :class="{editable: material.is_new}"><input type="text" class="inline-td" :disabled="!material.is_new" v-model="material.name" @focus="$event.target.select()"></td>
+                                        <td :class="{editable: material.is_new}"><input type="text" class="inline-td" :disabled="!material.is_new" v-model="material.per" @focus="$event.target.select()"></td>
+                                        <td :class="{editable: material.is_new}"><input type="text" class="inline-td" :disabled="!material.is_new" v-model="material.currency" @focus="$event.target.select()"></td>
+                                        <td :class="{editable: material.is_new}"><input type="text" class="inline-td" :disabled="!material.is_new" v-model="material.brand" @focus="$event.target.select()"></td>
+                                        <td class="editable"><input type="text" class="inline-td" v-model="material.unit" @focus="$event.target.select()"></td>
+                                        <td class="editable"><input type="text" class="inline-td" v-model="material.price" @focus="$event.target.select()"></td>
+                                        <td>{{ $comma(material.price * material.unit) }}</td>
+                                        <td :class="{editable: material.is_new}"><input type="text" class="inline-td" :disabled="!material.is_new" v-model="material.boq_unit" @focus="$event.target.select()"></td>
+                                        <td :class="{editable: material.is_new}"><input type="text" class="inline-td" :disabled="!material.is_new" v-model="material.boq_price" @focus="$event.target.select()"></td>                               
+                                        <td class="editable"><input type="text" class="inline-td" :v-model="material.note" @focus="$event.target.select()"></td>
                                     </tr>
                                     <tr :key="category.uid + 1" class="new-material">
                                         <td class="controls-col">∗</td>
@@ -117,6 +123,16 @@
                                 <tr class="add-more" @click="addCategory">
                                     <td class="controls-col">+</td>
                                     <td colspan="10">Thêm danh mục</td>
+                                </tr>
+                                <tr class="sum">
+                                    <td colspan="5"></td>
+                                    <td colspan="3" class="text-center"><b>Tổng tiền </b></td>
+                                    <td colspan="3" class="text-center">{{ $comma(sum)}}</td>
+                                </tr>
+                                <tr class="sum">
+                                    <td colspan="5"></td>
+                                    <td colspan="3" class="text-center"><b>Sau VAT </b></td>
+                                    <td colspan="3" class="text-center">{{ $comma(sum*1.1)}}</td>
                                 </tr>
                             </tbody>
                         </table>
@@ -139,13 +155,11 @@ export default {
     data() {
         return {
             is_ready: false,
-            new_list: [],
-            rows: [],
             materials_list: [],
             invoice_type_options: [
                 {
                     id: "invoice",
-                    label: "Hoá đơn mua hàng",
+                    label: "Hợp đồng kinh tế / Đơn Hàng",
                 }, {
                     id: "contract",
                     label: "Hợp đồng nguyên tắc"
@@ -155,7 +169,7 @@ export default {
             invoice_name: "",
             provider_id: null,
             providers: [],
-            signed_at: "",
+            signed_at: new Date().toISOString().substr(0, 10),
             contract_number: "",
             new_provider: {
                 name: "",
@@ -164,6 +178,7 @@ export default {
                 address: "",
             },
             work: false,
+            onSubmit: false,
         }
     },
 
@@ -185,29 +200,29 @@ export default {
                 }
             });
         },
-        nested_list() {
-            let _nestedList = [];
-            this.rows.forEach( node => {
-                if (node.type === "category") {
-                    _nestedList.push({
-                        name: node.name,
-                        id: node.id,
-                        children: [],
-                    });
+        validation() {
+            if (this.onSubmit) {
+                return {
+                    provider_id: (typeof this.provider_id === "number") ? true : false,
                 }
-                if (node.type === "material") {
-                    if (node.name) {
-                        _nestedList[_nestedList.length - 1].children.push(node);
-                    }
-                    
+            } else {
+                return {
+                    provider_id: true,
                 }
-            });
-            return _nestedList;
+            }
         },
+        sum() {
+            return this.materials_list.reduce( (sum, category) => {
+                if (category.children.length > 0) {
+                    sum += category.children.reduce( (child_sum, material) => {
+                        return child_sum += material.price * material.unit;
+                    }, 0);
+                }
+                return sum;
+            }, 0);
+        }
     },
-    watch: {
 
-    },
     methods: {
         chooseMaterials(values) {
             let _list = [];
@@ -284,13 +299,14 @@ export default {
                 "per": (material) ? material.per : "m",
                 "uid": this.uid(),
                 "boq_unit": (material) ? material.boq_unit : "-",
-                "boq_price": (material) ? material.boq_price : "-",
+                "boq_price": (material) ? this.$comma(material.boq_price) : "-",
                 "brand": (material) ? material.brand : "",
                 "is_new": (material) ? false : true,
                 "unit":  0,
                 "price": 0,   
                 "id": (material) ? material.id : 0,
                 "category_id": (material) ? material.category_id : 0,
+                "note": "",
             }
             return Object.assign({}, _material, override);
         },
@@ -306,8 +322,11 @@ export default {
             if (event) event.target.value = "";
 
         },
-        newMaterial(index) {
-
+        deleteFrom(category_uid, material_uid) {
+            const index = this.materials_list.findIndex( category => category.uid === category_uid);
+            const mat_index = this.materials_list[index].children.findIndex( material => material.uid === material_uid);
+            this.materials_list[index].children.splice(mat_index, 1);
+            
         },
 
         uid() {
@@ -331,20 +350,50 @@ export default {
             });
         },
         submit() {
-            axios.patch(`${this.$store.state.apiBase}/work/${this.work.id}`, {
-                action: `new_${this.invoice_type}`,
-                provider_id: this.provider_id,
-                new_provider: this.new_provider,
-                list: this.nested_list,
-                signed_at: this.signed_at,
-                contract_number: this.contract_number,
-            }).then( response => {
-                if (response.status === 200) {
-                    this.$swal("Hoàn tất", "Cập nhật thành công", "success").then( result => {
-                        this.$close(true);
-                    });
-                }
-            });
+            this.onSubmit = true;
+            if (typeof this.provider_id === "number") {
+               
+                const list = this.materials_list.reduce( (categories, category) => {
+                    if (category.name !== "") {
+                        categories.push(category);
+                    }
+                    return categories;
+                }, []);
+                axios.post(`${this.$store.state.apiBase}/invoice`, {
+                    work_id: this.$route.query.work_id,
+                    provider_id: this.provider_id,
+                    new_provider: this.new_provider,
+                    name: this.invoice_name,
+                    type: this.invoice_type,
+                    list: list,
+                    signed_at: this.signed_at,
+                    contract_number: this.contract_number,
+                }).then( response => {
+                    if (response.status === 200) {
+
+                        this.$swal("Hoàn tất", "Cập nhật thành công", "success").then( result => {
+                            axios.get(`${this.$store.state.apiBase}/work/${this.$route.query.work_id}`).then( response => {    
+                                if (response.status === 200) {
+                                    this.$store.commit('SET_CURRENT_WORK', response.data.data);
+                                    this.$router.push({
+                                        name: "work.show",
+                                        params: {
+                                            id: this.$route.query.work_id,
+                                        }
+                                    });
+                                }
+                            }).catch( error => {
+                                console.log(error)
+                            });   
+
+                        });
+                    }
+                });
+            } else {
+                this.onSubmit = false;
+                return true;
+            }
+
         }
     },
     created() {
@@ -365,6 +414,8 @@ export default {
                     this.ready();
                 }); 
             }
+        } else {
+
         }
     },
     directives: {
