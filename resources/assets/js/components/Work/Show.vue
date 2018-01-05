@@ -37,28 +37,26 @@
                     <table class="table">
                         <thead class="thead-light">
                             <tr>
-                                <th>#</th>
+                                <th class="text-center">#</th>
                                 <th>Tên</th>
-                                <th>Ngày ký</th>
+                                <th class="text-center">Ngày ký</th>
                                 <th>Nhà cung cấp</th>
-                                <th>Giá trị đơn hàng</th>
-                                <th>Số lần nhận hàng</th>
-                                <th>Số lần thanh toán</th>
-                                <th>Giá trị thanh toán</th>
-                                <th>Ghi chú</th>
+                                <th class="text-center">Giá trị đơn hàng</th>
+
+                                <th class="text-center">Giá trị thanh toán</th>
+                                <th class="text-center">Ghi chú</th>
                             </tr>
                         </thead>
                         <tbody>
                             <template v-for="(invoice, index) in work.invoices">
                                 <tr :key="index" @click="showInvoice(invoice.id)">
-                                    <td>{{ (index + 1) }}</td>
+                                    <td class="text-center">{{ (index + 1) }}</td>
                                     <td>{{ invoice.name }}</td>
-                                    <td>{{ invoice.signed_at }}</td>
-                                    <td>{{ invoice.provider.name }}</td>
+                                    <td class="text-center">{{ invoice.signed_at }}</td>
+                                    <td class="provider-col">{{ invoice.provider.name }}</td>
                                     <td>{{ $comma(invoice.total * 1.1) }}</td>
-                                    <td>{{ invoice.receives.length }}</td>
-                                    <td>{{ invoice.payments.length }}</td>
                                     <td>{{ $comma(invoice.payment_total) }}</td>
+
                                     <td></td>
                                 </tr>
                             </template>
@@ -102,20 +100,8 @@ export default {
                     work_id: this.work.id,
                 }
             });
-        }
-    },
-    computed: {
-        user() {
-            return this.$store.state.user;
-        }
-    },
-    created() {
-        if (typeof this.$store.state.currentWork.id === "number") {
-            if (this.$store.state.currentWork.id === this.$route.params.id) {
-                this.work = this.$store.state.currentWork;
-            }
-        }
-        if (!this.work) {
+        },
+        fetchData() {
             axios.get(`${this.$store.state.apiBase}/work/${this.$route.params.id}`).then( response => {    
                 if (response.status === 200) {
                     this.$store.commit('SET_CURRENT_WORK', response.data.data);
@@ -124,8 +110,33 @@ export default {
             }).catch( error => {
                 console.log(error)
             });
+        },
+        guard() {
+
+            if (typeof this.$store.state.currentWork.id === "number") {
+                if (this.$store.state.currentWork.id === this.$route.params.id) {
+                    this.work = this.$store.state.currentWork;
+                }
+            }
+            if (!this.work) {
+                this.fetchData();
+            }
+            if (this.$store.state.reload === "reload_work") {
+                console.log("reloading work");
+                this.fetchData();
+                this.$store.commit("RELOAD_WORK_COMPLETE");
+            }
         }
     },
+    computed: {
+        user() {
+            return this.$store.state.user;
+        }
+    },
+    beforeRouteEnter( to, from, next) {
+        next(vm => vm.guard());
+    },
+
 }
 </script>
 

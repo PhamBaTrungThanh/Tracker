@@ -35,6 +35,12 @@
                         </div>                                              
                     </div>
                     <div class="card-body">
+                        <p class="card-text text-center">
+                            <button class="btn btn-primary" @click="newPayment" v-if="user.can_edit_invoice">Sửa đơn hàng</button>
+                            <button class="btn btn-secondary" @click="deleteInvoice" v-if="user.can_delete_invoice">Xóa đơn hàng</button>
+                        </p>
+                    </div>
+                    <div class="card-body">
                         <h5 class="card-title">Thanh toán</h5>
                         <table class="table payment-table">
                             <thead class="thead-light">
@@ -147,7 +153,7 @@ export default {
             axios.get(`${this.$store.state.apiBase}/invoice/${this.$route.params.id}`).then( result => {
                 this.invoice = result.data.data;
                 this.received_list = result.data.meta.received_list;
-                this.total_paid = this.invoice.payments.reduce( payment => payment.amount );
+                this.total_paid = (this.invoice.payments.length > 0) ? this.invoice.payments.reduce( payment => payment.amount ) : [];
             });
         },
         getFromMatrix(receive_id, tracker_id) {
@@ -189,6 +195,31 @@ export default {
                     index: this.invoice.payments.length + 1,
                 }
             })
+        },
+        deleteInvoice() {
+            this.$swal({
+                title:"Xóa đơn hàng",
+                content: "Bạn có chắc chắn muốn xóa đơn hàng này?",
+                icon: "warning",
+                buttons: {
+                    cancel: "Hủy",
+                    catch: "Đồng ý",
+                }
+            }).then( result => {
+                if (result) {
+                    axios.delete(`${this.$store.state.apiBase}/invoice/${this.$route.params.id}`).then( response => {
+                        this.$store.commit('RELOAD_WORK');
+                        this.$swal("Hoàn thành", "Đã xóa đơn hàng", "success").then( _catch => {
+                            this.$router.push({
+                                "name": "work.show",
+                                "params": {
+                                    "id": this.invoice.work.id,
+                                }
+                            });
+                        });
+                    });
+                }
+            });
         }
     },
     created() {

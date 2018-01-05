@@ -19,8 +19,21 @@ class User extends Authenticatable
         'name', 'email', 'password',
     ];
 
-
-
+    /**
+     * Role means:
+     * 0: Admin
+     * 1: Director
+     * 2: Project Manager
+     * 3: Accounting
+     * 4: User
+     */
+    protected $roles = [
+        0 => "Admin",
+        1 => "Ban giám đốc",
+        2 => "Phòng dự án",
+        3 => "Phòng kế toán",
+        4 => "Nhân viên",
+    ];
     /**
      * The attributes that should be hidden for arrays.
      *
@@ -29,4 +42,37 @@ class User extends Authenticatable
     protected $hidden = [
         'password', 'remember_token',
     ];
+    public function label()
+    {
+        return $this->roles[$this->role];
+    }
+    public function can_add_invoice()
+    {
+        return in_array($this->role, [0, 1, 2]);
+    }
+    public function can_edit_invoice()
+    {
+        return in_array($this->role, [0, 1, 2]);
+    }
+    public function can_delete_invoice()
+    {
+        return in_array($this->role, [0, 1, 2]);
+    }
+    public function can_add_payment()
+    {
+        return in_array($this->role, [0, 1, 3]);
+    }
+    public function can_edit_payment()
+    {
+        return in_array($this->role, [0, 1, 3]);
+    }
+    public function can_add_receive()
+    {
+        return in_array($this->role, [0, 1, 3]);
+    }
+
+    public function can_add_user()
+    {
+        return in_array($this->role, [0, 1]);
+    }
 }

@@ -227,6 +227,18 @@ class InvoiceController extends Controller
      */
     public function destroy(Invoice $invoice)
     {
-        //
+        $invoice->loadMissing(['trackers', 'trackers.material']);
+        foreach($invoice->trackers as $tracker) {
+            $material = $tracker->material;
+            $material->invoice_count -=1;
+            $material->total_unit -= $tracker->unit;
+            $material->total_price -= $tracker->total;
+            $material->save();
+            $tracker->receives()->detach();
+            $tracker->delete();
+        }
+        $invoice->payments()->delete();
+        $invoice->receives()->delete();
+        $invoice->delete();
     }
 }

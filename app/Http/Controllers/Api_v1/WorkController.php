@@ -38,7 +38,7 @@ class WorkController extends Controller
     public function show(Work $work)
     {
         $work->load(['categories', 'categories.materials', 'categories.materials.boq', 'contracts'])->load(['invoices' => function ($query) {
-            $query->orderBy('signed_at', 'desc')->with(['payments', 'provider', 'receives']);
+            $query->orderBy('name', 'asc')->orderBy('signed_at', 'desc')->with(['payments', 'provider', 'receives']);
         }]);
         $flatten_categories = [];
         $category_count = 0;

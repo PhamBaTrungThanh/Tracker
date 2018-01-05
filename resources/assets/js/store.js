@@ -11,6 +11,7 @@ const store = new Vuex.Store({
         user: {},
         categoryList: {},
         currentWork: {},
+        reload: false,
     },
     mutations: {
         SET_AUTHORIZATION_TOKEN(state, token) {
@@ -27,6 +28,12 @@ const store = new Vuex.Store({
         },
         SET_CURRENT_WORK (state, work) {
             state.currentWork = work;
+        },
+        RELOAD_WORK( state ) {
+            state.reload = "reload_work";
+        },
+        RELOAD_WORK_COMPLETE ( state ) {
+            state.reload = "false";
         }
     },
 });
