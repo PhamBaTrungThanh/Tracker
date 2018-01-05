@@ -36,7 +36,7 @@
                     </div>
                     <div class="card-body">
                         <p class="card-text text-center">
-                            <button class="btn btn-primary" @click="newPayment" v-if="user.can_edit_invoice">Sửa đơn hàng</button>
+                            <button class="btn btn-primary" @click="editInvoice" v-if="user.can_edit_invoice">Sửa đơn hàng</button>
                             <button class="btn btn-secondary" @click="deleteInvoice" v-if="user.can_delete_invoice">Xóa đơn hàng</button>
                         </p>
                     </div>
@@ -195,6 +195,15 @@ export default {
                     index: this.invoice.payments.length + 1,
                 }
             })
+        },
+        editInvoice() {
+             this.$router.push({
+                name: "invoice.edit",
+                query: {
+                    action: "new_payment",
+                    index: this.invoice.payments.length + 1,
+                }
+            });           
         },
         deleteInvoice() {
             this.$swal({

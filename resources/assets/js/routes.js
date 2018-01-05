@@ -91,9 +91,22 @@ const routes = [
                         name: "invoice.edit",
                         component: () => import("./components/Invoice/Edit.vue"),
                         meta: {
-                            title: "Chỉnh sửa"
+                            title: "Chỉnh sửa đơn hàng"
                         }
                     },
+                ]
+            }, {
+                path: "payment",
+                children: [
+                    {
+                        path: "create",
+                        name: "payment.create",
+                        component: () => import("./components/Payment/Create.vue"),
+                        meta: {
+                            title: "Thêm thanh toán mới",
+                        }
+                    }
+
                 ]
             }, {
                 path: "option",

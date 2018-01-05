@@ -14,11 +14,17 @@
                         <router-link tag="li" to="/dashboard">
                             <a>Thông báo</a>
                         </router-link>
+                        <router-link tag="li" to="/hr">
+                            <a>Nhân sự</a>
+                        </router-link>
                         <router-link tag="li" to="/work">
                             <a>Dự án</a>
                         </router-link>
                         <router-link tag="li" to="/invoice">
-                            <a>Hóa đơn</a>
+                            <a>Đơn hàng</a>
+                        </router-link>
+                        <router-link tag="li" to="/payment">
+                            <a>Thanh toán</a>
                         </router-link>
                         <router-link tag="li" to="/option">
                             <a>Tùy chỉnh</a>

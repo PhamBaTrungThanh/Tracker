@@ -23,16 +23,18 @@ class User extends Authenticatable
      * Role means:
      * 0: Admin
      * 1: Director
-     * 2: Project Manager
+     * 2: Project Department
      * 3: Accounting
-     * 4: User
+     * 4: Engineering Department
+     * 5: Engineer
      */
     protected $roles = [
         0 => "Admin",
         1 => "Ban giám đốc",
         2 => "Phòng dự án",
         3 => "Phòng kế toán",
-        4 => "Nhân viên",
+        4 => "Phòng kỹ thuật",
+        5 => "Kỹ sư công trường",
     ];
     /**
      * The attributes that should be hidden for arrays.
