@@ -16,7 +16,7 @@ import routes from './routes';
 import store from './store';
 
 import { Tracker } from './bootstrap';
-
+import Submit from "./resources/Submit.vue";
 Vue.use(ModalDialogs);
 
 Vue.use(VueRouter);
@@ -26,6 +26,7 @@ Vue.use(AsyncComputed);
 Vue.use(Tracker);
 
 Vue.component('treeselect', Treeselect);
+Vue.component('submit', Submit);
 // Boostrap
 // First we make axios globaly accessible
 window.axios = axios;

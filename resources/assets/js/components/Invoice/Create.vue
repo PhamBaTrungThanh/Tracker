@@ -141,7 +141,7 @@
 
 
                 <div class="form-group text-center" >
-                    <button class="btn btn-primary" @click="submit">Lưu</button>
+                    <submit :data="submitData" :on-success="saved"></submit>
                     <button class="btn" @click="cancel">Bỏ qua</button>
                 </div>
             </div>
@@ -179,6 +179,7 @@ export default {
             },
             work: false,
             onSubmit: false,
+            submitData: {},
         }
     },
 

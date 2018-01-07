@@ -1,3 +1,5 @@
+
+import axios from 'axios';
 export const Tracker = {
     install: (Vue) => {
         Vue.prototype.$comma = (number) => {
@@ -25,6 +27,11 @@ export const Tracker = {
             }
             return roman;
         }
+        Vue.prototype.axios = axios.create({
+            baseURL: `${window.location.protocol}//${window.location.host}/api/v1`,
+            timeout: 5000,
+            
+        });
     }
 }
 

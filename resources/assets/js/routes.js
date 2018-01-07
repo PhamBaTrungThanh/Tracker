@@ -25,7 +25,14 @@ const routes = [
                     title: "Công trường",
                 },
                 children: [
-                    {
+                    { 
+                        path: "create",
+                        name: "work.create",
+                        component: () => import('./components/Work/Create.vue'),
+                        meta: {
+                            title: "Tạo công trình mới"
+                        }
+                    }, {
                         path: ":id",
                         name: "work.show",
                         component: () => import('./components/Work/Show.vue'),

@@ -23,8 +23,10 @@
 @import "node_modules/@riophae/vue-treeselect/dist/vue-treeselect.min";
 @import 'node_modules/vue-instant/dist/vue-instant';
 
+
 // Apps
 @import "./components/global";
+@import "./components/resources";
 @import "./components/tables";
 @import "./components/buttons";
 @import "./components/dashboard";

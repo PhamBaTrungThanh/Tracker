@@ -5,7 +5,7 @@
           <div class="col-4 offset-4">     
                 <form class="form-signin">
                     <h2 class="form-signin-heading">Xin mời đăng nhập</h2>
-                    <fieldset :disabled="disabledForm">                       
+                    <fieldset>                       
                         <div class="form-group">
                             <label for="inputEmail" class="sr-only">Email</label>
                             <input v-model="username" type="email" id="inputEmail" :class="[formErrorMessage ? 'is-invalid' : '', 'form-control']" placeholder="Email" required autofocus>
@@ -39,12 +39,12 @@ export default {
     },
     methods: {
         login() {
-            if (this.username !== false && this.password !== false ) {
-                this.disabledForm = "disabled";
+            if (this.username !== false && this.password !== false && this.disabledForm === false) {
+                this.disabledForm = true;
                 axios.post(`./oauth/token`, {
                     "grant_type": "password",
                     "client_id": "2",
-                    "client_secret": "D8d2UvaXaBe6ommOdVgnVpwPrtmiJPDQN5k6cBNJ",
+                    "client_secret": "8whyT4JTjW7xBNr4hPf1zsDnerniSGfI7SWC8zUe",
                     "scope": "",
                     "username": this.username,
                     "password": this.password,
@@ -58,10 +58,11 @@ export default {
                         this.$router.push({name: "root.dashboard"});
                     }
                 }).catch( error => {
-                    console.log(error);
-                    this.formErrorMessage = error.response.data.message;
+                    console.log("error", error);
                     this.password = "";
-                    this.disabledForm = "";
+                    this.disabledForm = false;
+                    this.formErrorMessage = error.response.data.message;
+
                 });
             }
         }
