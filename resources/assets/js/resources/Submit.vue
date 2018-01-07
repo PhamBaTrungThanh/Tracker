@@ -59,9 +59,7 @@ export default {
             type: Function,
             default: () => {}
         },
-        data: {
-            type: Object,
-            default: () => {},
+        submit: {
         }
     },
     data() {
@@ -75,12 +73,14 @@ export default {
             options: {
                 statusTime: 1500,
                 timeOut: 5000,
-            }
+            },
+            data: {},
         }
     },
     methods: {
         fire() {
             this.onFire = true;
+            this.data = this.submit();
             if (this.data) {
                 const prg = setInterval(() => {
                     this.progress = Math.min(this.progress + Math.random() * 0.1, 1);
@@ -102,6 +102,10 @@ export default {
                         this.onError(error);
                     });                    
                 });
+            } else {
+                this.stop("error", () => {
+                    this.onError(error);
+                });   
             }
         },
         stop(status, callback = () => {}) {

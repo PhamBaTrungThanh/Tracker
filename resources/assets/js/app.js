@@ -6,8 +6,9 @@ import Vuex from 'vuex';
 
 import VueSwal from 'vue-swal';
 import Treeselect from '@riophae/vue-treeselect'
-import ModalDialogs from 'vue-modal-dialogs';
 import AsyncComputed from 'vue-async-computed'
+import VeeValidate from 'vee-validate';
+
 
 
 import axios from 'axios';
@@ -17,12 +18,12 @@ import store from './store';
 
 import { Tracker } from './bootstrap';
 import Submit from "./resources/Submit.vue";
-Vue.use(ModalDialogs);
 
 Vue.use(VueRouter);
 Vue.use(Vuex);
 Vue.use(VueSwal);
 Vue.use(AsyncComputed);
+Vue.use(VeeValidate);
 Vue.use(Tracker);
 
 Vue.component('treeselect', Treeselect);

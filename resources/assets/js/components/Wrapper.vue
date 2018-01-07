@@ -45,8 +45,7 @@
                     <router-view></router-view>
                 </main>
             </div>
-        </div>
-        <dialogs-wrapper></dialogs-wrapper>        
+        </div>   
     </div>
 </template>
 <script>
