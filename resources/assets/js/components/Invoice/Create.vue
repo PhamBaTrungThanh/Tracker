@@ -95,13 +95,14 @@
                                     <th rowspan="2" class="per-col">Đơn vị tính</th>
                                     <th rowspan="2" class="currency-col">Loại tiền</th>
                                     <th rowspan="2" class="brand-col">Hãng</th>
-                                    <th colspan="3" class="invoice-col"><span v-if="invoice_type === 'invoice'">Đơn hàng</span><span v-else>Hợp đồng</span></th>
+                                    <th colspan="4" class="invoice-col"><span v-if="invoice_type === 'invoice'">Đơn hàng</span><span v-else>Hợp đồng</span></th>
                                     <th colspan="2" class="boq-col">BOQ</th>
                                     <th rowspan="2" class="notes-col">Ghi chú</th>
                                 </tr>
                                 <tr>
                                     <th class="text-center boq-unit-col">Số lượng</th>
                                     <th class="text-center boq-price-col">Đơn giá</th>
+                                    <th class="text-center boq-price-col">VAT</th>
                                     <th class="text-center boq-total-col">Thành tiền</th>
                                     <th class="text-center boq-unit-col">Số lượng</th>
                                     <th class="text-center boq-price-col">Đơn giá</th>
@@ -111,7 +112,7 @@
                                 <template v-for="(category, index) in materials_list">
                                     <tr :key="category.uid" class="category-row">
                                         <td class="controls-col" @click.self="addMaterial(category.id)"><span class="index">{{ $romanize(index + 1) }}</span><span class="delete-this">-</span></td>
-                                        <td colspan="10"><input type="text" class="inline-td" v-model="category.name" @focus="$event.target.select()"></td>
+                                        <td colspan="11"><input type="text" class="inline-td" v-model="category.name" @focus="$event.target.select()"></td>
                                     </tr>                                 
                                     <tr v-for="(material, mat_index) in category.children" :key="material.uid" class="material-row">
                                         <td class="controls-col"><span class="index">{{ (mat_index + 1) }}</span><span class="delete-this" @click.self="deleteFrom(category.uid, material.uid)">-</span></td>
@@ -120,7 +121,8 @@
                                         <td :class="{editable: material.is_new}"><input type="text" class="inline-td" :disabled="!material.is_new" v-model="material.currency" @focus="$event.target.select()"></td>
                                         <td :class="{editable: material.is_new}"><input type="text" class="inline-td" :disabled="!material.is_new" v-model="material.brand" @focus="$event.target.select()"></td>
                                         <td class="editable"><input type="text" class="inline-td" v-model="material.unit" @focus="$event.target.select()"></td>
-                                        <td class="editable"><input type="text" class="inline-td" v-model="material.price" @focus="$event.target.select()"></td>
+                                        <td class="editable"><cleave type="text" class="inline-td" v-model="material.price" @focus="$event.target.select()" :options="options.price"></cleave></td>
+                                        <td class="editable"><cleave type="text" class="inline-td" v-model="material.vat" @focus="$event.target.select()" :options="options.vat"></cleave></td>
                                         <td>{{ $comma(material.price * material.unit) }}</td>
                                         <td :class="{editable: material.is_new}"><input type="text" class="inline-td" :disabled="!material.is_new" v-model="material.boq_unit" @focus="$event.target.select()"></td>
                                         <td :class="{editable: material.is_new}"><input type="text" class="inline-td" :disabled="!material.is_new" v-model="material.boq_price" @focus="$event.target.select()"></td>                               
@@ -128,22 +130,22 @@
                                     </tr>
                                     <tr :key="category.uid + 1" class="new-material">
                                         <td class="controls-col">∗</td>
-                                        <td colspan="10"><input type="text" placeholder="Thêm vật tư" class="inline-td" @focus="$event.target.select()" @keyup.enter="addMaterial(category.uid, $event)"></td>
+                                        <td colspan="11"><input type="text" placeholder="Thêm vật tư" class="inline-td" @focus="$event.target.select()" @keyup.enter="addMaterial(category.uid, $event)"></td>
                                     </tr>
                                 </template>
                                 <tr class="add-more" @click="addCategory">
                                     <td class="controls-col">+</td>
-                                    <td colspan="10">Thêm danh mục</td>
+                                    <td colspan="11">Thêm danh mục</td>
                                 </tr>
                                 <tr class="sum">
                                     <td colspan="5"></td>
                                     <td colspan="3" class="text-center"><b>Tổng tiền </b></td>
-                                    <td colspan="3" class="text-center">{{ $comma(sum)}}</td>
+                                    <td colspan="4" class="text-center">{{ $comma(sum)}}</td>
                                 </tr>
                                 <tr class="sum">
                                     <td colspan="5"></td>
                                     <td colspan="3" class="text-center"><b>Sau VAT </b></td>
-                                    <td colspan="3" class="text-center">{{ $comma(sum*1.1)}}</td>
+                                    <td colspan="4" class="text-center">{{ $comma(sum*1.1)}}</td>
                                 </tr>
                             </tbody>
                         </table>
@@ -167,6 +169,15 @@ export default {
         return {
             is_ready: false,
             materials_list: [],
+            options: {
+                price: {
+                    numeral: true,
+                    numeralThousandsGroupStyle: 'thousand'
+                },
+                vat: {
+                    numeral: true,
+                }
+            },
             invoice_type_options: [
                 {
                     id: "invoice",
@@ -318,6 +329,7 @@ export default {
                 "id": (material) ? material.id : 0,
                 "category_id": (material) ? material.category_id : 0,
                 "note": "",
+                "vat": 10,
             }
             return Object.assign({}, _material, override);
         },

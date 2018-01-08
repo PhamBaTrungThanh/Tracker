@@ -29,7 +29,6 @@
 <script>
 
 
-import NewWork from "./../Modals/NewWork.vue";
 
 export default {
     data() {

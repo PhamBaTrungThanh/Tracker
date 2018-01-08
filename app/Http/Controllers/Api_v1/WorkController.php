@@ -30,6 +30,7 @@ class WorkController extends Controller
         $work->name = $request->input('name');
         $work->description = ($request->input('description')) ? $request->input('description') : "Mô tả";
         $work->client = $request->input('client');
+        $work->started_at = $request->input('started_at');
         $work->save();
         return response()->JSON([
             'message' => 'success',

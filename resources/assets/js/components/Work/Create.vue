@@ -23,7 +23,7 @@
                                     </div>
                                     <div class="form-group">
                                         <label class="col-form-label" for="work_started_at">Ngày bắt đầu</label>
-                                        <input :class="{'form-control': true, 'is-invalid': errors.has('work_started_at')}" v-validate="'required'" name="work_started_at" v-model="work_started_at" placeholder="dd/mm/yyyy" ></cleave>
+                                        <input :class="{'form-control': true, 'is-invalid': errors.has('work_started_at')}" v-validate="'required'" name="work_started_at" v-model="work_started_at" type="date" >
                                         <span class="invalid-feedback" v-show="errors.has('work_started_at')">
                                             Ngày không được để trống
                                         </span>
@@ -39,7 +39,7 @@
                             </div>
                         </div>
                         <div class="form-group text-center" >
-                            <submit :submit="newWork" :success="onSuccess"></submit>
+                            <submit :on-submit="newWork" :on-success="onSuccess"></submit>
                             <button class="btn" @click="cancel">Bỏ qua</button>
                         </div>
                     </div>    
@@ -57,13 +57,7 @@ export default {
         work_description: "",
         work_client: "",
         work_started_at: "",
-        options: {
-            start_at: {
-                date: true, 
-                datePattern: ['d', 'm', 'Y'],
-                delimiter: "/",
-            }
-        }
+
     }),
     methods: {
         cancel() {
@@ -83,7 +77,7 @@ export default {
                         "name": this.work_name,
                         "client": this.work_client,
                         "description": this.work_description,
-                        "start_at": this.work_started_at,
+                        "started_at": this.work_started_at,
                     }
                 }
             }
