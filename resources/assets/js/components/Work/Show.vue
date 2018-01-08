@@ -23,7 +23,7 @@
                             <p class="card-text"><b>Danh mục / vật tư: </b>{{work.category_count}} / {{work.material_count}}</p>
                         </div>
                         <div class="col">
-                            <p class="card-text"><b>Hóa đơn: </b>{{work.invoices.length}}</p>
+                            <p class="card-text"><b>Đơn hàng: </b>{{work.invoices.length}}</p>
                             <p class="card-text"><b>Giá trị đơn hàng: </b>{{ $comma(work.total_sum) }}</p>
                         </div>
                         <div class="col">
@@ -33,7 +33,7 @@
                     </div>
                 </div>
                 <div class="card-body">
-                    <h5 class="text-center">Danh sách hóa đơn</h5>
+                    <h5 class="text-center">Danh sách đơn hàng</h5>
                     <table class="table">
                         <thead class="thead-light">
                             <tr>

@@ -23,7 +23,7 @@
                                     </div>
                                     <div class="form-group">
                                         <label class="col-form-label" for="work_started_at">Ngày bắt đầu</label>
-                                        <input type="text" :class="{'form-control': true, 'is-invalid': errors.has('work_started_at')}" v-validate="'required'" name="work_started_at" v-model="work_started_at" placeholder="Nhập ngày">
+                                        <input :class="{'form-control': true, 'is-invalid': errors.has('work_started_at')}" v-validate="'required'" name="work_started_at" v-model="work_started_at" placeholder="dd/mm/yyyy" ></cleave>
                                         <span class="invalid-feedback" v-show="errors.has('work_started_at')">
                                             Ngày không được để trống
                                         </span>
@@ -56,6 +56,14 @@ export default {
         work_name: "",
         work_description: "",
         work_client: "",
+        work_started_at: "",
+        options: {
+            start_at: {
+                date: true, 
+                datePattern: ['d', 'm', 'Y'],
+                delimiter: "/",
+            }
+        }
     }),
     methods: {
         cancel() {
@@ -75,7 +83,7 @@ export default {
                         "name": this.work_name,
                         "client": this.work_client,
                         "description": this.work_description,
-
+                        "start_at": this.work_started_at,
                     }
                 }
             }

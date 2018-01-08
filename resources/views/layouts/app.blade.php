@@ -12,6 +12,7 @@
 
     <!-- Styles -->
     <link href="{{ mix('css/app.css') }}" rel="stylesheet">
+    <meta name="passport-grant-client" content="{{  env('PASSPORT_GRANT_CLIENT', '')}}">
 </head>
 <body>
     <div id="app">

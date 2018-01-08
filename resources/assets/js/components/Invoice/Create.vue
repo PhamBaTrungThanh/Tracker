@@ -11,7 +11,10 @@
                             <h5 class="text-center">Thông tin chung</h5>
                             <div class="form-group">
                                 <label for="invoice_name">Tên đơn hàng</label>
-                                <input type="text" class="form-control" id="invoice_name" v-model="invoice_name">
+                                <input type="text" :class="{'form-control': true, 'is-invalid': errors.has('invoice_name')}" name="invoice_name" v-model="invoice_name" v-validate="'required'">
+                                <span class="invalid-feedback">
+                                    Tên đơn hàng không được để trống.
+                                </span>
                             </div>
                             <div class="form-group">
                                 <treeselect :options="invoice_type_options" v-model="invoice_type"></treeselect>
@@ -20,7 +23,13 @@
                                 <div class="row">
                                     <div class="col">
                                         <label for="signed_at">Ngày ký</label>
-                                        <input type="date" class="form-control" id="signed_at" v-model="signed_at">
+                                        <input type="date" :class="{'form-control': true, 'is-invalid': errors.has('signed_at')}" name="signed_at" v-model="signed_at" v-validate="'required|date_format:YYYY-MM-DD'">
+                                        <span class="invalid-feedback" v-show="errors.firstByRule('signed_at', 'required')">
+                                            Ngày không được để trống.
+                                        </span>   
+                                        <span class="invalid-feedback" v-show="errors.firstByRule('signed_at', 'date_format')">
+                                            Ngày không hợp lệ.
+                                        </span>                                    
                                     </div>
                                     <div class="col">
                                         <label for="contract_number">Số hợp đồng</label>
@@ -33,21 +42,23 @@
                         <div class="col">
                             <h5 class="text-center">Nhà cung cấp</h5>
                             <div class="form-group">
-                                <div class="form-control"  :class="{'is-invalid': !validation.provider_id, 'form-control': true}">
+                                <div class="form-control"  :class="{'is-invalid': errors.has('provider_id'), 'form-control': true}">
                                     <label for="">Chọn nhà cung cấp</label>
-                                    <treeselect :load-root-options="fetchProviders"  v-model="provider_id" placeholder="Chọn nhà cung cấp" ></treeselect>
-                                    <div class="invalid-feedback">
-                                        Hãy chọn nhà cung cấp
-                                    </div>
+                                    <treeselect :load-root-options="fetchProviders"  v-model="provider_id" placeholder="Chọn nhà cung cấp" v-validate.initial="'required'" name="provider_id"></treeselect>
                                 </div>
-
+                                <div class="invalid-feedback">
+                                    Hãy chọn nhà cung cấp
+                                </div>
                             </div>
                             
                             <div v-if="provider_id === 0">
                                 <div class="form-group">
                                     <div class="row">
                                         <div class="col">
-                                            <input type="text" class="form-control" v-model="new_provider.name" placeholder="Tên nhà cung cấp">
+                                            <input type="text" :class="{'is-invalid': errors.has('new_provider_name'), 'form-control': true}" v-model="new_provider.name" placeholder="Tên nhà cung cấp" v-validate.initial="'required'" name="new_provider_name">
+                                            <div class="invalid-feedback">
+                                                Xin hãy nhập tên nhà cung cấp.
+                                            </div>
                                         </div>
                                         <div class="col">
                                             <input type="text" class="form-control" v-model="new_provider.tax_number" placeholder="Mã số thuế">
@@ -141,7 +152,7 @@
 
 
                 <div class="form-group text-center" >
-                    <submit :data="submitData" :on-success="saved"></submit>
+                    <submit :on-submit="submitData" :on-success="saved"></submit>
                     <button class="btn" @click="cancel">Bỏ qua</button>
                 </div>
             </div>
@@ -179,7 +190,6 @@ export default {
             },
             work: false,
             onSubmit: false,
-            submitData: {},
         }
     },
 
@@ -350,38 +360,55 @@ export default {
                 }
             });
         },
-        submit() {
-            this.onSubmit = true;
-            if (typeof this.provider_id === "number") {
-               
+        saved(response) {
+            
+            this.$router.push({
+                name: "work.show",
+                params: {
+                    id: this.$route.query.work_id,
+                }
+            });
+        },
+        submitData() {
+            if (this.errors.any()) {
+                return false;
+            } else {
                 const list = this.materials_list.reduce( (categories, category) => {
                     if (category.name !== "") {
                         categories.push(category);
                     }
                     return categories;
                 }, []);
+                return {
+                    "method": "POST",
+                    "url": "invoice",
+                    "data": {
+                        "work_id": this.$route.query.work_id,
+                        "provider_id": this.provider_id,
+                        "new_provider": this.new_provider,
+                        "name": this.invoice_name,
+                        "type": this.invoice_type,
+                        "list": list,
+                        "signed_at": this.signed_at,
+                        "contract_number": this.contract_number,
+                    }
+                }
+            }
+        },
+        submit() {
+            this.onSubmit = true;
+            if (typeof this.provider_id === "number") {
+               
+
                 axios.post(`${this.$store.state.apiBase}/invoice`, {
-                    work_id: this.$route.query.work_id,
-                    provider_id: this.provider_id,
-                    new_provider: this.new_provider,
-                    name: this.invoice_name,
-                    type: this.invoice_type,
-                    list: list,
-                    signed_at: this.signed_at,
-                    contract_number: this.contract_number,
+
                 }).then( response => {
                     if (response.status === 200) {
 
                         this.$swal("Hoàn tất", "Cập nhật thành công", "success").then( result => {
                             axios.get(`${this.$store.state.apiBase}/work/${this.$route.query.work_id}`).then( response => {    
                                 if (response.status === 200) {
-                                    this.$store.commit('SET_CURRENT_WORK', response.data.data);
-                                    this.$router.push({
-                                        name: "work.show",
-                                        params: {
-                                            id: this.$route.query.work_id,
-                                        }
-                                    });
+
                                 }
                             }).catch( error => {
                                 console.log(error)

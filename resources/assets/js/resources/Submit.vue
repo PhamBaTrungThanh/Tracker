@@ -59,7 +59,7 @@ export default {
             type: Function,
             default: () => {}
         },
-        submit: {
+        onSubmit: {
         }
     },
     data() {
@@ -75,23 +75,29 @@ export default {
                 timeOut: 5000,
             },
             data: {},
+            timeOut: false,
         }
     },
     methods: {
         fire() {
             this.onFire = true;
-            this.data = this.submit();
+            this.data = this.onSubmit();
             if (this.data) {
+                this.timeOut = false;
                 const prg = setInterval(() => {
                     this.progress = Math.min(this.progress + Math.random() * 0.1, 1);
                     this.setProgress();
                 }, 150);
                 setTimeout( () => {
-                    clearInterval(prg);
-                    this.stop("error");
+                    if (!this.timeOut) {
+                        clearInterval(prg);
+                        this.stop("error");
+                    }
+
 
                 }, this.options.timeOut + 500);
                 this.axios(this.data).then( result => {
+                    
                     clearInterval(prg);
                     this.stop("success", () => {
                         this.onSuccess(result);
@@ -109,16 +115,17 @@ export default {
             }
         },
         stop(status, callback = () => {}) {
-
+            this.timeOut = true;
             setTimeout(() => {
                 this.progressSVG.draw(0);
                 if (status === "success") {
                     this.status = "success";
                     this.successSVG.draw(1);
-
+                    callback();
                 } else {
                     this.status = "error";
-                    this.errorSVG.draw(1);                    
+                    this.errorSVG.draw(1);      
+                    callback();              
                 }
                 setTimeout( () => {
                     this.status = false;

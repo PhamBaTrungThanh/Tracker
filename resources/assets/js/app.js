@@ -8,7 +8,7 @@ import VueSwal from 'vue-swal';
 import Treeselect from '@riophae/vue-treeselect'
 import AsyncComputed from 'vue-async-computed'
 import VeeValidate from 'vee-validate';
-
+import Cleave from 'vue-cleave-component';
 
 
 import axios from 'axios';
@@ -24,6 +24,8 @@ Vue.use(Vuex);
 Vue.use(VueSwal);
 Vue.use(AsyncComputed);
 Vue.use(VeeValidate);
+Vue.use(Cleave);
+
 Vue.use(Tracker);
 
 Vue.component('treeselect', Treeselect);

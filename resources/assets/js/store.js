@@ -9,6 +9,7 @@ const store = new Vuex.Store({
         authorizationToken: "",
         apiBase:`${window.location.protocol}//${window.location.host}/api/v1`,
         user: {},
+        passportGrantClient: document.querySelector("meta[name='passport-grant-client']").getAttribute('content'),
         categoryList: {},
         currentWork: {},
         reload: false,
