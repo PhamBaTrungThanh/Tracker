@@ -2,9 +2,8 @@
     <transition v-if="is_ready">
         <div class="create_invoice--container">
             <div class="card">
-                <br>
-                <h3 class="card-title text-center">Tạo đơn hàng mới</h3>
-                <hr>
+                <h3 class="card-header  text-center">Tạo đơn hàng mới</h3>
+                
                 <div class="card-body">
                     <div class="row">
                         <div class="col">
@@ -151,12 +150,13 @@
                         </table>
                     </div>
                 </div>
+                 <div class="card-body">
+                     <p class="card-text text-center">
+                        <submit :on-submit="submitData" :on-success="saved"></submit>
+                        <button class="btn" @click="cancel">Bỏ qua</button>
+                     </p>
 
-
-                <div class="form-group text-center" >
-                    <submit :on-submit="submitData" :on-success="saved"></submit>
-                    <button class="btn" @click="cancel">Bỏ qua</button>
-                </div>
+                </div>               
             </div>
         </div>           
     </transition>
