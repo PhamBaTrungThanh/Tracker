@@ -41,7 +41,7 @@
                         <div class="col">
                             <h5 class="text-center">Nhà cung cấp</h5>
                             <div class="form-group">
-                                <div class="form-control"  :class="{'is-invalid': errors.has('provider_id'), 'form-control': true}">
+                                <div :class="{'is-invalid': errors.has('provider_id'), 'form-control': true}">
                                     <label for="">Chọn nhà cung cấp</label>
                                     <treeselect :load-root-options="fetchProviders"  v-model="provider_id" placeholder="Chọn nhà cung cấp" v-validate.initial="'required'" name="provider_id"></treeselect>
                                 </div>

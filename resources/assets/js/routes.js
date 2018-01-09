@@ -104,6 +104,7 @@ const routes = [
                 ]
             }, {
                 path: "payment",
+                component: () => import("./components/Payment/Base.vue"),
                 children: [
                     {
                         path: "create",

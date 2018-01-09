@@ -2,6 +2,9 @@
     <div class="wrapper">
         <div class="row no-gutters">
             <div id="sidebar">
+                <div class="expand text-white">
+                    <i class="material-icons">menu</i>
+                </div>
                 <div class="userinfo">
                     <div class="user-avatar">
                     </div>
@@ -10,24 +13,23 @@
                 </div>
                 <div role="sections">
                     <ul>
-
                         <router-link tag="li" to="/dashboard">
-                            <a>Thông báo</a>
+                            <a><i class="material-icons">announcement</i><span>Thông báo</span></a>
                         </router-link>
                         <router-link tag="li" to="/hr">
-                            <a>Nhân sự</a>
+                            <a><i class="material-icons">contacts</i><span>Nhân sự</span></a>
                         </router-link>
                         <router-link tag="li" to="/work">
-                            <a>Dự án</a>
+                            <a><i class="material-icons">location_city</i><span>Dự án</span></a>
                         </router-link>
                         <router-link tag="li" to="/invoice">
-                            <a>Đơn hàng</a>
+                            <a><i class="material-icons">receipt</i><span>Đơn hàng</span></a>
                         </router-link>
                         <router-link tag="li" to="/payment">
-                            <a>Thanh toán</a>
+                            <a><i class="material-icons">account_balance_wallet</i><span>Thanh toán</span></a>
                         </router-link>
                         <router-link tag="li" to="/option">
-                            <a>Tùy chỉnh</a>
+                            <a><i class="material-icons">settings</i><span>Tùy chỉnh</span></a>
                         </router-link>
                     </ul>
                 </div>

@@ -97,24 +97,7 @@
 export default {
     data() {
         return {
-            payment_methods: [
-                {
-                    label: "Chuyển khoản",
-                    id: "bank_transfer"
-                },
-                {
-                    label: "Tiền mặt",
-                    id: "cash"
-                }
-            ],
-            new_payment: {
-                name: "",
-                pay_at: "",
-                note: "",
-                amount: "",
-                method: "",
-                type: "new_payment",
-            },
+
             new_receive: {
                 name: "",
                 receive_at: "",

@@ -189,10 +189,10 @@ export default {
         },
         newPayment() {
             this.$router.push({
-                name: "invoice.edit",
+                name: "payment.create",
                 query: {
-                    action: "new_payment",
                     index: this.invoice.payments.length + 1,
+                    invoice_id: this.invoice.id,
                 }
             })
         },
