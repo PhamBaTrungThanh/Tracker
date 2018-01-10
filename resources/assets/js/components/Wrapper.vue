@@ -90,7 +90,7 @@ export default {
 
                 })
                 .catch(error => {
-                    if (error.response.status == 401) {
+                    if (error.status == 401) {
                         console.error("Token ilegal, proceed to login");
                         next({name: "login"});
                     } else {

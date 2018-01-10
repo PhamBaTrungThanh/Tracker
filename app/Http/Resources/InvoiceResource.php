@@ -20,13 +20,9 @@ class InvoiceResource extends Resource
             "name" => $this->name,
             "signed_at" => $this->signed_at->format('d/m/Y'),
             "status" => $this->status,
-            "trackers" => TrackerResource::collection($this->whenLoaded('trackers')),
             "total" => $this->total,
             "payment_total" => $this->payment_total,
-            "work" => new WorkResource($this->whenLoaded('work')),
-            "provider" => new ProviderResource($this->whenLoaded('provider')),
-            "receives" => ReceiveResource::collection($this->whenLoaded('receives')),
-            "payments" => PaymentResource::collection($this->whenLoaded('payments')),
+            "work_id" => $this->work_id,
         ];
     }
 }

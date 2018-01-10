@@ -11,7 +11,9 @@ const store = new Vuex.Store({
         user: {},
         passportGrantClient: document.querySelector("meta[name='passport-grant-client']").getAttribute('content'),
         categoryList: {},
-        currentWork: {},
+        providers: [],
+        currentWork: { id: 0},
+        currentWorkId: false,
         reload: false,
         cleaveOptions: {
             price: {
@@ -37,6 +39,24 @@ const store = new Vuex.Store({
             }
         ],
     },
+    actions: {
+        setWorkId(context, work_id) {
+            context.commit('SET_CURRENT_WORK_ID', work_id);
+            if (context.state.currentWork.id !== work_id) {
+                context.dispatch('httpGetWork', work_id);
+            }
+        },
+        httpGetWork(context, work_id) {
+            this._vm.axios.get(`work/${work_id}`).then( response => {
+                context.commit('SET_CURRENT_WORK', response.data.data);
+            });
+        },
+        httpGetProviders(context) {
+            this._vm.axios.get(`providers`).then( response => {
+                context.commit('SET_PROVIDERS', response.data.data);
+            });
+        }
+    },
     mutations: {
         SET_AUTHORIZATION_TOKEN(state, token) {
             state.authorizationToken = token;
@@ -50,8 +70,14 @@ const store = new Vuex.Store({
         UPDATE_CATEGORY_LIST(state, list) {
             state.categoryList = list;
         },
+        SET_PROVIDERS(state, providers) {
+            state.providers = providers;
+        },
         SET_CURRENT_WORK (state, work) {
             state.currentWork = work;
+        },
+        SET_CURRENT_WORK_ID (state, work_id) {
+            state.currentWorkId = work_id;
         },
         RELOAD_WORK( state ) {
             state.reload = "reload_work";

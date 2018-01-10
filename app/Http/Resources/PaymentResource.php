@@ -14,6 +14,13 @@ class PaymentResource extends Resource
      */
     public function toArray($request)
     {
-        return parent::toArray($request);
+        return [
+            'id' => $this->id,
+            'name' => $this->name,
+            'paid_on' => $this->paid_on->format('d/m/Y'),
+            'amount' => $this->amount,
+            'method' => $this->method,
+            'content' => $this->content,
+        ];
     }
 }

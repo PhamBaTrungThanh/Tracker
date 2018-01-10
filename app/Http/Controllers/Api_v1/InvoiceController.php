@@ -7,13 +7,19 @@ use Illuminate\Support\Facades\DB;
 use App\Models\Invoice;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use App\Http\Resources\InvoiceResource;
 
-use App\Models\Payment;
+use App\Http\Resources\InvoiceResource;
+use App\Http\Resources\PaymentResource;
+use App\Http\Resources\ReceiveResource;
+use App\Http\Resources\ProviderResource;
+use App\Http\Resources\TrackerResource;
+
 use App\Models\Receive;
 use App\Models\Tracker;
 use App\Models\Work;
 use App\Models\Provider;
+
+
 class InvoiceController extends Controller
 {
     /**
@@ -137,7 +143,7 @@ class InvoiceController extends Controller
     public function show(Invoice $invoice, Request $request)
     {
 
-        $invoice->load(['work', 'provider', 'trackers', 'trackers.material', 'payments', 'receives', 'trackers.receives']);
+        $invoice->load(['work', 'provider', 'trackers', 'trackers.material','trackers.material.boq', 'payments', 'receives', 'trackers.receives']);
         $received = $invoice->receives->map( function($receive) {
 
             $trackers = $receive->trackers->map( function($tracker) {
@@ -160,6 +166,10 @@ class InvoiceController extends Controller
 
         return (new InvoiceResource($invoice))->additional(['meta' => [
             'received_list' => $received,
+            'payments' => PaymentResource::collection($invoice->payments),
+            'receives' => ReceiveResource::collection($invoice->receives),
+            'provider' => new ProviderResource($invoice->provider),
+            'trackers' => TrackerResource::collection($invoice->trackers),
         ]]);
     }
 

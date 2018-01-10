@@ -41,7 +41,7 @@ export default {
         login() {
             if (this.username !== false && this.password !== false && this.disabledForm === false) {
                 this.disabledForm = true;
-                axios.post(`./oauth/token`, {
+                this.axios.post(`./oauth/token`, {
                     "grant_type": "password",
                     "client_id": "2",
                     "client_secret": this.$store.state.passportGrantClient,

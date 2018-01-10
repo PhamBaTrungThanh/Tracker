@@ -10,6 +10,15 @@ table.table {
     & > thead.thead-light {
         background: #eee;
     }
+
+    td, th {
+        text-align: center;
+
+    }
+    td.left, th.left {
+        text-align: left;
+    }
+    /*****************************/
     input.inline-td {
         width: 100%;
         padding: 0 5px;
@@ -264,14 +273,3 @@ td.provider-col {
     font-size: 0.8rem;
 }
 
-
-table.table {
-    .index-col {
-        width: 50px;
-        text-align: center;
-    }
-    .date-col {
-        width: 100px;
-        text-align: center;
-    }
-}
