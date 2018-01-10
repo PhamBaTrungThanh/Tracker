@@ -39,7 +39,7 @@ class PaymentController extends Controller
     {
         $payment = new Payment;
         $payment->name = $request->input('name');
-        $payment->paid_on = $request->input('pay_on');
+        $payment->paid_on = $request->input('paid_on');
         $payment->content = $request->input('content');
         $payment->amount = $request->input('amount');
         $payment->method = $request->input('method');
