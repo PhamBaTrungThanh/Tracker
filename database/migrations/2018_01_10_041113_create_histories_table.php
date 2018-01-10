@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateNotesTable extends Migration
+class CreateHistoriesTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,14 +13,16 @@ class CreateNotesTable extends Migration
      */
     public function up()
     {
-        Schema::create('notes', function (Blueprint $table) {
+        Schema::create('histories', function (Blueprint $table) {
             $table->increments('id');
-            $table->bigInteger('parent_id');
-            $table->string('parent_type');
-            $table->string('title')->nullable();
-            $table->string('content');
+            // Which table are we tracking
+            $table->string('reference_table');
+            // Which record from the table are we referencing
+            $table->integer('reference_id')->unsigned();
+            // Who made the action
             $table->integer('actor_id')->unsigned();
-            $table->string('action');
+            // What did they do
+            $table->string('body');
             $table->timestamps();
         });
     }
@@ -32,6 +34,6 @@ class CreateNotesTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('notes');
+        Schema::dropIfExists('histories');
     }
 }

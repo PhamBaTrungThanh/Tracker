@@ -187,17 +187,6 @@ class InvoiceController extends Controller
      */
     public function update(Request $request, Invoice $invoice)
     {
-        if ($request->type === "new_payment") {
-            $payment = new Payment;
-            $payment->name = $request->input('name');
-            $payment->pay_at = $request->input('pay_at');
-            $payment->note = $request->input('note');
-            $payment->amount = $request->input('amount');
-            $payment->method = $request->input('method');
-            $invoice->payments()->save($payment);
-            $invoice->payment_total += $payment->amount;
-            $invoice->save();
-        }
         
         if ($request->type === "new_receive") {
             $receive = new Receive;

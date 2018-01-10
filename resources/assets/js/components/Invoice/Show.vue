@@ -42,22 +42,22 @@
                     </div>
                     <div class="card-body">
                         <h5 class="card-title">Thanh toán</h5>
-                        <table class="table payment-table">
+                        <table class="table">
                             <thead class="thead-light">
                                 <tr>
-                                    <th class="number-col">#</th>
+                                    <th class="text-center" style="width: 50px">#</th>
                                     <th class="name-col">Tên</th>
-                                    <th class="date-col">Ngày</th>
-                                    <th class="method-col">Hình thức</th>
+                                    <th style="width: 200px; text-align: center;">Ngày</th>
+                                    <th style="width: 200px; text-align: center;">Hình thức</th>
                                     <th class="pay-col">Số tiền</th>
                                     <th class="note-col">Ghi chú</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr v-for="(row, index) in invoice.payments" :key="row.id">
-                                    <td class="number-col">{{ (index + 1) }}</td>
+                                <tr v-for="(row, index) in invoice.payments" :key="row.id" @click="gotoPayment(row.id)">
+                                    <td class="text-center">{{ (index + 1) }}</td>
                                     <td class="name-col">{{row.name}}</td>
-                                    <td class="date-col">{{row.pay_at}}</td>
+                                    <td class="date-col">{{row.paid_on}}</td>
                                     <td class="method-col">{{row.method}}</td>
                                     <td class="pay-col">{{$comma(row.amount)}}</td>
                                     <td class="note-col">{{row.note}}</td>
@@ -205,6 +205,14 @@ export default {
                 }
             });           
         },
+        gotoPayment(payment_id) {
+             this.$router.push({
+                name: "payment.show",
+                params: {
+                    id: payment_id,
+                }
+            });    
+        },  
         deleteInvoice() {
             this.$swal({
                 title:"Xóa đơn hàng",

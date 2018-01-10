@@ -113,6 +113,20 @@ const routes = [
                         meta: {
                             title: "Thêm thanh toán mới",
                         }
+                    }, {
+                        path: ":id",
+                        name: "payment.show",
+                        component: () => import("./components/Payment/Show.vue"),
+                        meta: {
+                            title: "Chi tiết thanh toán",
+                        }
+                    }, {
+                        path: ":id/edit",
+                        name: "payment.edit",
+                        component: () => import("./components/Payment/Edit.vue"),
+                        meta: {
+                            title: "Sửa thanh toán",
+                        }                        
                     }
 
                 ]

@@ -13,6 +13,29 @@ const store = new Vuex.Store({
         categoryList: {},
         currentWork: {},
         reload: false,
+        cleaveOptions: {
+            price: {
+                "numeral": true,
+                "numeralThousandsGroupStyle": 'thousand'
+            },
+            date: {
+                "date": true,
+                "datePattern": ["d", "m", "Y"],
+            }
+        },
+        veeValidations: {
+
+        },
+        paymentMethods: [
+            {
+                "label": "Chuyển khoản",
+                "id": "bank_transfer"
+            },
+            {
+                "label": "Tiền mặt",
+                "id": "cash"
+            }
+        ],
     },
     mutations: {
         SET_AUTHORIZATION_TOKEN(state, token) {

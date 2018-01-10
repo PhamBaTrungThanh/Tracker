@@ -110,7 +110,7 @@ export default {
                 });
             } else {
                 this.stop("error", () => {
-                    this.onError(error);
+                    this.onError();
                 });   
             }
         },

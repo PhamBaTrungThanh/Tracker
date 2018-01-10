@@ -263,3 +263,15 @@ table.invoices-table {
 td.provider-col {
     font-size: 0.8rem;
 }
+
+
+table.table {
+    .index-col {
+        width: 50px;
+        text-align: center;
+    }
+    .date-col {
+        width: 100px;
+        text-align: center;
+    }
+}

@@ -32,6 +32,18 @@ export const Tracker = {
             timeout: 5000,
             
         });
+        Vue.prototype.__ = (str) => {
+            const trans_string = {
+                "bank_transfer": "Chuyển tiền",
+                "cash": "Tiền mặt",
+            }
+            return trans_string[str];
+        }
+        Vue.prototype.toISODate = (str_date) => {
+            const split_date = str_date.split('/');
+
+            return `${split_date[2]}-${split_date[1]}-${split_date[0]}`;
+        }
     }
 }
 

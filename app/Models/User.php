@@ -68,6 +68,10 @@ class User extends Authenticatable
     {
         return in_array($this->role, [0, 1, 3]);
     }
+    public function can_delete_payment()
+    {
+        return in_array($this->role, [0, 1]);
+    }
     public function can_add_receive()
     {
         return in_array($this->role, [0, 1, 3]);

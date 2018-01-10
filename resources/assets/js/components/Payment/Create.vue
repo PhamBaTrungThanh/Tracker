@@ -34,30 +34,29 @@
                         </div>
                     </div>
                     <div class="form-row">
-                        <div class="form-group col-6">
+                        <div class="form-group col">
                             <label for="payment_date">Ngày thanh toán</label>
-                            <input type="date" v-model="new_payment.pay_at" :class="{'form-control': true, 'is-invalid': errors.has('payment_date')}" name="payment_date" v-validate.initial="'required'">
-                            <span class="invalid-feedback">Xin nhập ngày thanh toán</span>
+                            <cleave :options="cleave.date" v-model="new_payment.paid_on" :class="{'form-control': true, 'is-invalid': errors.has('payment_date')}" name="payment_date" v-validate.initial="'required|date_format:DD/MM/YYYY'" :raw="false"></cleave>
+                            <span class="invalid-feedback" v-show="errors.firstByRule('payment_date', 'required')">
+                                Ngày không được để trống.
+                            </span>   
+                            <span class="invalid-feedback" v-show="errors.firstByRule('payment_date', 'date_format')">
+                                Ngày không hợp lệ. Nhập ngày theo dạng DD/MM/YYYY
+                            </span>      
                         </div>
-                        <div class="form-group col-6">
-                            <label for="receive_note">Ghi chú</label>
-                            <input type="input" v-model="new_payment.note" class="form-control" id="payment_note" placeholder="Nhập ghi chú">
-                        </div>
-                    </div>
-                    <div class="form-row">
-                        
                         <div class="form-group col">
                             <label for="payment_amount">Số tiền</label>
-                            <cleave v-model="new_payment.amount" :options="price_option" :class="{'form-control': true, 'is-invalid': errors.has('payment_amount')}" name="payment_amount" placeholder="Số tiền" v-validate.initial="'required'"></cleave>
-                            <span class="invalid-feedback">Xin nhập số tiền</span>
+                            <cleave v-model="new_payment.amount" :options="cleave.price" :class="{'form-control': true, 'is-invalid': errors.has('payment_amount')}" name="payment_amount" placeholder="Số tiền" v-validate.initial="'required'"></cleave>
                         </div>
                     </div>
                     <div class="form-group">
-                        
+                        <label for="payment_content">Nội dung</label>
+                        <textarea v-model="new_payment.content" :class="{'form-control': true, 'is-invalid': errors.has('payment_content')}" v-validate.initial="'required'" name="payment_content" placeholder="Nội dung thanh toán"></textarea>
                     </div>
-                    <div class="form-group text-center">
+
+                    <div class="card-footer text-center">
                         <submit :on-submit="submitPayment" :on-success="goToInvoice">Thêm thanh toán</submit>
-                        <button class="btn btn-secondary" @click="goToInvoice">Hủy</button>
+                        <button class="btn" @click="goToInvoice">Hủy</button>
                     </div>
                 </div>
             </div>
@@ -68,28 +67,22 @@
 <script>
 export default {
     data: () => ({
-            payment_methods: [
-                {
-                    label: "Chuyển khoản",
-                    id: "bank_transfer"
-                },
-                {
-                    label: "Tiền mặt",
-                    id: "cash"
-                }
-            ],
-            price_option: {
-                numeral: true,
-                numeralThousandsGroupStyle: 'thousand'
-            },
-            new_payment: {
-                name: "",
-                pay_at: "",
-                note: "",
-                amount: "",
-                method: "",
-            },
+        new_payment: {
+            name: "",
+            paid_on: "",
+            content: "",
+            amount: "",
+            method: "",
+        },
     }),
+    computed: {
+        cleave() {
+            return this.$store.state.cleaveOptions;
+        },
+        payment_methods() {
+            return this.$store.state.paymentMethods;
+        }
+    },
     methods: {
         submitPayment() {
             if (this.errors.any()) {
@@ -100,10 +93,12 @@ export default {
                     "url": "payment",
                     "data": {
                         "name": this.new_payment.name,
-                        "pay_at": this.new_payment.pay_at,
-                        "note": this.new_payment.note,
+                        "paid_on": this.new_payment.paid_on,
+                        "content": this.new_payment.content,
                         "amount": this.new_payment.amount,
                         "method": this.new_payment.method,
+                        "invoice_id": this.$route.query.invoice_id,
+                        "user_id": this.$store.state.user.id,
                     }
                 }
             }

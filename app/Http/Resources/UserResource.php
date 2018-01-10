@@ -25,6 +25,8 @@ class UserResource extends Resource
             "can_edit_invoice" => $this->can_edit_invoice(),
             "can_delete_invoice" => $this->can_delete_invoice(),
             "can_add_payment" => $this->can_add_payment(),
+            "can_edit_payment" => $this->can_edit_payment(),
+            "can_delete_payment" => $this->can_delete_payment(),
             "can_add_receive" => $this->can_add_receive(),
             
             "can_add_user" => $this->can_add_user(),
