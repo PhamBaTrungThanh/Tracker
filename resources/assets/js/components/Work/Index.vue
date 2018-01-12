@@ -44,7 +44,7 @@ export default {
     methods: {
         fetchData() {
             this.current_work_id = false;
-            axios.get(`${this.$store.state.apiBase}/work`).then( response => {
+            this.axios.get(`${this.$store.state.apiBase}/work`).then( response => {
                 this.works = response.data;
 
             }).catch( error => {

@@ -30,7 +30,10 @@ export const Tracker = {
         Vue.prototype.axios = axios.create({
             baseURL: `${window.location.protocol}//${window.location.host}/api/v1`,
             timeout: 5000,
-            
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+            }
         });
         Vue.prototype.__ = (str) => {
             const trans_string = {

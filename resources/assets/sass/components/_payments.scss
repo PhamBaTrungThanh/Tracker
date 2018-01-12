@@ -1,0 +1,15 @@
+.payment_index--wrapper {
+    .choose-month {
+        padding: 0 5px;
+        cursor: pointer;
+        border: 1px solid transparent;
+        i.material-icons {
+            font-size: 1.1rem;
+        }
+
+        &:hover {
+            background: #eee;
+            border-color: #ddd;
+        }
+    }
+}

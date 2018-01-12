@@ -22,7 +22,8 @@
 // Components
 @import "node_modules/@riophae/vue-treeselect/dist/vue-treeselect.min";
 
-
+// Pages
+@import "./pages/login.scss";
 // Apps
 @import "./components/global";
 @import "./components/resources";
@@ -30,5 +31,5 @@
 @import "./components/buttons";
 @import "./components/dashboard";
 @import "./components/works";
-@import "./components/materials";
-@import "./components/accounting";
+
+@import "./components/payments";

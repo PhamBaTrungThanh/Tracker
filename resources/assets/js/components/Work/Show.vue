@@ -102,7 +102,7 @@ export default {
             });
         },
         fetchData() {
-            axios.get(`${this.$store.state.apiBase}/work/${this.$route.params.id}`).then( response => {    
+            this.axios.get(`${this.$store.state.apiBase}/work/${this.$route.params.id}`).then( response => {    
                 if (response.status === 200) {
                     this.$store.commit('SET_CURRENT_WORK', response.data.data);
                     this.work = response.data.data;

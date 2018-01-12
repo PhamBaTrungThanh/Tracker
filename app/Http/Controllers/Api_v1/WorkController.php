@@ -59,11 +59,15 @@ class WorkController extends Controller
                 $boq_sum += $child['boq']['total'];
             }
         }
-        $work->flatten = $flatten_categories;
-        $work->category_count = $category_count;
-        $work->material_count = $material_count;
-        $work->boq_sum = $boq_sum;
-        return new WorkResource($work);
+
+        return (new WorkResource($work))->additional([
+            'extra' => [
+                'flatten' => $flatten_categories,
+                'category_count' => $category_count,
+                'material_count' => $material_count,
+                'boq_sum' => $boq_sum,
+            ],
+        ]);
     }
 
     public function update(Work $work, Request $request)

@@ -23,6 +23,11 @@ class InvoiceResource extends Resource
             "total" => $this->total,
             "payment_total" => $this->payment_total,
             "work_id" => $this->work_id,
+            "provider_id" => $this->provider_id,
+            "work" => new WorkResource($this->whenLoaded('work')),
+            "provider" => new ProviderResource($this->whenLoaded('provider')),
+            "receives" => ReceiveResource::collection($this->whenLoaded('receives')),
+            "payments" => PaymentResource::collection($this->whenLoaded('payments')),
         ];
     }
 }

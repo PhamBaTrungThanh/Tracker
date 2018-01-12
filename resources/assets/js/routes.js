@@ -1,13 +1,5 @@
 const routes = [
     {
-        path: "/login",
-        name: "login",
-        component: () => import('./components/Login.vue'),
-        meta: {
-            title: "Đăng nhập",
-        },
-    },
-    {
         path: "/",
         component: () => import('./components/Wrapper.vue'),
         children: [
@@ -74,7 +66,7 @@ const routes = [
                         name: "invoice.index",
                         component: () => import("./components/Invoice/Index.vue"),
                         meta: {
-                            title: "Hóa đơn",
+                            title: "Đơn hàng",
                         }, 
                     }, 
                     {
@@ -107,6 +99,13 @@ const routes = [
                 component: () => import("./components/Payment/Base.vue"),
                 children: [
                     {
+                        path: "",
+                        name: "payment.index",
+                        component: () => import("./components/Payment/Index.vue"),
+                        meta: {
+                            title: "Thanh toán",
+                        }
+                    }, {
                         path: "create",
                         name: "payment.create",
                         component: () => import("./components/Payment/Create.vue"),

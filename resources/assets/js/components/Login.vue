@@ -30,7 +30,7 @@ import { setCookie } from 'tiny-cookie';
 export default {
     data() {
         return {
-            rememberMe: true,
+            rememberMe: false,
             username: "",
             password: "",
             formErrorMessage: false,
@@ -41,7 +41,7 @@ export default {
         login() {
             if (this.username !== false && this.password !== false && this.disabledForm === false) {
                 this.disabledForm = true;
-                this.axios.post(`./oauth/token`, {
+                this.axios.post(`${window.location.protocol}//${window.location.host}/oauth/token`, {
                     "grant_type": "password",
                     "client_id": "2",
                     "client_secret": this.$store.state.passportGrantClient,
@@ -50,12 +50,13 @@ export default {
                     "password": this.password,
                 }).then( response => {
                     if (response.status === 200) {
-                        this.$store.commit('SET_AUTHORIZATION_TOKEN', `Bearer ${response.data.access_token}`);
+                        //this.$store.commit('SET_AUTHORIZATION_TOKEN', `Bearer ${response.data.access_token}`);
                         //axios.defaults.headers.common['Authorization'] =  `Bearer ${response.data.access_token}`;
                         if (this.rememberMe) {
                             setCookie('cookie-token', `Bearer ${response.data.access_token}`, "1Y");
                         }
                         this.$router.push({name: "root.dashboard"});
+                        this.axios.get(`${window.location.protocol}//${window.location.host}/oauth/clients`);
                     }
                 }).catch( error => {
                     console.log("error", error);

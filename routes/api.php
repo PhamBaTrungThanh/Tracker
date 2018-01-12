@@ -15,6 +15,7 @@ use Illuminate\Http\Request;
 
 
 Route::prefix('v1')->middleware('auth:api')->namespace('Api_v1')->group(function() {
+
     Route::Resource('/user', 'UserController');
 
     Route::Resource('/provider', 'ProviderController');

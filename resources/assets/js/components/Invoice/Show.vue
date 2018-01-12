@@ -147,7 +147,7 @@ export default {
 
     methods: {
         fetchData() {
-            axios.get(`${this.$store.state.apiBase}/invoice/${this.$route.params.id}`).then( result => {
+            this.axios.get(`${this.$store.state.apiBase}/invoice/${this.$route.params.id}`).then( result => {
                 this.invoice = result.data.data;
                 this.payments = result.data.meta.payments;
                 this.provider = result.data.meta.provider;

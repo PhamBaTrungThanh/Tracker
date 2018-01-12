@@ -4,6 +4,8 @@ namespace App\Http\Controllers\Api_v1;
 
 use App\Models\Payment;
 
+use App\Http\Resources\PaymentResource;
+
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 
@@ -14,9 +16,29 @@ class PaymentController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        //
+        if ($request->query('do') === 'by_month') 
+        {
+            if ($request->query('from')) {
+                $date = explode("-", $request->query('from'));
+                $payments = Payment::whereMonth('paid_on', $date[1])
+                                    ->whereYear('paid_on', $date[0])
+                                    ->with(['invoice', 'invoice.work'])
+                                    ->get();
+                $invoices = $payments->pluck('invoice')->unique();
+                $works = $invoices->pluck('work')->unique();
+                return PaymentResource::collection($payments)->additional([
+                    'extra' => [
+                        'invoices' => $invoices,
+                        'works' => $works,
+                    ],
+                ]);
+            }
+            else {
+                return response()->json(['message' => "no_date"], 400);
+            }
+        }
     }
 
     /**

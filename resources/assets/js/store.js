@@ -55,6 +55,15 @@ const store = new Vuex.Store({
             this._vm.axios.get(`providers`).then( response => {
                 context.commit('SET_PROVIDERS', response.data.data);
             });
+        },
+        httpGetUser(context, _with) {
+            this._vm.axios.get('user').then( response => {
+                context.commit('SET_USER', response.data.data);
+                
+            }).catch( error => {
+                console.log(error)
+                this._vm.$router.push("login");
+            });
         }
     },
     mutations: {

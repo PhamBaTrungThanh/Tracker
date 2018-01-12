@@ -48,6 +48,7 @@
                 </main>
             </div>
         </div>   
+        <vue-topprogress ref="topProgress"></vue-topprogress>
     </div>
 </template>
 <script>
@@ -65,42 +66,24 @@ export default {
         ]),
     },
     beforeRouteEnter(to, from, next) {
-        
-        console.log("Getting token from cookie");
-        const cookieToken = getCookie('cookie-token');
-        if (!cookieToken) {
-            console.error("Cookies's empty, proceed to login");
-            next({name: "login"});
-        } else {
-            console.info("Token found from cookies");
-
-            // do a call to ./user
-            axios.get(`${window.location.origin}/api/v1/user`, {
-                    headers: {
-                        'Authorization': cookieToken
-                    }
-                }).then(response => {
-                    console.info("Token is legit");
-                    axios.defaults.headers.common['Authorization'] = cookieToken;
-                    axios.defaults.headers.common['X-CSRF-TOKEN'] = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
-                    next(vm => {
-                        vm.$store.commit('SET_USER', response.data.data);
-                        vm.$store.commit('SET_AUTHORIZATION_TOKEN', cookieToken);
-                    })
-
-                })
-                .catch(error => {
-                    if (error.status == 401) {
-                        console.error("Token ilegal, proceed to login");
-                        next({name: "login"});
-                    } else {
-                        console.log(error);
-                    }
+        next(vm => {
+            // Interceptors for axios
+            vm.axios.interceptors.request.use( config => {
+                vm.$refs.topProgress.start();
+                return config;
+            }, error => {
+                vm.$refs.topProgress.fail();
+                return Promise.reject(error);
             });
-        }
-
-
-        
+            vm.axios.interceptors.response.use( response => {
+                vm.$refs.topProgress.done();
+                return response;
+            }, error => {
+                vm.$refs.topProgress.fail();
+                return Promise.reject(error);
+            })
+            vm.$store.dispatch('httpGetUser');
+        });        
     },
 }
 </script>

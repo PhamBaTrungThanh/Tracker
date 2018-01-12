@@ -21,6 +21,7 @@ class PaymentResource extends Resource
             'amount' => $this->amount,
             'method' => $this->method,
             'content' => $this->content,
+            'invoice_id' => $this->invoice_id,
         ];
     }
 }

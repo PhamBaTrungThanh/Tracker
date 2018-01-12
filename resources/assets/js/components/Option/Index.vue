@@ -149,9 +149,18 @@ export default {
                 }
         },
         logout() {
-            remove('cookie-token');
-            this.$store.commit('REMOVE_AUTHORIZATION_TOKEN');
-            this.$router.push("login");
+            console.log('loging out');
+            const logoutForm = document.createElement('form');
+            logoutForm.action = 'logout';
+            logoutForm.method = 'POST';
+            
+            const csrf_field = document.createElement('input');
+            csrf_field.type = 'hidden';
+            csrf_field.name = '_token';
+            csrf_field.value = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+            logoutForm.appendChild(csrf_field);
+            document.body.appendChild(logoutForm);
+            logoutForm.submit();
         }
     }
 }
