@@ -24,5 +24,6 @@ Route::prefix('v1')->middleware('auth:api')->namespace('Api_v1')->group(function
     Route::resource('/material', 'MaterialController');
     Route::resource('/invoice', 'InvoiceController');
     Route::resource('/payment', 'PaymentController');
+    Route::post('/payment/archive', 'PaymentController@archive');
     Route::resource('/receive', 'ReceiveController');
 });

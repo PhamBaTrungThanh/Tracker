@@ -18,29 +18,30 @@ class PaymentController extends Controller
      */
     public function index(Request $request)
     {
-        if ($request->query('do') === 'by_month') 
-        {
-            if ($request->query('from')) {
-                $date = explode("-", $request->query('from'));
-                $payments = Payment::whereMonth('paid_on', $date[1])
-                                    ->whereYear('paid_on', $date[0])
-                                    ->with(['invoice', 'invoice.work'])
-                                    ->get();
-                $invoices = $payments->pluck('invoice')->unique();
-                $works = $invoices->pluck('work')->unique();
-                return PaymentResource::collection($payments)->additional([
-                    'extra' => [
-                        'invoices' => $invoices,
-                        'works' => $works,
-                    ],
-                ]);
-            }
-            else {
-                return response()->json(['message' => "no_date"], 400);
-            }
-        }
     }
+    public function archive(Request $request)
+    {
 
+        if ($request->input('from')) 
+        {
+            $date = explode("-", $request->input('from'));
+            $payments = Payment::whereMonth('paid_on', $date[1])
+                                ->whereYear('paid_on', $date[0])
+                                ->with(['invoice', 'invoice.work'])
+                                ->get();
+            $invoices = $payments->pluck('invoice')->unique();
+            $works = $invoices->pluck('work')->unique();
+            return PaymentResource::collection($payments)->additional([
+                'related' => [
+                    'invoices' => $invoices,
+                    'works' => $works,
+                ],
+            ]);
+        } else {
+            return response()->json(['message' => "no_date"], 400);
+        }
+        
+    }
     /**
      * Show the form for creating a new resource.
      *
