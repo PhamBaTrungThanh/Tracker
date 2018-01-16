@@ -27,6 +27,7 @@
     "cross-env": "^5.0.1",
     "laravel-mix": "^1.6.1",
     "tiny-cookie": "^2.1.1",
+    "type-detect": "^4.0.6",
     "unique-concat": "^0.2.2",
     "vee-validate": "^2.0.0",
     "vue": "^2.1.10",

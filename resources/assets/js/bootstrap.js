@@ -2,6 +2,7 @@
 import axios from 'axios';
 import Chart from 'chart.js';
 import concat from 'unique-concat';
+import type from 'type-detect';
 
 export const Tracker = {
     install: (Vue) => {
@@ -100,7 +101,15 @@ export const Tracker = {
 
         // Additional Libraries
         const identity = (obj) => obj.id;
-        Vue.prototype._concat = (a, b) => concat(a, b, identity);
+        Vue.prototype._concat = (a, b) => {
+            if (type(a) === "Object") {
+                a = Object.values(a);
+            }
+            if (type(b) === "Object") {
+                b = Object.values(b);
+            }
+            return concat(a, b, identity);
+        }
     }
 }
 

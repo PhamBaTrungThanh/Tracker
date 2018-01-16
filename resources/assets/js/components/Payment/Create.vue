@@ -93,7 +93,7 @@ export default {
                     "url": "payment",
                     "data": {
                         "name": this.new_payment.name,
-                        "paid_on": this.new_payment.paid_on,
+                        "paid_on": this.toISODate(this.new_payment.paid_on),
                         "content": this.new_payment.content,
                         "amount": this.new_payment.amount,
                         "method": this.new_payment.method,

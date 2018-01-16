@@ -33,8 +33,8 @@ class PaymentController extends Controller
             $works = $invoices->pluck('work')->unique();
             return PaymentResource::collection($payments)->additional([
                 'related' => [
-                    'invoices' => $invoices,
-                    'works' => $works,
+                    'invoices' => $invoices->toArray(),
+                    'works' => $works->toArray(),
                 ],
             ]);
         } else {
@@ -70,7 +70,7 @@ class PaymentController extends Controller
         $payment->created_by = $request->input('user_id');
         $payment->save();
         $payment->notes()->create([
-            'content' => $request->reason,
+            'content' => $request->input('content'),
             'action' => 'create',
             'actor_id' => $request->user()->id,
         ]);
