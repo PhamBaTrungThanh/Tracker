@@ -20,9 +20,11 @@
     "bootstrap": "^4.0.0-beta.3",
     "browser-sync": "^2.23.5",
     "browser-sync-webpack-plugin": "^1.2.0",
+    "bulma": "^0.6.2",
     "chart.js": "^2.7.1",
     "cross-env": "^5.0.1",
     "laravel-mix": "^1.6.1",
+    "mdi": "^2.1.19",
     "tiny-cookie": "^2.1.1",
     "type-detect": "^4.0.6",
     "unique-concat": "^0.2.2",
@@ -38,5 +40,6 @@
     "vue-template-compiler": "^2.5.9",
     "vue-top-progress": "^0.7.0",
     "vuex": "^3.0.1"
-  }
+  },
+  "dependencies": {}
 }

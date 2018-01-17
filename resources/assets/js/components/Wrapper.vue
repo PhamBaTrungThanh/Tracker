@@ -1,89 +1,94 @@
 <template>
-    <div class="wrapper">
-        <div class="row no-gutters">
-            <div id="sidebar">
-                <div class="expand text-white">
-                    <i class="material-icons">menu</i>
-                </div>
-                <div class="userinfo">
-                    <div class="user-avatar">
-                    </div>
-                    <h6 class="text-center text-light">{{ user.name }}</h6>
-                    <p class="small text-center text-muted">{{ user.label }}</p>
-                </div>
-                <div role="sections">
-                    <ul>
-                        <router-link tag="li" to="/dashboard">
-                            <a><i class="material-icons">announcement</i><span>Thông báo</span></a>
-                        </router-link>
-                        <router-link tag="li" to="/hr">
-                            <a><i class="material-icons">contacts</i><span>Nhân sự</span></a>
-                        </router-link>
-                        <router-link tag="li" to="/work">
-                            <a><i class="material-icons">location_city</i><span>Dự án</span></a>
-                        </router-link>
-                        <router-link tag="li" to="/invoice">
-                            <a><i class="material-icons">receipt</i><span>Đơn hàng</span></a>
-                        </router-link>
-                        <router-link tag="li" to="/payment">
-                            <a><i class="material-icons">account_balance_wallet</i><span>Thanh toán</span></a>
-                        </router-link>
-                        <router-link tag="li" to="/option">
-                            <a><i class="material-icons">settings</i><span>Tùy chỉnh</span></a>
-                        </router-link>
-                    </ul>
-                </div>
-            </div>
+    <div class="page----wrapper">
+        <nav class="navbar" role="navigation" aria-label="main navigation">
+            <div class="container">
+                <div class="navbar-brand">
+                    <router-link class="navbar-item" to="/dashboard">
+                        <img src="./../../images/logo.png">
+                    </router-link>
 
-            <div id="main-content" class="col">
-                <div id="navigation" class="container-fluid">
-                    <div class="row align-items-center" style="height: 100%">
-                        <div class="col">
-                            <span class="h4">{{ pageTitle }}</span>
-                        </div>
-                    </div>  
+                    <a :class="['burger', 'navbar-burger', {'is-active': eatTheBurger}]" @click="eatTheBurger = !eatTheBurger">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                    </a>
                 </div>
-                <main class="container-fluid">
-                    <router-view></router-view>
-                </main>
+                <div :class="['navbar-menu', {'is-active': eatTheBurger}]">
+                    <div class="navbar-start">
+                        <router-link class="navbar-item router-link" to="/dashboard">
+                            <span>Thông báo</span>
+                        </router-link>
+                        <router-link class="navbar-item router-link" to="/hr">
+                            <span>Nhân sự</span>
+                        </router-link>
+                        <router-link class="navbar-item router-link" to="/work">
+                            <span>Dự án</span>
+                        </router-link>
+                        <router-link class="navbar-item router-link" to="/invoice">
+                            <span>Đơn hàng</span>
+                        </router-link>
+                        <router-link class="navbar-item router-link" to="/payment">
+                            <span>Thanh toán</span>
+                        </router-link>
+                    </div>
+                    <div class="navbar-end">
+                        <div class="navbar-item" v-if="user.name">
+                            <span>Xin chào </span><h6 class="text-center text-light"> {{ user.name }}</h6>
+                        </div>
+                        <div class="navbar-item">
+                            <div class="field is-grouped">
+                                <p class="control">
+                                    <router-link class="button is-primary" to="/option">
+                                        <span class="icon">
+                                            <i class="mdi mdi-settings"></i>
+                                        </span>
+                                        <span>Tùy chọn</span>
+                                    </router-link>
+                                </p>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
             </div>
-        </div>   
-        <vue-topprogress ref="topProgress"></vue-topprogress>
+        </nav>
+        <section :class="['hero', 'is-primary', {'is-medium': page.isBigHero}]">
+            <div class="hero-body is-relative">
+                <div class="is-overlay background-cover">
+                    <img :src="page.background" v-if="page.background">
+                </div>
+                <div class="container">
+                    <h1 class="title">{{page.title}}</h1>
+                    <h2 class="subtitle">{{page.description}}</h2>
+                </div>
+            </div>
+        </section>
+        <section role="main">
+            <main class="container">
+                <router-view></router-view>
+            </main>
+        </section>
     </div>
 </template>
 <script>
 import { mapState } from 'vuex';
-import { getCookie } from 'tiny-cookie';
-
-
 export default {
+    data: () => ({
+        eatTheBurger: false,
+    }),
     computed: {
-        pageTitle() {
-            return this.$route.meta.title;
-        },
         ...mapState([
             'user',
+            'page',
         ]),
     },
+    methods: {
+        guard() {
+            console.log('call guard');
+        }
+    },
     beforeRouteEnter(to, from, next) {
-        next(vm => {
-            // Interceptors for axios
-            vm.axios.interceptors.request.use( config => {
-                vm.$refs.topProgress.start();
-                return config;
-            }, error => {
-                vm.$refs.topProgress.fail();
-                return Promise.reject(error);
-            });
-            vm.axios.interceptors.response.use( response => {
-                vm.$refs.topProgress.done();
-                return response;
-            }, error => {
-                vm.$refs.topProgress.fail();
-                return Promise.reject(error);
-            })
-            vm.$store.dispatch('httpGetUser');
-        });        
+        next(vm => vm.$store.dispatch('httpGetUser'));
     },
 }
 </script>

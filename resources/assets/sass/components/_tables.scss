@@ -29,12 +29,12 @@ table.table {
         color: inherit;
     }
     input.inline-td:focus {
-        border-color: $brand-primary;
+
         background: #ffffff;
     }
 
     tr.category-row {
-        background: $brand-primary;
+       
         
         td {
             //color: #ffffff;
@@ -135,7 +135,7 @@ table.trackers-table {
         }
     }
     tr.add-more:hover {
-        background: $brand-secondary;
+
         td {
             color: #ffffff;
         }

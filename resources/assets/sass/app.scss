@@ -1,26 +1,22 @@
-
-// Fonts
-@import url('https://fonts.googleapis.com/css?family=Roboto+Condensed:300,400&subset=vietnamese');
-@import url('https://fonts.googleapis.com/icon?family=Material+Icons');
 // Variables
 @import "variables";
+// Bulma
+@import "node_modules/bulma/sass/utilities/_all";
+@import "node_modules/bulma/sass/base/_all";
+@import "node_modules/bulma/sass/layout/_all";
+@import "node_modules/bulma/sass/grid/_all";
+@import "node_modules/bulma/sass/components/_all";
+@import "node_modules/bulma/sass/elements/_all";
 
-// Bootstrap
-@import "node_modules/bootstrap/scss/bootstrap-reboot";
-@import "node_modules/bootstrap/scss/bootstrap-grid";
-@import "node_modules/bootstrap/scss/type";
-@import "node_modules/bootstrap/scss/forms";
-@import "node_modules/bootstrap/scss/buttons";
-@import "node_modules/bootstrap/scss/button-group";
-@import "node_modules/bootstrap/scss/input-group";
-@import "node_modules/bootstrap/scss/custom-forms";
-@import "node_modules/bootstrap/scss/card";
-@import "node_modules/bootstrap/scss/close";
-@import "node_modules/bootstrap/scss/utilities";
+// Fonts
+
+@import "./components/fonts";
+@import "node_modules/mdi/css/materialdesignicons.min";
 
 
 // Components
 @import "node_modules/@riophae/vue-treeselect/dist/vue-treeselect.min";
+
 
 // Pages
 @import "./pages/login.scss";
@@ -28,9 +24,6 @@
 @import "./components/global";
 @import "./components/resources";
 @import "./components/tables";
-@import "./components/buttons";
 @import "./components/dashboard";
 @import "./components/works";
-
-
 @import "./components/payments";

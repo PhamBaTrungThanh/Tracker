@@ -6,7 +6,18 @@ import type from 'type-detect';
 
 export const Tracker = {
     install: (Vue) => {
-
+        // Mixins
+        Vue.mixin({
+            mounted() {
+                // Load pageMeta into $store
+                if (this.$data.pageMeta) {
+                    if (type(this.$data.pageMeta.title) === 'string') {
+                        window.document.title = this.$data.pageMeta.title;
+                    }
+                    this.$store.dispatch("setPageMeta", this.$data.pageMeta);
+                }                
+            }
+        })
         // Custom functions
         /**
          * Format float number to human-friendly string

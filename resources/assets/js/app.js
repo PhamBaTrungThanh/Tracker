@@ -39,14 +39,9 @@ Vue.component('spinner', Spinner);
 //  we do some vue router, states, and app init
 const router = new VueRouter({
     routes: routes,
-    mode: 'hash',
+    mode: 'history',
 });
 
-router.afterEach((to, from) => {
-    if (typeof to.meta.title === "string") {
-        document.title = to.meta.title;
-    }
-});
 
 const app = new Vue({
     el: '#app',

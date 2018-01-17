@@ -6,7 +6,6 @@ Vue.use(Vuex);
 
 const store = new Vuex.Store({
     state: {
-        authorizationToken: "",
         apiBase:`${window.location.protocol}//${window.location.host}/api/v1`,
         user: {},
         passportGrantClient: document.querySelector("meta[name='passport-grant-client']").getAttribute('content'),
@@ -15,6 +14,7 @@ const store = new Vuex.Store({
         currentWork: { id: 0},
         currentWorkId: false,
         reload: false,
+        page: {},
         cleaveOptions: {
             price: {
                 "numeral": true,
@@ -45,6 +45,9 @@ const store = new Vuex.Store({
             if (context.state.currentWork.id !== work_id) {
                 context.dispatch('httpGetWork', work_id);
             }
+        },
+        setPageMeta(context, meta) {
+            context.commit('SET_CURRENT_PAGE_META', meta);
         },
         httpGetWork(context, work_id) {
             this._vm.axios.get(`work/${work_id}`).then( response => {
@@ -93,6 +96,9 @@ const store = new Vuex.Store({
         },
         RELOAD_WORK_COMPLETE ( state ) {
             state.reload = "false";
+        },
+        SET_CURRENT_PAGE_META ( state, meta) {
+            state.page = Object.assign({}, state.page, meta);
         }
     },
 });

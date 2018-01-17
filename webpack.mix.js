@@ -1,6 +1,5 @@
 let mix = require('laravel-mix');
 
-
 mix.js('resources/assets/js/app.js', 'public/js')
    .extract(['vue', 'axios', 'vue-router', 'vuex',
              'tiny-cookie', 'vue-fullscreen', 'vee-validate',
@@ -8,5 +7,11 @@ mix.js('resources/assets/js/app.js', 'public/js')
              'vue-cleave-component', 'vue-monthly-picker', 'vue-top-progress', 'chart.js']);
     
 mix.sass('resources/assets/sass/app.scss', 'public/css');
-
-mix.browserSync('tracker.dev');
+mix.copy("resources/assets/images", "public/images");
+mix.version();
+mix.sourceMaps();
+mix.disableSuccessNotifications();
+mix.browserSync({
+    proxy: 'tracker.dev',
+    open: false,
+});
