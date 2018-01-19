@@ -63,7 +63,7 @@
                 </div>
             </div>
         </section>
-        <section role="main">
+        <section role="main" class="section">
             <main class="container">
                 <router-view></router-view>
             </main>
@@ -84,11 +84,8 @@ export default {
     },
     methods: {
         guard() {
-            console.log('call guard');
+            this.$store.dispatch('httpGetUser')
         }
-    },
-    beforeRouteEnter(to, from, next) {
-        next(vm => vm.$store.dispatch('httpGetUser'));
     },
 }
 </script>

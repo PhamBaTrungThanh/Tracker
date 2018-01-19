@@ -29,10 +29,20 @@ class InvoiceController extends Controller
      */
     public function index(Request $request)
     {
-        $invoices = Invoice::where([
-            ['work_id', '=', $request->query('work_id')],
-            ['provider_id', '=', $request->query('provider_id')]
-        ])->orderBy('signed_at')->withCount('receives')->with('payments')->get();
+        if ($request->query('action') === "more") {
+            $not_in_array = explode(",", $request->query('not_in'));
+            $invoices = Invoice::whereNotIn('id', $not_in_array)
+                                ->where('work_id', $request->query('work_id'))
+                                ->where('type', 'invoice')
+                                ->orderBy('signed_at')
+                                ->get();
+        } else {
+            $invoices = Invoice::where([
+                ['work_id', '=', $request->query('work_id')],
+                ['provider_id', '=', $request->query('provider_id')]
+            ])->orderBy('signed_at')->get();
+        }
+
         return InvoiceResource::collection($invoices);
     }
 

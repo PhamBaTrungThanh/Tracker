@@ -1,37 +1,62 @@
 <template>
-    <transition v-if="work">
+    <transition v-if="work" name="slide-fade">
         <div class="show_work--container">
-            <div class="card">
-                <img class="card-img limit-img" :src="work.image_cover">
-                <div class="card-img-overlay  text-white">
-                    <h3 class="card-title">Công trình {{work.name}}</h3>
-                    <p class="card-text">{{work.description}}</p>
-                    <p class="card-text"><em>Cập nhật lần cuối: </em>{{work.updated_at}}</p>
-                    <p class="card-text text-center">
-                        <button class="btn btn-primary" @click="viewReport()">Xem báo cáo</button>
-                    </p>
-                </div>
-                <div class="card-body">
-                    <h5 class="text-center">Thông tin chung</h5>
-                    <div class="row">
-                        <div class="col">
-                            <p class="card-text"><b>Khởi công: </b>{{ work.started_at }}</p>
-                            <p class="card-text"><b>Số người công tác: </b>Chưa có thông tin</p>
-                        </div>
-                        <div class="col">
-                            <p class="card-text"><b>Hợp đồng nguyên tắc: </b>{{work.contracts.length}}</p>
-                            <p class="card-text"><b>Danh mục / vật tư: </b>{{work.category_count}} / {{work.material_count}}</p>
-                        </div>
-                        <div class="col">
-                            <p class="card-text"><b>Đơn hàng: </b>{{work.invoices.length}}</p>
-                            <p class="card-text"><b>Giá trị đơn hàng: </b>{{ $comma(work.total_sum) }}</p>
-                        </div>
-                        <div class="col">
-                            <p class="card-text"><b>Tổng giá trị BOQ: </b>{{ $comma(work.boq_sum) }}</p>
-                            <p class="card-text"><b>Giá trị thanh toán: </b>{{ $comma(work.paid_sum) }}</p>
-                        </div>
+            <h1 class="title">Công trình {{work.name}}</h1>
+            <h3 class="subtitle"><em>Cập nhật lần cuối: </em>{{work.updated_at}}</h3>
+            <hr>
+            <div class="level">
+                <div class="level-item has-text-centered">
+                    <div>
+                        <p class="heading">Khởi công</p>
+                        <p class="title">{{ work.started_at }}</p>
                     </div>
                 </div>
+                <div class="level-item has-text-centered">
+                    <div>
+                        <p class="heading">Số hợp đồng</p>
+                        <p class="title">0</p>
+                    </div>
+                </div>
+                <div class="level-item has-text-centered">
+                    <div>
+                        <p class="heading">Giá trị đơn hàng</p>
+                        <p class="title">0</p>
+                    </div>
+                </div>
+                <div class="level-item has-text-centered">
+                    <div>
+                        <p class="heading">Giá trị BOQ</p>
+                        <p class="title">0</p>
+                    </div>
+                </div>
+                <div class="level-item has-text-centered">
+                    <div>
+                        <p class="heading">Đã thanh toán</p>
+                        <p class="title">0</p>
+                    </div>
+                </div>                
+            </div>
+            <hr>
+            <div class="content">
+                <table class="table is-bordered is-striped is-hoverable">
+                    <thead>
+                        <h3 class="title">Danh sách đơn hàng</h3>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <th>#</th>
+                            <th>Tên</th>
+                            <th>Ngày ký</th>
+                            <th>Nhà cung cấp</th>
+                            <th>Giá trị đơn hàng</th>
+                            <th>Giá trị thanh toán</th>
+                            <th>Ghi chú</th>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <!---
+            <div class="card">
                 <div class="card-body">
                     <h5 class="text-center">Danh sách đơn hàng</h5>
                     <table class="table">
@@ -68,16 +93,35 @@
                     </p>
                 </div>
             </div>
+            -->
         </div>
     </transition>
 </template>
 
 <script>
+import {mapState} from 'vuex';
 export default {
     data() {
         return {
-            work: false,
         }
+    },
+    computed: {
+         ...mapState([
+            'user',
+        ]),
+    },
+    asyncComputed: {
+        work() {
+            return this.$store.dispatch("getWork", this.$route.params.id).then( result => result);
+        },/*
+        invoices: {
+            get() {
+                return this.$store.dispatch("getRelatedInvoices", this.$route.params.id, 'work').then( result => result);
+            },
+            default() {
+                return [];
+            }
+        },*/
     },
     methods: {
         viewReport() {
@@ -101,40 +145,30 @@ export default {
                 }
             });
         },
-        fetchData() {
-            this.axios.get(`${this.$store.state.apiBase}/work/${this.$route.params.id}`).then( response => {    
-                if (response.status === 200) {
-                    this.$store.commit('SET_CURRENT_WORK', response.data.data);
-                    this.work = response.data.data;
-                }
-            }).catch( error => {
-                console.log(error)
-            });
+        updatePageMeta(work) {
+            const page = {
+                'title': `Công trình ${work.name}`,
+                'description': work.description,
+                'background': work.image_cover,
+                'isBigHero': true,
+            }
+            this.$store.dispatch("setPageMeta", page);
         },
-        guard() {
+
+        guard2() {
 
             if (typeof this.$store.state.currentWork.id === "number") {
                 if (this.$store.state.currentWork.id === this.$route.params.id) {
                     this.work = this.$store.state.currentWork;
                 }
             }
-            if (!this.work) {
-                this.fetchData();
-            }
+
             if (this.$store.state.reload === "reload_work") {
                 console.log("reloading work");
                 this.fetchData();
                 this.$store.commit("RELOAD_WORK_COMPLETE");
             }
         }
-    },
-    computed: {
-        user() {
-            return this.$store.state.user;
-        }
-    },
-    beforeRouteEnter( to, from, next) {
-        next(vm => vm.guard());
     },
 
 }

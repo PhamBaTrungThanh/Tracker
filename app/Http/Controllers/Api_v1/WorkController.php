@@ -20,8 +20,7 @@ class WorkController extends Controller
 {
     public function index()
     {
-
-        return response()->json(Work::all());
+        return WorkResource::collection(Work::all());
         
     }
     public function store(Request $request)
