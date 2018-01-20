@@ -4,7 +4,7 @@ import Chart from 'chart.js';
 import concat from 'unique-concat';
 import type from 'type-detect';
 
-const capitalizeFirstChar = str => str.charAt(0).toUpperCase() + str.substring(1);
+export const capitalizeFirstChar = str => str.charAt(0).toUpperCase() + str.substring(1);
 
 export const Tracker = {
     install: (Vue) => {

@@ -24,7 +24,9 @@ import Spinner from "./resources/Spinner.vue";
 Vue.use(VueRouter);
 Vue.use(Vuex);
 Vue.use(VueSwal);
-Vue.use(AsyncComputed);
+Vue.use(AsyncComputed, {
+    useRawError: true,
+});
 Vue.use(VeeValidate);
 Vue.use(Cleave);
 Vue.use(vueTopprogress);

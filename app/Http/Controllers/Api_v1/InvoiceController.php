@@ -32,7 +32,7 @@ class InvoiceController extends Controller
         if ($request->query('action') === "more") {
             $not_in_array = explode(",", $request->query('not_in'));
             $invoices = Invoice::whereNotIn('id', $not_in_array)
-                                ->where('work_id', $request->query('work_id'))
+                                ->where("{$request->query('parent_name')}_id", $request->query('parent_id'))
                                 ->where('type', 'invoice')
                                 ->orderBy('signed_at')
                                 ->get();

@@ -21,6 +21,7 @@
     "browser-sync": "^2.23.5",
     "browser-sync-webpack-plugin": "^1.2.0",
     "bulma": "^0.6.2",
+    "marked": "^0.3.9",
     "chart.js": "^2.7.1",
     "cross-env": "^5.0.1",
     "laravel-mix": "^1.6.1",

@@ -2,7 +2,7 @@ import Vue from 'vue'
 import Vuex from 'vuex'
 Vue.use(Vuex);
 
-
+import { capitalizeFirstChar } from "./bootstrap";
 
 const store = new Vuex.Store({
     state: {
@@ -46,6 +46,15 @@ const store = new Vuex.Store({
     getters: {
         getWorkById: (state) => (work_id) => {
             return state.works.find( w => w.id === parseInt(work_id))
+        },
+        findRelatedInvoice: (state) => ({parent_id, parent_name}) => {
+            
+            return state.invoices.reduce( (invoices, invoice) => {
+                if (invoice[`${parent_name}_id`] === parent_id) {
+                    invoices.push(invoice);
+                }
+                return invoices;
+            }, [] );
         }
     },
     actions: {
@@ -70,7 +79,18 @@ const store = new Vuex.Store({
                     resolve(response.data.data);
                 });
             });
-
+        },
+        httpGetInvoices( {commit} , params = {}) {
+            return new Promise( resolve => {
+                this._vm.axios.get(`invoice`, {
+                    'params': params,
+                }).then( response => {
+                    if (response.data.data) {
+                        commit('ADD_INVOICES', response.data.data);
+                    }
+                    resolve(response.data.data);
+                });
+            });
         },
         httpGetProviders(context) {
             this._vm.axios.get(`providers`).then( response => {
@@ -87,45 +107,44 @@ const store = new Vuex.Store({
             });
         },
         getWork( context, work_id ) {
-            return new Promise( (resolve, reject) => {
+
+            return new Promise( resolve => {
                 let work = context.getters.getWorkById(work_id);
                 if (!work) {
                     context.dispatch("httpGetWorks").then( result => {
                         resolve(context.getters.getWorkById(work_id));
                     });
+                } else {
+                    resolve(work);
                 }
             });
         },
-        getRelatedInvoices( { state, dispatch, commit }, parent_id, parent_name) {
-            const expect = parent.count_invoices;
-            console.log("call getRelatedInvoices");
-            return new Promise( (resolve, reject) => {
+        getRelatedInvoices( { state, dispatch, getters }, {parent_name, parent_id, expect}) {
+            let returner = getters.findRelatedInvoice({
+                'parent_id': parent_id,
+                'parent_name': parent_name,
+            });
 
-                const finder = (data) => (data.reduce( (invoices, invoice) => {
-                    if (invoice[`${parent_name}_${parent_id}`] === parent.id) {
-                        invoices.push(invoice);
-                    }
-                }, []));
-
-                let _returner = finder(state.invoices);
-                if (_returner.length !== expect) { // not enough, i want more
-                    const inHand = _returner.reduce( (ids, invoice) => ids.push(invoice.id), []);
-                     this._vm.axios.get(`invoice`, {
-                        'params': {
-                            'action': "more",
-                            'not_in': inHand.join(","),
-                            'parent_id': parent.id,
-                        }
-                    }).then( (response) => {
-                        _returner = _returner.concat(response.data.data);
-                        commit("ADD_INVOICES", response.data.data);
-                        resolve(_returner);
-                    });
-                    
-                } else {
-                    resolve(_returner);
-                }
-            })
+            if (returner.length === expect) {
+                return Promise.resolve(returner);
+            }
+            else {
+                const inHand = returner.reduce( (ids, invoice) => ids.push(invoice.id), []);
+                const params = {
+                    'action': "more",
+                    'not_in': inHand.join(","),
+                    'parent_id': parent_id,
+                    'parent_name': parent_name,
+                };
+                return new Promise (resolve => {
+                    dispatch("httpGetInvoices", params).then( result => {
+                        resolve(getters.findRelatedInvoice({
+                            'parent_id': parent_id,
+                            'parent_name': parent_name,
+                        }));
+                    })
+                })
+            }
         },
         getRelatedContracts() {
             return false;

@@ -55,6 +55,7 @@
                     </tbody>
                 </table>
             </div>
+            {{invoices.length}}
             <!---
             <div class="card">
                 <div class="card-body">
@@ -102,26 +103,45 @@
 import {mapState} from 'vuex';
 export default {
     data() {
-        return {
-        }
     },
     computed: {
          ...mapState([
             'user',
         ]),
+        page() {
+            if (this.work) {
+                const page = {
+                    'isBigHero': true,
+                    'title': `Công trình ${this.work.name}`,
+                    'description': this.work.description,
+                    'background': this.work.image_cover,
+                }
+                this.$store.dispatch("setPageMeta", page);
+                return page;
+            }
+
+        }
     },
     asyncComputed: {
-        work() {
-            return this.$store.dispatch("getWork", this.$route.params.id).then( result => result);
-        },/*
-        invoices: {
+        work: {
             get() {
-                return this.$store.dispatch("getRelatedInvoices", this.$route.params.id, 'work').then( result => result);
+                return this.$store.dispatch("getWork", this.$route.params.id).then( result => result );
             },
-            default() {
-                return [];
-            }
-        },*/
+            default: false,
+            
+        },
+        invoices: {
+            lazy: true,
+            get() {
+                const query = {
+                    parent_id: this.$route.params.id,
+                    parent_name: 'work',
+                    expect: this.work.count_invoices,
+                }
+                return this.$store.dispatch("getRelatedInvoices", query).then( result => result );    
+            },
+            default: [],
+        },
     },
     methods: {
         viewReport() {
@@ -170,7 +190,6 @@ export default {
             }
         }
     },
-
 }
 </script>
 
