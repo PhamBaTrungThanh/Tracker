@@ -1,131 +1,112 @@
 <template>
     <transition v-if="work" name="slide-fade">
-        <div class="show_work--container">
-            <h1 class="title">Công trình {{work.name}}</h1>
-            <h3 class="subtitle"><em>Cập nhật lần cuối: </em>{{work.updated_at}}</h3>
-            <hr>
-            <div class="level">
-                <div class="level-item has-text-centered">
-                    <div>
-                        <p class="heading">Khởi công</p>
-                        <p class="title">{{ work.started_at }}</p>
-                    </div>
-                </div>
-                <div class="level-item has-text-centered">
-                    <div>
-                        <p class="heading">Số hợp đồng</p>
-                        <p class="title">0</p>
-                    </div>
-                </div>
-                <div class="level-item has-text-centered">
-                    <div>
-                        <p class="heading">Giá trị đơn hàng</p>
-                        <p class="title">0</p>
-                    </div>
-                </div>
-                <div class="level-item has-text-centered">
-                    <div>
-                        <p class="heading">Giá trị BOQ</p>
-                        <p class="title">0</p>
-                    </div>
-                </div>
-                <div class="level-item has-text-centered">
-                    <div>
-                        <p class="heading">Đã thanh toán</p>
-                        <p class="title">0</p>
-                    </div>
-                </div>                
-            </div>
-            <hr>
-            <div class="content">
-                <table class="table is-bordered is-striped is-hoverable">
-                    <thead>
-                        <h3 class="title">Danh sách đơn hàng</h3>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <th>#</th>
-                            <th>Tên</th>
-                            <th>Ngày ký</th>
-                            <th>Nhà cung cấp</th>
-                            <th>Giá trị đơn hàng</th>
-                            <th>Giá trị thanh toán</th>
-                            <th>Ghi chú</th>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-            {{invoices.length}}
-            <!---
-            <div class="card">
-                <div class="card-body">
-                    <h5 class="text-center">Danh sách đơn hàng</h5>
-                    <table class="table">
-                        <thead class="thead-light">
-                            <tr>
-                                <th class="text-center">#</th>
-                                <th>Tên</th>
-                                <th class="text-center">Ngày ký</th>
-                                <th>Nhà cung cấp</th>
-                                <th class="text-center">Giá trị đơn hàng</th>
 
-                                <th class="text-center">Giá trị thanh toán</th>
-                                <th class="text-center">Ghi chú</th>
-                            </tr>
-                        </thead>
+        <section class="show_work--container section">
+            <div class="container">
+                <h1 class="title">Công trình {{work.name}}</h1>
+                <h3 class="subtitle"><em>Cập nhật lần cuối: </em>{{work.updated_at}}</h3>
+                <hr>
+                <div class="level">
+                    <div class="level-item has-text-centered">
+                        <div>
+                            <p class="heading">Khởi công</p>
+                            <p class="title">{{ work.started_at }}</p>
+                        </div>
+                    </div>
+                    <div class="level-item has-text-centered">
+                        <div>
+                            <p class="heading">Số đơn hàng</p>
+                            <p class="title">{{invoices.length}}</p>
+                        </div>
+                    </div>
+                    <div class="level-item has-text-centered">
+                        <div>
+                            <p class="heading">Giá trị đơn hàng</p>
+                            <p class="title">{{comma(sum_invoices)}}</p>
+                        </div>
+                    </div>
+                    <div class="level-item has-text-centered">
+                        <div>
+                            <p class="heading">Giá trị BOQ</p>
+                            <p class="title">0</p>
+                        </div>
+                    </div>
+                    <div class="level-item has-text-centered">
+                        <div>
+                            <p class="heading">Đã thanh toán</p>
+                            <p class="title">{{comma(sum_payments)}}</p>
+                        </div>
+                    </div>                
+                </div>
+                <hr>
+                <div class="content">
+                    <h3 class="title">Danh sách đơn hàng</h3>
+                    <table class="table is-striped is-hoverable">
                         <tbody>
-                            <template v-for="(invoice, index) in work.invoices">
-                                <tr :key="index" @click="showInvoice(invoice.id)">
-                                    <td class="text-center">{{ (index + 1) }}</td>
-                                    <td>{{ invoice.name }}</td>
-                                    <td class="text-center">{{ invoice.signed_at }}</td>
-                                    <td class="provider-col">{{ invoice.provider.name }}</td>
-                                    <td>{{ $comma(invoice.total * 1.1) }}</td>
-                                    <td>{{ $comma(invoice.payment_total) }}</td>
-
-                                    <td></td>
-                                </tr>
-                            </template>
+                            <tr>
+                                <th style="width: 50px;">#</th>
+                                <th style="width: 250px">Tên</th>
+                                <th style="width: 125px">Ngày ký</th>
+                                <th>Nhà cung cấp</th>
+                                <th style="width: 175px">Giá trị đơn hàng</th>
+                                <th style="width: 175px">Giá trị thanh toán</th>
+                                <th style="width: 100px">Ghi chú</th>
+                            </tr>
+                            <router-link tag="tr" v-for="(invoice, index) in invoices" :key="index" :to="{'name': 'invoice.show', 'params': {'id': invoice.id}}">
+                                <td><b>{{index + 1}}</b></td>
+                                <td>{{invoice.name}}</td>
+                                <td><b>{{invoice.signed_at}}</b></td>
+                                <td>{{ $store.getters.getProviderById(invoice.provider_id).name}}</td>
+                                <td>{{comma(invoice.total * 1.1)}}</td>
+                                <td>{{comma(invoice.payment_total)}}</td>
+                                <td></td>
+                            </router-link>
                         </tbody>
+
                     </table>
-                    <br>
-                    <p class="card-text text-center" v-if="user.can_add_invoice">
-                        <button class="btn btn-primary" @click="newInvoice()">Thêm đơn hàng</button>
-                    </p>
                 </div>
             </div>
-            -->
-        </div>
+            
+        </section>
     </transition>
 </template>
 
 <script>
-import {mapState} from 'vuex';
+import {mapState,mapGetters} from 'vuex';
+import * as moment from 'moment';
+import 'moment/locale/vi';
+moment.locale('vi');
 export default {
-    data() {
-    },
+    data: () => ({
+        sortBy: "date",
+    }),
     computed: {
          ...mapState([
             'user',
+            'providers',
         ]),
-        page() {
-            if (this.work) {
-                const page = {
-                    'isBigHero': true,
-                    'title': `Công trình ${this.work.name}`,
-                    'description': this.work.description,
-                    'background': this.work.image_cover,
-                }
-                this.$store.dispatch("setPageMeta", page);
-                return page;
-            }
-
+        sum_invoices() {
+            return this.invoices.reduce( (sum, invoice) => sum += parseFloat(invoice.total), 0);
+        },
+        sum_payments() {
+            return this.invoices.reduce( (sum, invoice) => sum += parseFloat(invoice.payment_total), 0);
         }
     },
+    
     asyncComputed: {
         work: {
             get() {
-                return this.$store.dispatch("getWork", this.$route.params.id).then( result => result );
+                return this.$store.dispatch("getWork", this.$route.params.id).then( work => {
+                    
+                    this.$store.dispatch("setPageMeta", {                        
+                        'isBigHero': true,
+                        'title': `Công trình ${work.name}`,
+                        'description': work.description,
+                        'background': work.image_cover,                
+                    });
+                    
+                    return work;
+                });
             },
             default: false,
             
@@ -138,12 +119,17 @@ export default {
                     parent_name: 'work',
                     expect: this.work.count_invoices,
                 }
-                return this.$store.dispatch("getRelatedInvoices", query).then( result => result );    
+                return this.$store.dispatch("getRelatedInvoices", query).then( result => {
+                    return this.sortInvoices(result) 
+                });    
             },
             default: [],
         },
     },
     methods: {
+        ...mapGetters([
+            'getProviderById'
+        ]),
         viewReport() {
             this.$router.push({
                 name: "work.report",
@@ -175,21 +161,31 @@ export default {
             this.$store.dispatch("setPageMeta", page);
         },
 
-        guard2() {
+        sortInvoices($_invoices) {
+            let $_result = $_invoices;
 
-            if (typeof this.$store.state.currentWork.id === "number") {
-                if (this.$store.state.currentWork.id === this.$route.params.id) {
-                    this.work = this.$store.state.currentWork;
-                }
-            }
+            if (this.sortBy === "date") {
+                let mapped = $_invoices.map( (el, i) => {
+                    return {'index': i, value: moment(el.signed_at, 'DD-MM-YYYY').unix() }
+                });
+                mapped.sort( (a, b) => {
+                    if (a.value > b.value) {
+                        return 1;
+                    }
+                    if (a.value < b.value) {
+                        return -1;
+                    }
+                    return 0;
+                });
 
-            if (this.$store.state.reload === "reload_work") {
-                console.log("reloading work");
-                this.fetchData();
-                this.$store.commit("RELOAD_WORK_COMPLETE");
+                $_result = mapped.map( el => {
+                    return $_invoices[el.index];
+                });
             }
-        }
+            return $_result;
+        },
     },
+
 }
 </script>
 

@@ -63,11 +63,9 @@
                 </div>
             </div>
         </section>
-        <section role="main" class="section">
-            <main class="container">
-                <router-view></router-view>
-            </main>
-        </section>
+        <div class="page----content">
+            <router-view></router-view>
+        </div>
     </div>
 </template>
 <script>
@@ -84,9 +82,14 @@ export default {
     },
     methods: {
         guard() {
-            this.$store.dispatch('httpGetUser')
+            this.$store.dispatch('httpGetUser');
+            this.$store.dispatch('httpGetProviders');
         }
     },
+
+    beforeRouteEnter(to, from, next) {
+        next(vm => vm.guard());
+    }
 }
 </script>
 

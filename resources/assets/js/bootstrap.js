@@ -28,7 +28,7 @@ export const Tracker = {
          * @param {*} number 
          * @return string
          */
-        Vue.prototype.$comma = (number) => {
+        Vue.prototype.comma = (number) => {
             if (isNaN(number)) {
                 return "-";
             } else if (parseFloat(number) === 0) {

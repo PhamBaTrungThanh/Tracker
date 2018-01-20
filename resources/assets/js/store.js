@@ -18,7 +18,12 @@ const store = new Vuex.Store({
         currentWork: { id: 0},
         currentWorkId: false,
         reload: false,
-        page: {},
+        page: {
+            description: "",
+            title: "MEC",
+            isBigMeta: false,
+            background: false,
+        },
         cleaveOptions: {
             price: {
                 "numeral": true,
@@ -47,14 +52,21 @@ const store = new Vuex.Store({
         getWorkById: (state) => (work_id) => {
             return state.works.find( w => w.id === parseInt(work_id))
         },
+        getProviderById: (state) => (id) => {
+            return state.providers.find( p => p.id === parseInt(id));
+        },
         findRelatedInvoice: (state) => ({parent_id, parent_name}) => {
             
-            return state.invoices.reduce( (invoices, invoice) => {
-                if (invoice[`${parent_name}_id`] === parent_id) {
+            const _t = state.invoices.reduce( (invoices, invoice) => {
+                
+                if (invoice[`${parent_name}_id`] === parseInt(parent_id)) {
+                    
                     invoices.push(invoice);
                 }
                 return invoices;
             }, [] );
+            
+            return _t;
         }
     },
     actions: {
@@ -90,10 +102,11 @@ const store = new Vuex.Store({
                     }
                     resolve(response.data.data);
                 });
-            });
+            })
+
         },
         httpGetProviders(context) {
-            this._vm.axios.get(`providers`).then( response => {
+            this._vm.axios.get(`provider`).then( response => {
                 context.commit('SET_PROVIDERS', response.data.data);
             });
         },
@@ -107,7 +120,7 @@ const store = new Vuex.Store({
             });
         },
         getWork( context, work_id ) {
-
+            /*
             return new Promise( resolve => {
                 let work = context.getters.getWorkById(work_id);
                 if (!work) {
@@ -117,33 +130,42 @@ const store = new Vuex.Store({
                 } else {
                     resolve(work);
                 }
-            });
+            });*/
+            let work = context.getters.getWorkById(work_id);
+
+            if (work) {
+                return Promise.resolve(work);
+            } else {
+                return context.dispatch("httpGetWorks").then( result => {
+                    return result.find(w => w.id === parseInt(work_id));
+                });
+            }
         },
         getRelatedInvoices( { state, dispatch, getters }, {parent_name, parent_id, expect}) {
             let returner = getters.findRelatedInvoice({
                 'parent_id': parent_id,
                 'parent_name': parent_name,
             });
-
+            
             if (returner.length === expect) {
                 return Promise.resolve(returner);
             }
             else {
-                const inHand = returner.reduce( (ids, invoice) => ids.push(invoice.id), []);
+                const inHand = returner.reduce( (ids, invoice) => {
+                    ids.push(invoice.id);
+                    return ids;
+                }, []);
+                
                 const params = {
                     'action': "more",
                     'not_in': inHand.join(","),
                     'parent_id': parent_id,
                     'parent_name': parent_name,
                 };
-                return new Promise (resolve => {
-                    dispatch("httpGetInvoices", params).then( result => {
-                        resolve(getters.findRelatedInvoice({
-                            'parent_id': parent_id,
-                            'parent_name': parent_name,
-                        }));
-                    })
-                })
+                return dispatch("httpGetInvoices", params).then( result => {
+                    return returner.push(...result);
+                });
+                
             }
         },
         getRelatedContracts() {
@@ -185,7 +207,7 @@ const store = new Vuex.Store({
             state.reload = "false";
         },
         SET_CURRENT_PAGE_META ( state, meta) {
-            state.page = meta;
+            state.page = Object.assign({}, state.page, meta);
         }
     },
 });

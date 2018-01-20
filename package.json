@@ -21,10 +21,10 @@
     "browser-sync": "^2.23.5",
     "browser-sync-webpack-plugin": "^1.2.0",
     "bulma": "^0.6.2",
-    "marked": "^0.3.9",
     "chart.js": "^2.7.1",
     "cross-env": "^5.0.1",
     "laravel-mix": "^1.6.1",
+    "marked": "^0.3.9",
     "mdi": "^2.1.19",
     "tiny-cookie": "^2.1.1",
     "type-detect": "^4.0.6",
@@ -42,5 +42,7 @@
     "vue-top-progress": "^0.7.0",
     "vuex": "^3.0.1"
   },
-  "dependencies": {}
+  "dependencies": {
+    "moment": "^2.20.1"
+  }
 }
