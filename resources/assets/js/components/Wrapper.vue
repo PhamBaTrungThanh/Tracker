@@ -52,17 +52,7 @@
                 </div>
             </div>
         </nav>
-        <section :class="['hero', 'is-primary', {'is-medium': page.isBigHero}]">
-            <div class="hero-body is-relative">
-                <div class="is-overlay background-cover">
-                    <img :src="page.background" v-if="page.background">
-                </div>
-                <div class="container">
-                    <h1 class="title">{{page.title}}</h1>
-                    <h2 class="subtitle">{{page.description}}</h2>
-                </div>
-            </div>
-        </section>
+        
         <div class="page----content">
             <router-view></router-view>
         </div>
@@ -73,11 +63,15 @@ import { mapState } from 'vuex';
 export default {
     data: () => ({
         eatTheBurger: false,
+        page: {
+            'title': "MEC",
+            'description': "",
+            'isBigHero': false,
+        }
     }),
     computed: {
         ...mapState([
             'user',
-            'page',
         ]),
     },
     methods: {

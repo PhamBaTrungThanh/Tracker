@@ -12,6 +12,6 @@ mix.version();
 mix.sourceMaps();
 mix.disableSuccessNotifications();
 mix.browserSync({
-    proxy: 'localhost:8000',
+    proxy: 'tracker.dev',
     open: false,
 });

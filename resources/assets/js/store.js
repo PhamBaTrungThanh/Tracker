@@ -55,6 +55,9 @@ const store = new Vuex.Store({
         getProviderById: (state) => (id) => {
             return state.providers.find( p => p.id === parseInt(id));
         },
+        getInvoiceById: (state) => (id) => {
+            return state.invoices.find( i => i.id === parseInt(id));
+        },
         findRelatedInvoice: (state) => ({parent_id, parent_name}) => {
             
             const _t = state.invoices.reduce( (invoices, invoice) => {
@@ -92,6 +95,14 @@ const store = new Vuex.Store({
                 });
             });
         },
+        httpGetInvoice( {commit}, id ) {
+            return new Promise( resolve => {
+                this._vm.axios.get(`invoice/${id}`).then( response => {
+                    commit('STORE_INVOICE', response.data.data);
+                    resolve(response.data.data);
+                });
+            });
+        },
         httpGetInvoices( {commit} , params = {}) {
             return new Promise( resolve => {
                 this._vm.axios.get(`invoice`, {
@@ -119,18 +130,8 @@ const store = new Vuex.Store({
                 this._vm.$router.push("login");
             });
         },
-        getWork( context, work_id ) {
-            /*
-            return new Promise( resolve => {
-                let work = context.getters.getWorkById(work_id);
-                if (!work) {
-                    context.dispatch("httpGetWorks").then( result => {
-                        resolve(context.getters.getWorkById(work_id));
-                    });
-                } else {
-                    resolve(work);
-                }
-            });*/
+        getWork( context, {work_id} ) {
+
             let work = context.getters.getWorkById(work_id);
 
             if (work) {
@@ -141,6 +142,17 @@ const store = new Vuex.Store({
                 });
             }
         },
+        getInvoice( {state, dispatch, getters}, {invoice_id} ) {
+            let invoice = getters.getInvoiceById(invoice_id);
+            if (invoice) {
+                return Promise.resolve(invoice);
+            } else {
+                return dispatch("httpGetInvoice", invoice_id).then( result => {
+                    return result;
+                });
+            }
+        }, 
+
         getRelatedInvoices( { state, dispatch, getters }, {parent_name, parent_id, expect}) {
             let returner = getters.findRelatedInvoice({
                 'parent_id': parent_id,
@@ -190,6 +202,9 @@ const store = new Vuex.Store({
         },
         SET_PROVIDERS(state, providers) {
             state.providers = providers;
+        },
+        STORE_INVOICE(state, invoice) {
+            state.invoices.push(invoice);
         },
         ADD_INVOICES( state, invoices) {
             state.invoices.push(...invoices);

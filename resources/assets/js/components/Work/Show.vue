@@ -1,73 +1,77 @@
 <template>
     <transition v-if="work" name="slide-fade">
+        <div class="wrap">
+            <hero-header :page="pageMeta" />
 
-        <section class="show_work--container section">
-            <div class="container">
-                <h1 class="title">Công trình {{work.name}}</h1>
-                <h3 class="subtitle"><em>Cập nhật lần cuối: </em>{{work.updated_at}}</h3>
-                <hr>
-                <div class="level">
-                    <div class="level-item has-text-centered">
-                        <div>
-                            <p class="heading">Khởi công</p>
-                            <p class="title">{{ work.started_at }}</p>
+            <section class="show_work--container section">
+                <article role="work" class="">
+                    <div class="container">
+                        <h1 class="title">Công trình {{work.name}}</h1>
+                        <h3 class="subtitle"><em>Cập nhật lần cuối: </em>{{work.updated_at}}</h3>
+                        <hr>
+                        <div class="level">
+                            <div class="level-item has-text-centered">
+                                <div>
+                                    <p class="heading">Khởi công</p>
+                                    <p class="title">{{ work.started_at }}</p>
+                                </div>
+                            </div>
+                            <div class="level-item has-text-centered">
+                                <div>
+                                    <p class="heading">Số đơn hàng</p>
+                                    <p class="title">{{invoices.length}}</p>
+                                </div>
+                            </div>
+                            <div class="level-item has-text-centered">
+                                <div>
+                                    <p class="heading">Giá trị đơn hàng</p>
+                                    <p class="title">{{comma(sum_invoices)}}</p>
+                                </div>
+                            </div>
+                            <div class="level-item has-text-centered">
+                                <div>
+                                    <p class="heading">Giá trị BOQ</p>
+                                    <p class="title">0</p>
+                                </div>
+                            </div>
+                            <div class="level-item has-text-centered">
+                                <div>
+                                    <p class="heading">Đã thanh toán</p>
+                                    <p class="title">{{comma(sum_payments)}}</p>
+                                </div>
+                            </div>                
                         </div>
-                    </div>
-                    <div class="level-item has-text-centered">
-                        <div>
-                            <p class="heading">Số đơn hàng</p>
-                            <p class="title">{{invoices.length}}</p>
-                        </div>
-                    </div>
-                    <div class="level-item has-text-centered">
-                        <div>
-                            <p class="heading">Giá trị đơn hàng</p>
-                            <p class="title">{{comma(sum_invoices)}}</p>
-                        </div>
-                    </div>
-                    <div class="level-item has-text-centered">
-                        <div>
-                            <p class="heading">Giá trị BOQ</p>
-                            <p class="title">0</p>
-                        </div>
-                    </div>
-                    <div class="level-item has-text-centered">
-                        <div>
-                            <p class="heading">Đã thanh toán</p>
-                            <p class="title">{{comma(sum_payments)}}</p>
-                        </div>
-                    </div>                
-                </div>
-                <hr>
-                <div class="content">
-                    <h3 class="title">Danh sách đơn hàng</h3>
-                    <table class="table is-striped is-hoverable">
-                        <tbody>
-                            <tr>
-                                <th style="width: 50px;">#</th>
-                                <th style="width: 250px">Tên</th>
-                                <th style="width: 125px">Ngày ký</th>
-                                <th>Nhà cung cấp</th>
-                                <th style="width: 175px">Giá trị đơn hàng</th>
-                                <th style="width: 175px">Giá trị thanh toán</th>
-                                <th style="width: 100px">Ghi chú</th>
-                            </tr>
-                            <router-link tag="tr" v-for="(invoice, index) in invoices" :key="index" :to="{'name': 'invoice.show', 'params': {'id': invoice.id}}">
-                                <td><b>{{index + 1}}</b></td>
-                                <td>{{invoice.name}}</td>
-                                <td><b>{{invoice.signed_at}}</b></td>
-                                <td>{{ $store.getters.getProviderById(invoice.provider_id).name}}</td>
-                                <td>{{comma(invoice.total * 1.1)}}</td>
-                                <td>{{comma(invoice.payment_total)}}</td>
-                                <td></td>
-                            </router-link>
-                        </tbody>
+                        <hr>
+                        <div class="content">
+                            <h3 class="title">Danh sách đơn hàng</h3>
+                            <table class="table is-striped is-hoverable">
+                                <tbody>
+                                    <tr>
+                                        <th style="width: 50px;">#</th>
+                                        <th style="width: 250px">Tên</th>
+                                        <th style="width: 125px">Ngày ký</th>
+                                        <th>Nhà cung cấp</th>
+                                        <th style="width: 175px">Giá trị đơn hàng</th>
+                                        <th style="width: 175px">Giá trị thanh toán</th>
+                                        <th style="width: 100px">Ghi chú</th>
+                                    </tr>
+                                    <tr v-for="(invoice, index) in invoices" :key="index" >
+                                        <td><b>{{index + 1}}</b></td>
+                                        <td><router-link :to="{'name': 'invoice.show', 'params': {'id': invoice.id}}">{{invoice.name}}</router-link></td>
+                                        <td><b>{{invoice.signed_at}}</b></td>
+                                        <td>{{ $store.getters.getProviderById(invoice.provider_id).name}}</td>
+                                        <td>{{comma(invoice.total * 1.1)}}</td>
+                                        <td>{{comma(invoice.payment_total)}}</td>
+                                        <td></td>
+                                    </tr>
+                                </tbody>
 
-                    </table>
-                </div>
-            </div>
-            
-        </section>
+                            </table>
+                        </div>
+                    </div>
+                </article>               
+            </section>
+        </div>
     </transition>
 </template>
 
@@ -90,23 +94,21 @@ export default {
         },
         sum_payments() {
             return this.invoices.reduce( (sum, invoice) => sum += parseFloat(invoice.payment_total), 0);
+        },
+        pageMeta() {
+            return {
+                'title': `Công trình ${this.work.name}`,
+                'description': this.work.description,
+                'background': this.work.image_cover,
+                'isBigHero': true,
+            }
         }
     },
     
     asyncComputed: {
         work: {
             get() {
-                return this.$store.dispatch("getWork", this.$route.params.id).then( work => {
-                    
-                    this.$store.dispatch("setPageMeta", {                        
-                        'isBigHero': true,
-                        'title': `Công trình ${work.name}`,
-                        'description': work.description,
-                        'background': work.image_cover,                
-                    });
-                    
-                    return work;
-                });
+                return this.$store.dispatch("getWork", {'work_id': this.$route.params.id});
             },
             default: false,
             
