@@ -11,6 +11,7 @@ class Payment extends Model
         'updated_at',
         'paid_on',
     ];
+    protected $withCount = ['notes'];
 
     public function invoice()
     {

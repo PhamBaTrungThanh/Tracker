@@ -18,6 +18,13 @@ class PaymentController extends Controller
      */
     public function index(Request $request)
     {
+        $payments = Payment::when($request->filled('not_in'), function($query) use ($request) {
+            $not_in_array = explode(",", $request->query('not_in'));
+            return $query->whereNotIn('id', $not_in_array);
+        })->when($request->filled('invoice_id'), function($query) use ($request) {
+            return $query->where('invoice_id', $request->query('invoice_id'));
+        })->get();
+        return PaymentResource::collection($payments);
     }
     public function archive(Request $request)
     {
@@ -89,7 +96,7 @@ class PaymentController extends Controller
      */
     public function show(Payment $payment)
     {
-        $payment->loadMissing(['invoice', 'notes', 'notes.actor', 'creator']);
+        $payment->loadMissing(['notes', 'notes.actor', 'creator']);
         $notes = [];
         foreach ($payment->notes as $note) {
             $notes[] = [
@@ -102,22 +109,11 @@ class PaymentController extends Controller
                 'created_at' => $note->created_at->format('d/m/Y'),
             ];
         }
-        return response()->json([
-            "name" => $payment->name,
-            "id" => $payment->id,
-            "paid_on" => $payment->paid_on->format('d/m/Y'),
-            "amount" => $payment->amount,
-            "method" => $payment->method,
-            "creator" => [
-                "id" => $payment->creator->id,
-                "name" => $payment->creator->name,
+        return (new PaymentResource($payment))->additional([
+            'extra' => [
+                'creator' => $payment->creator,
+                'notes' => $notes,
             ],
-            "invoice" => [
-                "id" => $payment->invoice->id,
-                "name" => $payment->invoice->name,
-            ],
-            "content" => $payment->content,
-            "notes" => $notes,
         ]);
     }
 

@@ -20,7 +20,8 @@ class WorkController extends Controller
 {
     public function index()
     {
-        return WorkResource::collection(Work::all());
+        $works = Work::withCount(['invoices', 'contracts'])->get();
+        return WorkResource::collection($works);
         
     }
     public function store(Request $request)

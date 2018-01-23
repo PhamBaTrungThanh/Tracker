@@ -24,6 +24,7 @@ class Invoice extends Model
         'updated_at',
         'signed_at',
     ];
+    protected $withCount = ['payments', 'receives'];
     public function provider()
     {
         return $this->belongsTo(Provider::class);

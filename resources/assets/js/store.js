@@ -58,7 +58,10 @@ const store = new Vuex.Store({
         getInvoiceById: (state) => (id) => {
             return state.invoices.find( i => i.id === parseInt(id));
         },
-        findRelatedInvoice: (state) => ({parent_id, parent_name}) => {
+        getPaymentById: (state) => (id) => {
+            return state.payments.find( p => p.id === parseInt(id));
+        },
+        findRelatedInvoices: (state) => ({parent_id, parent_name}) => {
             
             const _t = state.invoices.reduce( (invoices, invoice) => {
                 
@@ -70,31 +73,21 @@ const store = new Vuex.Store({
             }, [] );
             
             return _t;
+        },
+        findRelatedPayments: (state) => (invoice_id) => {
+            const _p = state.payments.reduce( (payments, payment) => {
+                if (payment.invoice_id === parseInt(invoice_id)) {
+                    payments.push(payment);
+                }
+                return payments;
+            }, []);
+            return _p;
         }
     },
     actions: {
-        setWorkId(context, work_id) {
-            context.commit('SET_CURRENT_WORK_ID', work_id);
-            if (context.state.currentWork.id !== work_id) {
-                context.dispatch('httpGetWork', work_id);
-            }
-        },
-        setPageMeta(context, meta) {
-            context.commit('SET_CURRENT_PAGE_META', meta);
-        },
-        httpGetWork(context, work_id) {
-            this._vm.axios.get(`work/${work_id}`).then( response => {
-                context.commit('SET_CURRENT_WORK', response.data.data);
-            });
-        },
-        httpGetWorks( context ) {
-            return new Promise( resolve => {
-                this._vm.axios.get(`work`).then( response => {
-                    context.commit('SET_WORKS', response.data.data);
-                    resolve(response.data.data);
-                });
-            });
-        },
+
+        /* QUERY SINGLE INSTANCE */
+
         httpGetInvoice( {commit}, id ) {
             return new Promise( resolve => {
                 this._vm.axios.get(`invoice/${id}`).then( response => {
@@ -103,33 +96,77 @@ const store = new Vuex.Store({
                 });
             });
         },
-        httpGetInvoices( {commit} , params = {}) {
+        httpGetPayment( {commit, getters}, id) {
             return new Promise( resolve => {
-                this._vm.axios.get(`invoice`, {
-                    'params': params,
-                }).then( response => {
-                    if (response.data.data) {
-                        commit('ADD_INVOICES', response.data.data);
-                    }
-                    resolve(response.data.data);
+                this._vm.axios.get(`payment/${id}`).then( response => {
+                    commit('STORE_PAYMENT', response.data);
+                    resolve(getters.getPaymentById(response.data.data.id));
                 });
-            })
-
-        },
-        httpGetProviders(context) {
-            this._vm.axios.get(`provider`).then( response => {
-                context.commit('SET_PROVIDERS', response.data.data);
             });
         },
         httpGetUser(context, _with) {
             this._vm.axios.get('user').then( response => {
-                context.commit('SET_USER', response.data.data);
+                context.commit('STORE_USER', response.data.data);
                 
             }).catch( error => {
                 console.log(error)
                 this._vm.$router.push("login");
             });
         },
+        
+        /* QUERY MUTIPLE INSTANCE */
+
+        httpGetWorks( context ) {
+            return new Promise( resolve => {
+                this._vm.axios.get(`work`).then( response => {
+                    context.commit('STORE_MUTIPLE_WORKS', response.data.data);
+                    resolve(response.data.data);
+                });
+            });
+        },
+
+        httpGetInvoices( {commit} , params = {}) {
+            return new Promise( resolve => {
+                this._vm.axios.get(`invoice`, {
+                    'params': params,
+                }).then( response => {
+                    if (response.data.data) {
+                        if (response.data.data.length === 1) {
+                            commit('STORE_INVOICE', response.data.data);
+                        } else {
+                            commit('STORE_MUTIPLE_INVOICES', response.data.data);
+                        }
+                        
+                    }
+                    resolve(response.data.data);
+                });
+            })
+        },
+        httpGetPayments( {commit}, params = {}) {
+            return new Promise( resolve => {
+                this._vm.axios.get(`payment`, {
+                    'params': params,
+                }).then( response => {
+                    if (response.data.data) {
+                        if (response.data.data.length === 1) {
+                            commit('STORE_PAYMENT', response.data.data);
+                        } else {
+                            commit('STORE_MUTIPLE_PAYMENTS', response.data.data);
+                        }
+                        
+                    }
+
+                    resolve(response.data.data);
+                });
+            })
+        },
+        httpGetProviders(context) {
+            this._vm.axios.get(`provider`).then( response => {
+                context.commit('STORE_MUTIPLE_PROVIDERS', response.data.data);
+            });
+        },
+
+        /* PROMISE BASE GETTERS */
         getWork( context, {work_id} ) {
 
             let work = context.getters.getWorkById(work_id);
@@ -147,14 +184,44 @@ const store = new Vuex.Store({
             if (invoice) {
                 return Promise.resolve(invoice);
             } else {
-                return dispatch("httpGetInvoice", invoice_id).then( result => {
-                    return result;
-                });
+                return dispatch("httpGetInvoice", invoice_id);
             }
         }, 
-
+        getPayment({state, dispatch, getters}, {payment_id, fetchNew = false}) {
+            let payment = false;
+            if (!fetchNew) {
+                payment = getters.getPaymentById(payment_id);
+            }
+            if (payment) {
+                return Promise.resolve(payment);
+            } else {
+                return dispatch("httpGetPayment", payment_id);
+            }
+        },
+        getRelatedPayments( { state, dispatch, getters }, {invoice_id, expect}) {
+            let returner = getters.findRelatedPayments(invoice_id);
+            
+            if (returner.length === expect) {
+                return Promise.resolve(returner);
+            }
+            else {
+                const inHand = returner.reduce( (ids, payment) => {
+                    ids.push(payment.id);
+                    return ids;
+                }, []);
+                
+                const params = {
+                    'not_in': inHand.join(","),
+                    'invoice_id': invoice_id,
+                };
+                return dispatch("httpGetPayments", params).then( result => {
+                     return returner.push(...result);
+                });
+                
+            }
+        },
         getRelatedInvoices( { state, dispatch, getters }, {parent_name, parent_id, expect}) {
-            let returner = getters.findRelatedInvoice({
+            let returner = getters.findRelatedInvoices({
                 'parent_id': parent_id,
                 'parent_name': parent_name,
             });
@@ -191,35 +258,38 @@ const store = new Vuex.Store({
         REMOVE_AUTHORIZATION_TOKEN(state) {
             state.authorizationToken = '';
         },
-        SET_USER(state, userObject) {
+        STORE_USER(state, userObject) {
             state.user = userObject;
         },
         UPDATE_CATEGORY_LIST(state, list) {
             state.categoryList = list;
         },
-        SET_WORKS( state, works) {
+        STORE_MUTIPLE_WORKS( state, works) {
             state.works = works;
         },
-        SET_PROVIDERS(state, providers) {
+        STORE_MUTIPLE_PROVIDERS(state, providers) {
             state.providers = providers;
         },
         STORE_INVOICE(state, invoice) {
             state.invoices.push(invoice);
         },
-        ADD_INVOICES( state, invoices) {
+        STORE_PAYMENT(state, data) {
+            let payment = data.data;
+            if (data.extra) {
+                payment = Object.assign({}, payment, data.extra);
+            }
+            const _i = state.payments.findIndex(p => p.id === payment.id);
+            if (_i === -1) {
+                state.payments.push(payment);
+            } else {
+                this.$set(state.payments, _i, payment);
+            }
+        },
+        STORE_MUTIPLE_INVOICES( state, invoices) {
             state.invoices.push(...invoices);
         },
-        SET_CURRENT_WORK (state, work) {
-            state.currentWork = work;
-        },
-        SET_CURRENT_WORK_ID (state, work_id) {
-            state.currentWorkId = work_id;
-        },
-        RELOAD_WORK( state ) {
-            state.reload = "reload_work";
-        },
-        RELOAD_WORK_COMPLETE ( state ) {
-            state.reload = "false";
+        STORE_MUTIPLE_PAYMENTS(state, payments) {
+            state.payments.push(...payments);
         },
         SET_CURRENT_PAGE_META ( state, meta) {
             state.page = Object.assign({}, state.page, meta);

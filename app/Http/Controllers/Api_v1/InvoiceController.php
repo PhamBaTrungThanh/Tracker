@@ -40,7 +40,9 @@ class InvoiceController extends Controller
             $invoices = Invoice::where([
                 ['work_id', '=', $request->query('work_id')],
                 ['provider_id', '=', $request->query('provider_id')]
-            ])->orderBy('signed_at')->get();
+            ])
+            ->orderBy('signed_at')
+            ->get();
         }
 
         return InvoiceResource::collection($invoices);
@@ -152,7 +154,8 @@ class InvoiceController extends Controller
      */
     public function show(Invoice $invoice, Request $request)
     {
-
+        
+        /*
         $invoice->load(['work', 'provider', 'trackers', 'trackers.material','trackers.material.boq', 'payments', 'receives', 'trackers.receives']);
         $received = $invoice->receives->map( function($receive) {
 
@@ -181,6 +184,8 @@ class InvoiceController extends Controller
             'provider' => new ProviderResource($invoice->provider),
             'trackers' => TrackerResource::collection($invoice->trackers),
         ]]);
+        */
+        return (new InvoiceResource($invoice));        
     }
 
     /**

@@ -21,13 +21,12 @@ class InvoiceResource extends Resource
             "signed_at" => $this->signed_at->format('d/m/Y'),
             "status" => $this->status,
             "total" => $this->total,
+            "type" => "invoice",
             "payment_total" => $this->payment_total,
             "work_id" => $this->work_id,
             "provider_id" => $this->provider_id,
-            "work" => new WorkResource($this->whenLoaded('work')),
-            "provider" => new ProviderResource($this->whenLoaded('provider')),
-            "receives" => ReceiveResource::collection($this->whenLoaded('receives')),
-            "payments" => PaymentResource::collection($this->whenLoaded('payments')),
+            "count_payments" => $this->payments_count,
+            "count_receives" => $this->receives_count,
         ];
     }
 }
