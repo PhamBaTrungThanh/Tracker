@@ -44,7 +44,7 @@
                             </div>
                         </div>
                         <a name="payments"></a>
-                        <div class="columns" v-if="payments">
+                        <div class="columns">
                             <div class="column">
                                 <div class="box">
                                     <p class="title is-3">Thanh toán</p>
@@ -140,6 +140,7 @@ export default {
             default: false,
             get() {
                 return this.$store.dispatch("getRelatedPayments", {'invoice_id': this.invoice.id, 'expect': this.invoice.count_payments}).then( result => {
+                    console.log("payu");
                     this.initializePaymentsChart(result);
                     return result;
                 });

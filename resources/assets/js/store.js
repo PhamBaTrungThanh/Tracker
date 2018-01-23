@@ -149,7 +149,7 @@ const store = new Vuex.Store({
                 }).then( response => {
                     if (response.data.data) {
                         if (response.data.data.length === 1) {
-                            commit('STORE_PAYMENT', response.data.data);
+                            commit('STORE_PAYMENT', response.data);
                         } else {
                             commit('STORE_MUTIPLE_PAYMENTS', response.data.data);
                         }
@@ -275,15 +275,22 @@ const store = new Vuex.Store({
         },
         STORE_PAYMENT(state, data) {
             let payment = data.data;
+            
             if (data.extra) {
                 payment = Object.assign({}, payment, data.extra);
             }
-            const _i = state.payments.findIndex(p => p.id === payment.id);
-            if (_i === -1) {
+            
+            if (state.payments.length === 0) {
                 state.payments.push(payment);
             } else {
-                this.$set(state.payments, _i, payment);
+                const _i = state.payments.findIndex(p => p.id === payment.id);
+                if (_i === -1) {
+                    state.payments.push(payment);
+                } else {
+                    Vue.set(state.payments, _i, payment);
+                }
             }
+
         },
         STORE_MUTIPLE_INVOICES( state, invoices) {
             state.invoices.push(...invoices);

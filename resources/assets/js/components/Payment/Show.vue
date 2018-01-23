@@ -4,7 +4,7 @@
             <hero-header :page="pageMeta" />
             <div class="navbar has-shadow">
                 <div class="container">
-                    <div class="navbar-tabs">
+                    <div class="navbar-tabs" v-if="invoice">
                         <router-link :to="{'name': 'invoice.show', 'params': {'id': invoice.id}}" class="navbar-item is-tab">
                             <span class="icon">
                                 <i class="mdi mdi-chevron-left"></i>
