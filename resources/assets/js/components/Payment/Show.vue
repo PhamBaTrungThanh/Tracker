@@ -129,7 +129,28 @@
                             </div>
                         </div>
                     </div>
-
+                    <div class="columns">
+                        <div class="column">
+                            <div class="field is-grouped is-grouped-centered">
+                                <div class="control">
+                                    <button class="button is-danger" @click="deletePayment">
+                                        <span class="icon">
+                                            <span class="mdi mdi-delete"></span>
+                                        </span>
+                                        <span class="">Xóa thanh toán</span>
+                                    </button>
+                                </div>
+                                <div class="control">
+                                    <router-link class="button is-outlined" :to="{'name': 'invoice.show', 'params': {'id': invoice.id}}">
+                                        <span class="icon">
+                                            <span class="mdi mdi-chevron-left"></span>
+                                        </span>
+                                        <span class="">Quay lại</span>
+                                    </router-link>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
             </section>
@@ -168,6 +189,30 @@ export default {
             get() {
                 return this.$store.dispatch("getInvoice", {invoice_id: this.payment.invoice_id});
             }
+        }
+    },
+    methods: {
+        deletePayment() {
+            this.swal({
+                'title': "Xác nhận xóa!",
+                'text': "Bạn có chắc chắc xóa thanh toán này? Hành động này sẽ không thể khôi phục.",
+                'type': "error",
+                'confirmButtonClass': "button is-danger",
+            }).then( result => {
+                if (result.value) {
+                    this.axios.delete(`payment/${this.payment.id}`).then(response => {
+                        this.swal({
+                            'title': "Đã xóa",
+                            'text': "Thanh toán đã được xóa",
+                            'type': "success",
+                            'timer': 3000
+                        }).then( response => {
+                            this.$store.dispatch("removePaymentsById", [this.payment.id]);
+                            this.$store.dispatch("updateInvoice", response.data.affected.invoice);
+                        });
+                    });
+                }
+            });
         }
     }
 

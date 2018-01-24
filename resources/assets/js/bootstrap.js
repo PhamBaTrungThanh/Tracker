@@ -3,9 +3,13 @@ import axios from 'axios';
 import Chart from 'chart.js';
 import concat from 'unique-concat';
 import type from 'type-detect';
+import swal from 'sweetalert2';
 
+/**
+ * SETUP
+ */
 
-const App = {
+const App = Object.freeze({
     'version': '0.2.3',
     'name': 'MEC Tracker',
     'helpers': {
@@ -54,8 +58,20 @@ const App = {
 
             return `${split_date[2]}-${split_date[1]}-${split_date[0]}`;
         },
+        'swal': options => {
+            const defaults = {
+                'buttonsStyling': false,
+                'cancelButtonClass': "button",
+                'cancelButtonText': "Hủy",
+                'confirmButtonClass': "button is-primary",
+                'confirmButtonText': "Xác nhận",
+                'customClass': "box",
+            };
+            const merged = Object.assign({}, defaults, options);
+            return new swal(merged);
+        },
     }
-}
+});
 export const capitalizeFirstChar = App.helpers.capitalizeFirstChar;
 export const chartColors = {
 	red: 'rgb(255, 99, 132)',
@@ -86,7 +102,9 @@ export const Tracker = {
                     this.$store.dispatch("setPageMeta", this.$data.pageMeta);
                 }                
             },
-
+            methods: {
+                swal: App.helpers.swal,
+            }
         })
         // Custom functions
         

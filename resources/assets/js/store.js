@@ -148,12 +148,7 @@ const store = new Vuex.Store({
                     'params': params,
                 }).then( response => {
                     if (response.data.data) {
-                        if (response.data.data.length === 1) {
-                            commit('STORE_PAYMENT', response.data);
-                        } else {
-                            commit('STORE_MUTIPLE_PAYMENTS', response.data.data);
-                        }
-                        
+                        commit('STORE_MUTIPLE_PAYMENTS', response.data.data);                       
                     }
 
                     resolve(response.data.data);
@@ -249,6 +244,19 @@ const store = new Vuex.Store({
         },
         getRelatedContracts() {
             return false;
+        },
+        /* NEW STATE */
+        newPayment( context, payment ) {
+            context.commit("NEW_PAYMENT", payment);
+        },
+        /* UPDATE STATE */
+        updateInvoice( context, invoice ) {
+            context.commit("UPDATE_INVOICE", invoice);
+        },
+
+        /* DELETE STATE */
+        removePaymentsById(context, ids) {
+            context.commit("REMOVE_PAYMENTS", ids);
         }
     },
     mutations: {
@@ -258,24 +266,62 @@ const store = new Vuex.Store({
         REMOVE_AUTHORIZATION_TOKEN(state) {
             state.authorizationToken = '';
         },
+         // -- user state
+        /**
+         * Store single user instance
+         * @param {*} state $store global state
+         * @param {*} userObject 
+         */
         STORE_USER(state, userObject) {
             state.user = userObject;
         },
         UPDATE_CATEGORY_LIST(state, list) {
             state.categoryList = list;
         },
+
+         // -- works state
+        /**
+         * Store mutiple work instances
+         * @param {*} state $store global state
+         * @param {*} works work instances
+         */
         STORE_MUTIPLE_WORKS( state, works) {
             state.works = works;
         },
+
         STORE_MUTIPLE_PROVIDERS(state, providers) {
             state.providers = providers;
         },
+         // -- invoices state
         STORE_INVOICE(state, invoice) {
             state.invoices.push(invoice);
         },
+        STORE_MUTIPLE_INVOICES( state, invoices) {
+            state.invoices.push(...invoices);
+        },
+        UPDATE_INVOICE(state, invoice) {
+   
+            if (state.invoices.length === 0) {
+                state.invoices.push(invoice);
+            } else {
+                const _i = state.invoices.findIndex(p => p.id === invoice.id);
+                if (_i === -1) {
+                    state.invoices.push(invoice);
+                } else {
+                    Vue.set(state.invoices, _i, invoice);
+                }
+            }
+        },
+        // -- payments state
+
+        /**
+         * Store detailed payment 
+         * from REST GET `payment/${id}`
+         * @param {*} state 
+         * @param {*} data 
+         */
         STORE_PAYMENT(state, data) {
             let payment = data.data;
-            
             if (data.extra) {
                 payment = Object.assign({}, payment, data.extra);
             }
@@ -292,11 +338,18 @@ const store = new Vuex.Store({
             }
 
         },
-        STORE_MUTIPLE_INVOICES( state, invoices) {
-            state.invoices.push(...invoices);
+        NEW_PAYMENT(state, payment) {
+            state.payments.push(payment);
         },
         STORE_MUTIPLE_PAYMENTS(state, payments) {
             state.payments.push(...payments);
+        },
+        REMOVE_PAYMENTS(state, ids) {
+            if (ids instanceof Array) {
+                ids.forEach(id => {
+                    Vue.delete(state.payments, id);
+                });
+            }
         },
         SET_CURRENT_PAGE_META ( state, meta) {
             state.page = Object.assign({}, state.page, meta);

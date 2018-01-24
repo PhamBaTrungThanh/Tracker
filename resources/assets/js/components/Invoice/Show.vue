@@ -44,10 +44,82 @@
                             </div>
                         </div>
                         <a name="payments"></a>
+                        <div class="columns" >
+                            <div class="column">
+                                <div class="box">
+                                    <nav class="level">
+                                        <div class="level-left">
+                                            <div class="level-item">
+                                                <p class="title is-4">Thanh toán</p>
+                                            </div>
+                                        </div>
+                                        <div class="level-right">
+                                            <div class="level-item">
+                                                <router-link :to="{'name': 'payment.create', 'query': {'index': payments.length + 1, 'invoice_id': invoice.id}}" class="button is-link" v-if="user.can_add_payment">
+                                                    <span class="icon">
+                                                        <i class="mdi mdi-credit-card-plus"></i>
+                                                    </span>
+                                                    <span>Thêm thanh toán</span>
+                                                </router-link>
+                                            </div>
+                                        </div>
+                                    </nav>
+                                    
+                                    <table class="table is-striped is-hoverable" v-if="payments">
+                                        <tbody>
+                                            <tr>
+                                                <th style="width: 50px">#</th>
+                                                <th style="width: 175px">Tên</th>
+                                                <th style="width: 110px">Ngày</th>
+                                                <th style="width: 110px">Hình thức</th>
+                                                <th>Số tiền</th>
+                                                <th>Nội dung</th>
+                                                <th>Ghi chú</th>
+                                            </tr>
+                                            <tr v-for="(payment, index) in payments" :key="payment.id">
+                                                <td><b>{{index + 1}}</b></td>
+                                                <td><router-link :to="{'name': 'payment.show', 'params': {'id': payment.id}}">{{payment.name}}</router-link></td>
+                                                <td>{{payment.paid_on}}</td>
+                                                <td>{{__(payment.method)}}</td>
+                                                <td>{{comma(payment.amount)}}</td>
+                                                <td>{{payment.content}}</td>
+                                                <td><span v-if="payment.count_notes > 0">{{payment.count_notes}} ghi chú</span></td>
+                                            </tr>
+                                            <tr>
+                                                <td colspan="4"><span class="is-size-5">Tổng cộng</span></td>
+                                                <td colspan="3">{{comma(sum_payment)}}</td>
+                                            </tr>
+                                            <tr>
+                                                <td colspan="4"><span class="is-size-5"><b>Chưa thanh toán</b></span></td>
+                                                <td colspan="3">{{comma(invoice.total * 1.1 - sum_payment)}}</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                        <a name="receives"></a>
                         <div class="columns">
                             <div class="column">
                                 <div class="box">
-                                    <p class="title is-3">Thanh toán</p>
+                                    <nav class="level">
+                                        <div class="level-left">
+                                            <div class="level-item">
+                                                <p class="title is-4">Nhận hàng</p>
+                                            </div>
+                                        </div>
+                                        <div class="level-right">
+                                            <div class="level-item">
+                                                <router-link :to="{'name': 'payment.create'}" class="button is-link">
+                                                    <span class="icon">
+                                                        <i class="mdi mdi-credit-card-plus"></i>
+                                                    </span>
+                                                    <span>Thêm thanh toán</span>
+                                                </router-link>
+                                            </div>
+                                        </div>
+                                    </nav>
+                                    
                                     <table class="table is-striped is-hoverable">
                                         <tbody>
                                             <tr>
@@ -79,12 +151,6 @@
                                         </tbody>
                                     </table>
                                 </div>
-                            </div>
-                        </div>
-                        <a name="receives"></a>
-                        <div class="columns">
-                            <div class="column">
-
                             </div>
                         </div>
                     </div>
@@ -119,7 +185,9 @@ export default {
                 return 0;
             }
         },
-        
+        user() {
+            return this.$store.state.user;
+        }
     },
     asyncComputed: {
         invoice: {
@@ -140,7 +208,6 @@ export default {
             default: false,
             get() {
                 return this.$store.dispatch("getRelatedPayments", {'invoice_id': this.invoice.id, 'expect': this.invoice.count_payments}).then( result => {
-                    console.log("payu");
                     this.initializePaymentsChart(result);
                     return result;
                 });

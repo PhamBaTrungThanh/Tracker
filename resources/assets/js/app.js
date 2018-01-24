@@ -4,15 +4,11 @@ import Vue from 'vue';
 import VueRouter from 'vue-router';
 import Vuex from 'vuex';
 
-import VueSwal from 'vue-swal';
+
 import Treeselect from '@riophae/vue-treeselect'
 import AsyncComputed from 'vue-async-computed'
 import VeeValidate from 'vee-validate';
 import Cleave from 'vue-cleave-component';
-import vueTopprogress from 'vue-top-progress';
-
-
-
 
 import routes from './routes';
 import store from './store';
@@ -21,15 +17,16 @@ import { Tracker } from './bootstrap';
 import Submit from "./resources/Submit.vue";
 import Spinner from "./resources/Spinner.vue";
 import HeroHeader from "./resources/HeroHeader.vue";
+
 Vue.use(VueRouter);
 Vue.use(Vuex);
-Vue.use(VueSwal);
+
 Vue.use(AsyncComputed, {
     useRawError: true,
 });
 Vue.use(VeeValidate);
 Vue.use(Cleave);
-Vue.use(vueTopprogress);
+
 
 Vue.use(Tracker);
 

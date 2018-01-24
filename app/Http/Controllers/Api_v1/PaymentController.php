@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api_v1;
 use App\Models\Payment;
 
 use App\Http\Resources\PaymentResource;
+use App\Http\Resources\InvoiceResource;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
@@ -74,10 +75,10 @@ class PaymentController extends Controller
         $payment->amount = $request->input('amount');
         $payment->method = $request->input('method');
         $payment->invoice_id = $request->input('invoice_id');
-        $payment->created_by = $request->input('user_id');
+        $payment->created_by = $request->user()->id;
         $payment->save();
         $payment->notes()->create([
-            'content' => $request->input('content'),
+            'content' => "Tạo thanh toán",
             'action' => 'create',
             'actor_id' => $request->user()->id,
         ]);
@@ -85,6 +86,14 @@ class PaymentController extends Controller
         $invoice = $payment->invoice;
         $invoice->payment_total += $payment->amount;
         $invoice->save();
+
+        return response()->json([
+            'message' => 'Success',
+            'created' => new PaymentResource($payment),
+            'affected' => [
+                'invoice' => new InvoiceResource($invoice),
+            ],
+        ]);
 
     }
 
@@ -175,6 +184,15 @@ class PaymentController extends Controller
      */
     public function destroy(Payment $payment)
     {
-        //
+        $invoice = $payment->invoice;
+        $invoice->decrement('payment_total', $payment->amount);
+
+        $payment->delete();
+        return response()->json([
+            'message' => 'success',
+            'affected' => [
+                'invoice' => new InvoiceResource($invoice),
+            ],
+        ]);
     }
 }
