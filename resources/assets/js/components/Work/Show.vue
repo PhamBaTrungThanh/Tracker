@@ -130,12 +130,7 @@ export default {
         invoices: {
             lazy: true,
             get() {
-                const query = {
-                    parent_id: this.$route.params.id,
-                    parent_name: 'work',
-                    expect: this.work.count_invoices,
-                }
-                return this.$store.dispatch("getRelatedInvoices", query).then( result => {
+                return this.$store.dispatch("getRelatedInvoices", {'work_id': this.work.id, 'expect': this.work.invoices_count}).then( result => {
                     return this.sortInvoices(result) 
                 });    
             },
@@ -151,14 +146,7 @@ export default {
                 name: "work.report",
             });
         },
-        showInvoice(invoice_id) {
-            this.$router.push({
-                name: "invoice.show",
-                params: {
-                    id: invoice_id,
-                }
-            })
-        },
+
         newInvoice() {
             this.$router.push({
                 name: "invoice.create",
@@ -166,15 +154,6 @@ export default {
                     work_id: this.work.id,
                 }
             });
-        },
-        updatePageMeta(work) {
-            const page = {
-                'title': `Công trình ${work.name}`,
-                'description': work.description,
-                'background': work.image_cover,
-                'isBigHero': true,
-            }
-            this.$store.dispatch("setPageMeta", page);
         },
 
         sortInvoices($_invoices) {
@@ -186,10 +165,10 @@ export default {
                 });
                 mapped.sort( (a, b) => {
                     if (a.value > b.value) {
-                        return 1;
+                        return -1;
                     }
                     if (a.value < b.value) {
-                        return -1;
+                        return 1;
                     }
                     return 0;
                 });

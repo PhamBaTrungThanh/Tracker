@@ -20,10 +20,10 @@ Route::prefix('v1')->middleware('auth:api')->namespace('Api_v1')->group(function
 
     Route::Resource('/provider', 'ProviderController');
     Route::Resource('/work', 'WorkController');
-    Route::Resource('/category', 'CategoryController');
     Route::resource('/material', 'MaterialController');
     Route::resource('/invoice', 'InvoiceController');
-    Route::resource('/payment', 'PaymentController');
+    Route::resource('/payment', 'PaymentController');  
     Route::post('/payment/archive', 'PaymentController@archive');
+    Route::resource('/tracker', 'TrackerController');
     Route::resource('/receive', 'ReceiveController');
 });

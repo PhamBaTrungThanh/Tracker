@@ -25,8 +25,9 @@ class InvoiceResource extends Resource
             "payment_total" => $this->payment_total,
             "work_id" => $this->work_id,
             "provider_id" => $this->provider_id,
-            "count_payments" => $this->payments_count,
-            "count_receives" => $this->receives_count,
+            "payments_count" => $this->payments_count,
+            "receives_count" => $this->receives_count,
+            "trackers_count" => $this->trackers_count,
         ];
     }
 }

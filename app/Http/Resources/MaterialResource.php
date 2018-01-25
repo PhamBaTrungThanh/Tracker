@@ -31,7 +31,6 @@ class MaterialResource extends Resource
             'total_unit' => $this->total_unit,
             'total_sum' => $this->total_price,
             'received_unit' => $this->received_unit,
-            'invoice_trackers' => $this->when($this->invoice_trackers, $this->invoice_trackers)
         ];
     }
 }

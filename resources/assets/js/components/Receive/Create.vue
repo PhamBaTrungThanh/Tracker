@@ -77,6 +77,45 @@
                                         </div>
                                     </div>
                                 </div>
+                                <div class="field is-horizontal">
+                                    <div class="field-label is-normal">
+                                        <label for="" class="label">Nhận</label>
+                                    </div>
+                                    <div class="field-body">
+                                        <div class="field">
+                                            <div class="control">
+                                                <table class="table is-striped is-bordered is-hoverable">
+                                                    <thead>
+                                                        <tr>
+                                                            <th>#</th>
+                                                            <th>Tên</th>
+                                                            <th>Tổng</th>
+                                                            <th>Nhận đợt này</th>
+                                                            <th>Còn lại</th>
+                                                        </tr>
+                                                    </thead>
+
+                                                    <tbody v-if="trackers && materials">
+                                                        <tr v-for="(tracker, index) in trackers" :key="index">
+                                                            <td>{{index + 1}}</td>
+                                                            <td>{{getMaterialById(tracker.material_id).name}}</td>
+                                                            <td>{{tracker.unit}}</td>
+                                                            <td></td>            
+                                                            <td></td>                                                     
+                                                        </tr>
+                                                    </tbody>
+                                                    <tbody v-else>
+                                                        <tr>
+                                                            <td colspan="5">
+                                                                <p class="subtitle is-5 has-text-centered">Đang tải dữ liệu</p>
+                                                            </td>
+                                                        </tr>
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
                                 <div class="field is-grouped is-grouped-centered">
                                     <div class="control">
                                         <button :class="['button', 'is-link', {'is-loading': onSubmit}]" @click="submitReceive">
@@ -90,6 +129,7 @@
                                         <router-link class="button is-outlined" :to="{'name': 'invoice.show', 'params': {'id': invoice.id}}">Bỏ qua</router-link>
                                     </div>
                                 </div>
+                                
                             </div>
                         </div>
                     </div>
@@ -127,9 +167,23 @@ export default {
             default: false,
             get() {
                 return this.$store.dispatch("getInvoice", {invoice_id: this.$route.query.invoice_id}).then( result => {
-                    this.receive_name = `Nhận hàng đợt ${result.count_receives + 1}`;
+                    this.receive_name = `Nhận hàng đợt ${result.receives_count + 1}`;
                     return result;
                 });
+            }
+        },
+        trackers: {
+            lazy: true, 
+            default: [],
+            get() {
+                return this.$store.dispatch("getRelatedTrackers", {'invoice_id': this.invoice.id, 'expect': this.invoice.trackers_count});
+            }
+        },
+        materials: {
+            lazy: true,
+            default: [],
+            get() {
+                return this.$store.dispatch("guaranteeMaterials", {'material_ids': this.trackers.map( t => t.material_id)});
             }
         }
     },

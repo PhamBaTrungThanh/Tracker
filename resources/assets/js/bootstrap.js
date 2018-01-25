@@ -98,6 +98,14 @@ export const Tracker = {
             },
             methods: {
                 swal: App.helpers.swal,
+                getMaterialById(id) {
+                    if (this.materials) {
+                        const _m = this.materials.find( m => m.id === id);
+                        return _m;
+                    } else {
+                        return false;
+                    }
+                }
             }
         })
         // Custom functions

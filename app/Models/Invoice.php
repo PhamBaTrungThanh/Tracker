@@ -24,7 +24,7 @@ class Invoice extends Model
         'updated_at',
         'signed_at',
     ];
-    protected $withCount = ['payments', 'receives'];
+    protected $withCount = ['payments', 'receives', 'trackers'];
     public function provider()
     {
         return $this->belongsTo(Provider::class);
@@ -46,6 +46,13 @@ class Invoice extends Model
     {
         return $this->hasMany(Receive::class);
     }
-
+    public function getMaterialsAttribute()
+    {
+        $this->loadMissing(['trackers', 'trackers.material']);
+        return $this->trackers->map( function($tracker) {
+            return $tracker->material;
+        });
+        //return $this->belongsToMany(Material::class)->using(Tracker::class);
+    }
 }
 

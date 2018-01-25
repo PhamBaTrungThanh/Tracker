@@ -29,22 +29,17 @@ class InvoiceController extends Controller
      */
     public function index(Request $request)
     {
-        if ($request->query('action') === "more") {
-            $not_in_array = explode(",", $request->query('not_in'));
-            $invoices = Invoice::whereNotIn('id', $not_in_array)
-                                ->where("{$request->query('parent_name')}_id", $request->query('parent_id'))
-                                ->where('type', 'invoice')
-                                ->orderBy('signed_at')
-                                ->get();
-        } else {
-            $invoices = Invoice::where([
-                ['work_id', '=', $request->query('work_id')],
-                ['provider_id', '=', $request->query('provider_id')]
-            ])
-            ->orderBy('signed_at')
-            ->get();
-        }
-
+        
+        $invoices = Invoice::withCount(['trackers', 'payments', 'receives'])
+            ->where('type', 'invoice')
+            ->when($request->filled('not_in'), function($query) use ($request) {
+                $not_in_array = explode(",", $request->query('not_in'));
+                return $query->whereNotIn('id', $not_in_array);
+            })->when($request->filled('work_id'), function($query)  use ($request){
+                return $query->where('work_id', $request->query('work_id'));
+            })->when($request->filled('provider_id'), function($query)  use ($request){
+                return $query->where('provider_id', $request->query('provider_id'));
+            })->get();
         return InvoiceResource::collection($invoices);
     }
 

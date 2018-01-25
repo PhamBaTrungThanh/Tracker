@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api_v1;
 
 use App\Models\Tracker;
 use Illuminate\Http\Request;
+use App\Http\Resources\TrackerResource;
 use App\Http\Controllers\Controller;
 
 class TrackerController extends Controller
@@ -13,9 +14,15 @@ class TrackerController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        //
+        $trackers = Tracker::when($request->filled('not_in'), function($query) use ($request) {
+            $not_in_array = explode(",", $request->query('not_in'));
+            return $query->whereNotIn('id', $not_in_array);
+        })->when($request->filled('invoice_id'), function($query) use ($request) {
+            return $query->where('invoice_id', $request->query('invoice_id'));
+        })->get();
+        return TrackerResource::collection($trackers);
     }
 
     /**

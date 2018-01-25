@@ -6,7 +6,6 @@ import { capitalizeFirstChar } from "./bootstrap";
 
 const store = new Vuex.Store({
     state: {
-        apiBase:`${window.location.protocol}//${window.location.host}/api/v1`,
         user: {},
         passportGrantClient: document.querySelector("meta[name='passport-grant-client']").getAttribute('content'),
         categoryList: {},
@@ -15,15 +14,8 @@ const store = new Vuex.Store({
         invoices: [],
         payments: [],
         receives: [],
-        currentWork: { id: 0},
-        currentWorkId: false,
-        reload: false,
-        page: {
-            description: "",
-            title: "MEC",
-            isBigMeta: false,
-            background: false,
-        },
+        trackers: [],
+        materials: [],
         cleaveOptions: {
             price: {
                 "numeral": true,
@@ -61,13 +53,32 @@ const store = new Vuex.Store({
         getPaymentById: (state) => (id) => {
             return state.payments.find( p => p.id === parseInt(id));
         },
-        findRelatedInvoices: (state) => ({parent_id, parent_name}) => {
+        getMaterialsByIds: (state) => (ids) => {
+            return state.materials.reduce( (materials, material) => {
+                if (ids.indexOf(material.id) !== -1) {
+                    materials.push(material);
+                }
+                return materials;
+            }, []);
+        },
+        findRelatedInvoices: (state) => ({work_id, provider_id}) => {
             
-            const _t = state.invoices.reduce( (invoices, invoice) => {
-                
-                if (invoice[`${parent_name}_id`] === parseInt(parent_id)) {
-                    
-                    invoices.push(invoice);
+            const _t = state.invoices.reduce( (invoices, invoice) => {               
+                if (work_id && provider_id) {
+                    if (invoice.work_id === parseInt(work_id) && invoice.provider_id === parseInt(provider_id)) {
+                        invoices.push(invoice);
+                    }
+                } else {
+                    if (provider_id) {
+                        if (invoice.provider_id === parseInt(provider_id)) {
+                            invoices.push(invoice);
+                        }                    
+                    }
+                    if (work_id) {
+                        if (invoice.work_id === parseInt(work_id)) {
+                            invoices.push(invoice);
+                        }                    
+                    }
                 }
                 return invoices;
             }, [] );
@@ -82,7 +93,34 @@ const store = new Vuex.Store({
                 return payments;
             }, []);
             return _p;
-        }
+        },
+        findRelatedTrackers: (state) => ({invoice_id, material_id}) => {
+            const _t = state.trackers.reduce( (trackers, tracker) => {
+                if (invoice_id) {
+                    if (tracker.invoice_id === parseInt(invoice_id)) {
+                        trackers.push(tracker);
+                    }
+                } else if (material_id) {
+                    if (tracker.material_id === parseInt(material_id)) {
+                        trackers.push(tracker);
+                    }                    
+                }
+
+                return trackers;
+            }, []);
+            return _t;
+        },
+        findMissingMaterialsIds: (state) => (material_ids) => {
+
+            let ids = (material_ids instanceof Array) ? material_ids : [material_ids];
+            for (let i = state.materials.length; i > 0; i--) {
+                let _i = ids.indexOf(state.materials[i]);
+                if (_i !== -1) {
+                    ids.splice(_i, 1);
+                }
+            }
+            return ids;
+        },
     },
     actions: {
 
@@ -155,12 +193,54 @@ const store = new Vuex.Store({
                 });
             })
         },
+        httpGetTrackers( {commit}, params = {}) {
+            return new Promise( resolve => {
+                this._vm.axios.get(`tracker`, {
+                    'params': params,
+                }).then( response => {
+                    if (response.data.data) {
+                        
+                        commit('STORE_MUTIPLE_TRACKERS', response.data.data);                       
+                    }
+
+                    resolve(response.data.data);
+                }).catch( error => {
+                    console.log(error);
+                });
+            })
+        },
+        httpGetMaterials({commit}, params = {}) {
+            return new Promise( resolve => {
+                this._vm.axios.get(`material`, {
+                    'params': params,
+                }).then( response => {
+                    if (response.data.data) {
+                        commit('STORE_MUTIPLE_MATERIALS', response.data.data);                       
+                    }
+                    resolve(response.data.data);
+                });
+            })            
+        },
         httpGetProviders(context) {
             this._vm.axios.get(`provider`).then( response => {
                 context.commit('STORE_MUTIPLE_PROVIDERS', response.data.data);
             });
         },
-
+        /* GUARANTEE EXITS INSTANCES */
+        guaranteeMaterials( {getters, dispatch}, {material_ids} ) {
+            let materials = getters.getMaterialsByIds(material_ids);
+            if (materials.length < material_ids.length) {
+                const missing = getters.findMissingMaterialsIds(material_ids);
+                
+                return dispatch("httpGetMaterials", {
+                    'in': missing.join(","),
+                }).then( result => {
+                    return materials.push(...materials);
+                });
+            } else {
+                return Promise.resolve(materials);
+            }
+        },
         /* PROMISE BASE GETTERS */
         getWork( context, {work_id} ) {
 
@@ -174,7 +254,7 @@ const store = new Vuex.Store({
                 });
             }
         },
-        getInvoice( {state, dispatch, getters}, {invoice_id} ) {
+        getInvoice( {dispatch, getters}, {invoice_id} ) {
             let invoice = getters.getInvoiceById(invoice_id);
             if (invoice) {
                 return Promise.resolve(invoice);
@@ -182,7 +262,7 @@ const store = new Vuex.Store({
                 return dispatch("httpGetInvoice", invoice_id);
             }
         }, 
-        getPayment({state, dispatch, getters}, {payment_id, fetchNew = false}) {
+        getPayment({dispatch, getters}, {payment_id, fetchNew = false}) {
             let payment = false;
             if (!fetchNew) {
                 payment = getters.getPaymentById(payment_id);
@@ -193,7 +273,7 @@ const store = new Vuex.Store({
                 return dispatch("httpGetPayment", payment_id);
             }
         },
-        getRelatedPayments( { state, dispatch, getters }, {invoice_id, expect}) {
+        getRelatedPayments( { dispatch, getters }, {invoice_id, expect}) {
             let returner = getters.findRelatedPayments(invoice_id);
             
             if (returner.length === expect) {
@@ -215,12 +295,12 @@ const store = new Vuex.Store({
                 
             }
         },
-        getRelatedInvoices( { state, dispatch, getters }, {parent_name, parent_id, expect}) {
+        getRelatedInvoices( { dispatch, getters }, {work_id, provider_id, expect}) {
             let returner = getters.findRelatedInvoices({
-                'parent_id': parent_id,
-                'parent_name': parent_name,
+                'work_id': work_id,
+                'provider_id': provider_id,
             });
-            
+
             if (returner.length === expect) {
                 return Promise.resolve(returner);
             }
@@ -231,16 +311,40 @@ const store = new Vuex.Store({
                 }, []);
                 
                 const params = {
-                    'action': "more",
                     'not_in': inHand.join(","),
-                    'parent_id': parent_id,
-                    'parent_name': parent_name,
+                    'work_id': work_id,
+                    'provider_id': provider_id,
                 };
                 return dispatch("httpGetInvoices", params).then( result => {
                     return returner.push(...result);
                 });
                 
             }
+        },
+        getRelatedTrackers({ dispatch, getters }, {invoice_id, material_id, expect}) {
+            let returner = getters.findRelatedTrackers({
+                'invoice_id': invoice_id,
+                'material_id': material_id,
+            });
+            if (returner.length === expect) {
+                return Promise.resolve(returner);
+            }
+            else {
+                const inHand = returner.reduce( (ids, invoice) => {
+                    ids.push(invoice.id);
+                    return ids;
+                }, []);
+                
+                const params = {
+                    'not_in': inHand.join(","),
+                    'invoice_id': invoice_id,
+                    'material_id': material_id,
+                };
+                return dispatch("httpGetTrackers", params).then( result => {
+                    return returner.push(...result);
+                });
+                
+            }            
         },
         getRelatedContracts() {
             return false;
@@ -311,6 +415,15 @@ const store = new Vuex.Store({
                     Vue.set(state.invoices, _i, invoice);
                 }
             }
+        },
+
+        // -- trackers state
+        STORE_MUTIPLE_TRACKERS(state, trackers) {
+            state.trackers.push(...trackers);
+        },
+        // -- materials state
+        STORE_MUTIPLE_MATERIALS(state, materials) {
+            state.materials.push(...materials);
         },
         // -- payments state
 

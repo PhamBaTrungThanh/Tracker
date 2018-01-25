@@ -156,6 +156,8 @@
                     </div>
                 </div>
             </section>
+            {{trackers.length}}
+            {{materials.length}}
         </div>
     </transition>
 </template>
@@ -205,12 +207,26 @@ export default {
         },
         payments: {
             lazy: true,
-            default: false,
+            default: [],
             get() {
-                return this.$store.dispatch("getRelatedPayments", {'invoice_id': this.invoice.id, 'expect': this.invoice.count_payments}).then( result => {
+                return this.$store.dispatch("getRelatedPayments", {'invoice_id': this.invoice.id, 'expect': this.invoice.payments_count}).then( result => {
                     this.initializePaymentsChart(result);
                     return result;
                 });
+            }
+        },
+        trackers: {
+            lazy: true, 
+            default: [],
+            get() {
+                return this.$store.dispatch("getRelatedTrackers", {'invoice_id': this.invoice.id, 'expect': this.invoice.trackers_count});
+            }
+        },
+        materials: {
+            lazy: true,
+            default: [],
+            get() {
+                return this.$store.dispatch("guaranteeMaterials", {'material_ids': this.trackers.map( t => t.material_id)});
             }
         }
     }, 

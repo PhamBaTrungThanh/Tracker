@@ -33,8 +33,8 @@ class WorkResource extends Resource
             //'contracts' => ContractResource::collection($this->whenLoaded('contracts')),
             //'category_count' => $this->category_count,
             //'material_count' => $this->material_count,
-            'count_invoices' => $this->invoices_count,
-            'count_contracts' => $this->contracts_count,
+            'invoices_count' => $this->invoices_count,
+            'contracts_count' => $this->contracts_count,
         ];
     }
 }

@@ -16,8 +16,8 @@ class TrackerResource extends Resource
     {
         return [
             'id' => $this->id,
-            'invoice' => new InvoiceResource($this->whenLoaded('invoice')),
-            'material' => new MaterialResource($this->whenLoaded('material')),
+            'invoice_id' => $this->invoice_id,
+            'material_id' => $this->material_id,
             'unit' => $this->unit,
             'received_unit' => $this->received_unit,           
             'cost' => $this->cost,
