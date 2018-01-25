@@ -2,7 +2,21 @@
     <transition v-if="work" name="slide-fade">
         <div class="wrap">
             <hero-header :page="pageMeta" />
-
+            <div class="navbar has-shadow">
+                <div class="container">
+                    <div class="navbar-tabs">
+                        <router-link :to="{'name': 'work.index'}" class="navbar-item is-tab">
+                            <span class="icon">
+                                <i class="mdi mdi-chevron-left"></i>
+                            </span>
+                            <span>Quay lại</span>
+                        </router-link>
+                        <router-link :to="{'name': 'invoice.create', 'query': {'work_id': work.id}}" class="navbar-item is-tab">
+                            Thêm đơn hàng
+                        </router-link>
+                    </div>
+                </div>
+            </div>
             <section class="show_work--container section">
                 <article role="work" class="">
                     <div class="container">

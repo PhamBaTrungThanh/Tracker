@@ -171,7 +171,7 @@ export default {
         },
         pageMeta() {
             return {
-                title: (this.payment) ? ` ${this.payment.name}` : "",
+                title: (this.payment) ? `${this.payment.name}` : "",
                 description: (this.invoice) ? `Đơn hàng: ${this.invoice.name}` : "Đơn hàng",
             }
         }

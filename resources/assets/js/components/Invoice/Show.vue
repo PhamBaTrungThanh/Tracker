@@ -110,11 +110,11 @@
                                         </div>
                                         <div class="level-right">
                                             <div class="level-item">
-                                                <router-link :to="{'name': 'payment.create'}" class="button is-link">
+                                                <router-link :to="{'name': 'receive.create', 'query': {'invoice_id': invoice.id}}" class="button is-link">
                                                     <span class="icon">
-                                                        <i class="mdi mdi-credit-card-plus"></i>
+                                                        <i class="mdi mdi-package-down"></i>
                                                     </span>
-                                                    <span>Thêm thanh toán</span>
+                                                    <span>Nhận hàng</span>
                                                 </router-link>
                                             </div>
                                         </div>

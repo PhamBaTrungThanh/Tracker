@@ -94,13 +94,7 @@ export const Tracker = {
         // Mixins
         Vue.mixin({
             mounted() {
-                // Load pageMeta into $store
-                if (this.$data.pageMeta) {
-                    if (type(this.$data.pageMeta.title) === 'string') {
-                        window.document.title = this.$data.pageMeta.title;
-                    }
-                    this.$store.dispatch("setPageMeta", this.$data.pageMeta);
-                }                
+           
             },
             methods: {
                 swal: App.helpers.swal,
