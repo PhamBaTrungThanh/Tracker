@@ -95,13 +95,13 @@
                                                         </tr>
                                                     </thead>
 
-                                                    <tbody v-if="trackers && materials">
-                                                        <tr v-for="(tracker, index) in trackers" :key="index">
+                                                    <tbody v-if="receive_list">
+                                                        <tr v-for="(tracker, index) in receive_list" :key="index">
                                                             <td>{{index + 1}}</td>
-                                                            <td>{{getMaterialById(tracker.material_id).name}}</td>
-                                                            <td>{{tracker.unit}}</td>
+                                                            <td>{{tracker.name}}</td>
+                                                            <td>{{tracker.total}}</td>
                                                             <td></td>            
-                                                            <td></td>                                                     
+                                                            <td>{{tracker.total - tracker.value}}</td>                                                     
                                                         </tr>
                                                     </tbody>
                                                     <tbody v-else>
@@ -140,6 +140,7 @@
 </template>
 
 <script>
+import {mapGetters} from 'vuex';
 export default {
     data: () => ({
         'receive_name': "",
@@ -173,17 +174,29 @@ export default {
             }
         },
         trackers: {
-            lazy: true, 
+            
             default: [],
             get() {
                 return this.$store.dispatch("getRelatedTrackers", {'invoice_id': this.invoice.id, 'expect': this.invoice.trackers_count});
             }
         },
         materials: {
-            lazy: true,
+            
             default: [],
             get() {
-                return this.$store.dispatch("guaranteeMaterials", {'material_ids': this.trackers.map( t => t.material_id)});
+                return this.$store.dispatch("guaranteeMaterials", {'material_ids': this.trackers.map( t => t.material_id)}).then( materials => {
+                    let receive_list = [];
+                    console.log(materials);
+                    for (let i = 0; i < materials.length; i++) {
+                        receive_list.push({
+                            'name': materials[i].name,
+                            'total': this.trackers[i].unit,
+                            'value': 0,
+                        });
+                    }
+                    this.receive_list = receive_list;
+                    return materials;
+                });
             }
         }
     },

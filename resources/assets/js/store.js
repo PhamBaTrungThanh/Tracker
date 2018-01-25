@@ -50,6 +50,9 @@ const store = new Vuex.Store({
         getInvoiceById: (state) => (id) => {
             return state.invoices.find( i => i.id === parseInt(id));
         },
+        getMaterialById: (state) => id => {
+            return sate.materials.find( m => m.id === id);
+        },
         getPaymentById: (state) => (id) => {
             return state.payments.find( p => p.id === parseInt(id));
         },
