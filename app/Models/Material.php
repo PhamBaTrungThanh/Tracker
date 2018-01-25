@@ -2,10 +2,13 @@
 
 namespace App\Models;
 
+use Kalnoy\Nestedset\NodeTrait;
 use Illuminate\Database\Eloquent\Model;
 
 class Material extends Model
 {
+    use NodeTrait;
+
     protected $fillable = ['name', 'per', 'currency', 'description', 'brand'];
 
     public function trackers()
@@ -16,15 +19,8 @@ class Material extends Model
     {
         return $this->hasOne(Boq::class);
     }
-    public function contracts()
+    public function work()
     {
-        return $this->hasManyThrough(
-            Contract::class,
-            Tracker::class,
-            "id",
-            "id",
-            "id",
-            "invoice_id"
-        );
+        return $this->hasOne(Work::class);
     }
 }

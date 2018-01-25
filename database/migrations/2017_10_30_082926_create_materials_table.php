@@ -17,7 +17,6 @@ class CreateMaterialsTable extends Migration
             $table->increments('id');
             $table->string('uid')->nullable();
             $table->string('name');
-            $table->integer('category_id');
             $table->string('brand')->nullable();
             $table->string('currency')->default('vnđ');
             $table->bigInteger('total_unit')->default(0);
@@ -25,8 +24,10 @@ class CreateMaterialsTable extends Migration
             $table->decimal('total_price', 50, 10)->default(0);
             $table->bigInteger('invoice_count')->default(0);
             $table->text('description')->nullable();
-            $table->string('per');
+            $table->string('per')->nullable();
             $table->timestamps();
+
+            NestedSet::columns($table);
         });
     }
 
