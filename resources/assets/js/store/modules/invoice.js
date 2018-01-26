@@ -1,4 +1,5 @@
 import { helpers } from './../../bootstrap';
+import payment from './payment';
 
 const namespaced = true;
 const state = {
@@ -32,7 +33,12 @@ const actions = {
     },
     'getRelatedPayments': async ({getters, dispatch}, {invoice_id, expect}) => {
         try {
-            let payments = await dispatch("payment/getPaymentsForInvoice", {'invoice_id': invoice_id}, {root: true});
+            let payments = getters["payment/getPaymentsForInvoice"]({'invoice_id': invoice_id});
+            if (payments.length !== expect) {
+                await dispatch("payment/getPaymentsForInvoice", {'invoice_id': invoice_id});
+            }
+            return payments;
+            
         } catch (error) {
             console.log(error);
         }
