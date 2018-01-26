@@ -15,7 +15,7 @@ import { Tracker } from './bootstrap';
 import Submit from "./resources/Submit.vue";
 import Spinner from "./resources/Spinner.vue";
 import HeroHeader from "./resources/HeroHeader.vue";
-
+import { sync } from 'vuex-router-sync'
 Vue.use(VueRouter);
 
 Vue.use(AsyncComputed, {
@@ -39,6 +39,7 @@ const router = new VueRouter({
     mode: 'hash',
 });
 
+const unsync = sync(store, router) // done. Returns an unsync callback fn
 
 const app = new Vue({
     el: '#app',

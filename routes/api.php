@@ -16,12 +16,18 @@ use Illuminate\Http\Request;
 
 Route::prefix('v1')->middleware('auth:api')->namespace('Api_v1')->group(function() {
 
+    /* Custom routes */
+
+    Route::get('/work/{work_id}/invoices', 'InvoiceController@fromWork');
     Route::Resource('/user', 'UserController');
 
     Route::Resource('/provider', 'ProviderController');
     Route::Resource('/work', 'WorkController');
     Route::resource('/material', 'MaterialController');
+
     Route::resource('/invoice', 'InvoiceController');
+    
+
     Route::resource('/payment', 'PaymentController');  
     Route::post('/payment/archive', 'PaymentController@archive');
     Route::resource('/tracker', 'TrackerController');

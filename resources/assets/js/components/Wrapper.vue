@@ -59,7 +59,7 @@
     </div>
 </template>
 <script>
-import { mapState } from 'vuex';
+import { mapGetters } from 'vuex';
 export default {
     data: () => ({
         eatTheBurger: false,
@@ -70,20 +70,20 @@ export default {
         }
     }),
     computed: {
-        ...mapState([
+        ...mapGetters('user',[
             'user',
         ]),
     },
     methods: {
         guard() {
-            this.$store.dispatch('httpGetUser');
-            this.$store.dispatch('httpGetProviders');
+            this.$store.dispatch('user/getUser');
+            this.$store.dispatch('provider/getProviders');
         }
     },
 
     beforeRouteEnter(to, from, next) {
         next(vm => vm.guard());
     }
-}
+} 
 </script>
 

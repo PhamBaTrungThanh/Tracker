@@ -1,6 +1,6 @@
 <template>
-    <transition v-if="invoice">
-        <div class="invoice_show--wrapper">
+    <transition name="slide-fade">
+        <div class="invoice_show--wrapper"  v-if="invoice" >
             <hero-header :page="page" />
             <div class="navbar has-shadow">
                 <div class="container">
@@ -165,6 +165,7 @@
 <script>
 
 import { chartColors, ChartJs, monetize } from "./../../bootstrap";
+import { mapGetters } from 'vuex';
 export default {
     data: () => ({
         'chartRefs': {
@@ -173,12 +174,16 @@ export default {
         }
     }),
     computed: {
+        ...mapGetters('user',[
+            'user',
+        ]),
         page() {
             return {
                 title: (this.invoice) ? `Đơn hàng ${this.invoice.name}` : "Đơn hàng",
                 description: (this.work) ? `Công trình ${this.work.name}` : "Công trình",
             }
         },
+        /*
         sum_payment() {
             if (this.payments) {
                 return this.payments.reduce( (sum, p) => sum + parseFloat(p.amount), 0);
@@ -187,17 +192,16 @@ export default {
                 return 0;
             }
         },
-        user() {
-            return this.$store.state.user;
-        }
+        */
     },
     asyncComputed: {
         invoice: {
             default: false,
             get() {
-                return this.$store.dispatch("getInvoice", {'invoice_id': this.$route.params.id});
+                return this.$store.dispatch("invoice/getSingleInvoiceInstance", {'invoice_id': parseInt(this.$route.params.id)});
             }
         },
+        /*
         work: {
             lazy: true,
             default: false,
@@ -229,6 +233,7 @@ export default {
                 return this.$store.dispatch("guaranteeMaterials", {'material_ids': this.trackers.map( t => t.material_id)});
             }
         }
+        */
     }, 
     methods: {
         initializePaymentsChart(payments) {

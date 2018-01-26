@@ -73,7 +73,7 @@
                                         <td><b>{{index + 1}}</b></td>
                                         <td><router-link :to="{'name': 'invoice.show', 'params': {'id': invoice.id}}">{{invoice.name}}</router-link></td>
                                         <td><b>{{invoice.signed_at}}</b></td>
-                                        <td>{{ $store.getters.getProviderById(invoice.provider_id).name}}</td>
+                                        <td>{{ provider(invoice.provider_id).name}}</td>
                                         <td>{{comma(invoice.total * 1.1)}}</td>
                                         <td>{{comma(invoice.payment_total)}}</td>
                                         <td></td>
@@ -90,7 +90,7 @@
 </template>
 
 <script>
-import {mapState,mapGetters} from 'vuex';
+import {mapState, mapGetters} from 'vuex';
 import * as moment from 'moment';
 import 'moment/locale/vi';
 moment.locale('vi');
@@ -99,10 +99,12 @@ export default {
         sortBy: "date",
     }),
     computed: {
-         ...mapState([
-            'user',
-            'providers',
-        ]),
+        user() {
+            return this.$store.getters['user/user'];
+        },
+        invoices() {
+            return this.sortInvoices(this.work.invoices);
+        },
         sum_invoices() {
             return this.invoices.reduce( (sum, invoice) => sum += parseFloat(invoice.total), 0);
         },
@@ -121,38 +123,19 @@ export default {
     
     asyncComputed: {
         work: {
-            get() {
-                return this.$store.dispatch("getWork", {'work_id': this.$route.params.id});
-            },
             default: false,
-            
-        },
-        invoices: {
-            lazy: true,
             get() {
-                return this.$store.dispatch("getRelatedInvoices", {'work_id': this.work.id, 'expect': this.work.invoices_count}).then( result => {
-                    return this.sortInvoices(result) 
-                });    
-            },
-            default: [],
-        },
+                return this.$store.dispatch("work/getWork", {work_id: parseInt(this.$route.params.id)});
+            }
+        }
     },
     methods: {
-        ...mapGetters([
-            'getProviderById'
+        ...mapGetters('provider', [
+            'provider'
         ]),
         viewReport() {
             this.$router.push({
                 name: "work.report",
-            });
-        },
-
-        newInvoice() {
-            this.$router.push({
-                name: "invoice.create",
-                query: {
-                    work_id: this.work.id,
-                }
             });
         },
 

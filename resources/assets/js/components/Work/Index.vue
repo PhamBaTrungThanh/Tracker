@@ -4,7 +4,7 @@
         <section class="section">
             <div class="container">
                 <transition name="slide-fade">
-                    <div class="work_index--wrapper" v-if="works.length" >
+                    <div class="work_index--wrapper" v-if="works" >
                         <div class="tile is-ancestor">
                             <div v-for="work in works" :key="work.id" class="tile is-3">
                                 <router-link class="card is-hoverable" tag="article" :to="{ 'name': 'work.show', 'params': {'id': work.id} }">
@@ -40,7 +40,7 @@
 
 <script>
 
-import {mapState} from 'vuex';
+import {mapGetters} from 'vuex';
 
 export default {
     data() {
@@ -54,38 +54,13 @@ export default {
             'ready': false,
         }
     },
-    computed: {
-        ...mapState([
-            'works'
-        ])
-    },
 
-
-    methods: {
-        fetchData() {
-            this.current_work_id = false;
-            this.axios.get(`${this.$store.state.apiBase}/work`).then( response => {
-                this.works = response.data;
-            }).catch( error => {
-                console.log(error);
-            });
-        },
-        viewReports(work_id) {
-            this.current_work_id = work_id;
-            this.$refs.fullscreen.enter();
-
-        },
-        workDetail(work_id) {
-            this.$router.push({
-                "name": "work.show",
-                "params": {"id": work_id}
-            });
-        },
-        newWork() {}
-    },
-    mounted() {
-        if (!this.works.length) {
-            this.$store.dispatch("httpGetWorks");
+    asyncComputed: {
+        works: {
+            default: false,
+            get() {
+                return this.$store.dispatch("work/getWorks");
+            }
         }
     },
 }

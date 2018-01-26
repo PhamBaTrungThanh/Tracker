@@ -30,19 +30,19 @@ class InvoiceController extends Controller
     public function index(Request $request)
     {
         
+
+    }
+    public function fromWork(int $work_id, Request $request)
+    {
         $invoices = Invoice::withCount(['trackers', 'payments', 'receives'])
             ->where('type', 'invoice')
+            ->where('work_id', $work_id)
             ->when($request->filled('not_in'), function($query) use ($request) {
                 $not_in_array = explode(",", $request->query('not_in'));
                 return $query->whereNotIn('id', $not_in_array);
-            })->when($request->filled('work_id'), function($query)  use ($request){
-                return $query->where('work_id', $request->query('work_id'));
-            })->when($request->filled('provider_id'), function($query)  use ($request){
-                return $query->where('provider_id', $request->query('provider_id'));
             })->get();
         return InvoiceResource::collection($invoices);
     }
-    
     /**
      * Show the form for creating a new resource.
      *

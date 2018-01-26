@@ -2,15 +2,22 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
 
-import invoices from "./modules/invoices";
+import invoice from "./modules/invoice";
+import user from "./modules/user";
+import provider from "./modules/provider";
+import work from "./modules/work";
+
 Vue.use(Vuex)
 
 const debug = process.env.NODE_ENV !== 'production'
 
 export default new Vuex.Store({
-  actions,
-  modules: {
-    invoices,
-  },
-  strict: debug,
+    modules: {
+        invoice,
+        user,
+        provider,
+        work,
+    },
+
+    strict: debug,
 });

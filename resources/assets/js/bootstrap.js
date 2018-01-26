@@ -8,6 +8,14 @@ import swal from 'sweetalert2';
 /**
  * SETUP
  */
+const _axios = axios.create({
+    baseURL: `${window.location.protocol}//${window.location.host}/api/v1`,
+    timeout: 5000,
+    headers: {
+        'X-Requested-With': 'XMLHttpRequest',
+        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+    }
+});
 
 const App = Object.freeze({
     'version': '0.2.3',
@@ -70,8 +78,10 @@ const App = Object.freeze({
             const merged = Object.assign({}, defaults, options);
             return new swal(merged);
         },
+        'axios': _axios,
     }
 });
+
 export const capitalizeFirstChar = App.helpers.capitalizeFirstChar;
 export const chartColors = {
 	red: 'rgb(255, 99, 132)',
@@ -87,6 +97,7 @@ export const chartColors = {
 export const ChartJs = Chart; 
 export const monetize = App.helpers.monetize;
 
+export const helpers = App.helpers;
 
 // VUE MIXIN
 export const Tracker = {

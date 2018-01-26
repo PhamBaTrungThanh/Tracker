@@ -20,8 +20,7 @@ class WorkController extends Controller
 {
     public function index()
     {
-        $works = Work::withCount(['invoices', 'contracts'])->get();
-        return WorkResource::collection($works);
+        return WorkResource::collection(Work::all());
         
     }
     public function getInvoices(Work $work, Request $request) {
@@ -29,7 +28,7 @@ class WorkController extends Controller
             $not_in = explode(",", $request->query('not_in'));
             return $query->whereNotIn('id', $not_in);
         })->get();
-        
+
 
     }
     public function store(Request $request)
