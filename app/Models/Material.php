@@ -23,4 +23,5 @@ class Material extends Model
     {
         return $this->hasOne(Work::class);
     }
+    
 }

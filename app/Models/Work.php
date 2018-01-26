@@ -7,7 +7,8 @@ use Illuminate\Database\Eloquent\Model;
 class Work extends Model
 {
 
-
+    protected $withCount = ['invoices', 'contracts'];
+    
     public function trackers()
     {
         return $this->hasMany(Tracker::class);
