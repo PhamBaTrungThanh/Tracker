@@ -24,6 +24,14 @@ class WorkController extends Controller
         return WorkResource::collection($works);
         
     }
+    public function getInvoices(Work $work, Request $request) {
+        $invoices = $work->invoices()->when($request->filled('not_in'), function ($query) use ($request) {
+            $not_in = explode(",", $request->query('not_in'));
+            return $query->whereNotIn('id', $not_in);
+        })->get();
+        
+
+    }
     public function store(Request $request)
     {
         $work = new Work();

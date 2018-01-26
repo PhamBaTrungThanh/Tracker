@@ -2,8 +2,6 @@
 
 import Vue from 'vue';
 import VueRouter from 'vue-router';
-import Vuex from 'vuex';
-
 
 import Treeselect from '@riophae/vue-treeselect'
 import AsyncComputed from 'vue-async-computed'
@@ -19,7 +17,6 @@ import Spinner from "./resources/Spinner.vue";
 import HeroHeader from "./resources/HeroHeader.vue";
 
 Vue.use(VueRouter);
-Vue.use(Vuex);
 
 Vue.use(AsyncComputed, {
     useRawError: true,

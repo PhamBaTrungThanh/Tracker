@@ -42,7 +42,7 @@ class InvoiceController extends Controller
             })->get();
         return InvoiceResource::collection($invoices);
     }
-
+    
     /**
      * Show the form for creating a new resource.
      *
