@@ -16,15 +16,15 @@ const routes = [
                         name: "work.create",
                         component: () => import('./components/Work/Create.vue'),
                     }, {
-                        path: ":id",
+                        path: ":work_id",
                         name: "work.show",
                         component: () => import('./components/Work/Show.vue'),
                     }, {
-                        path: ":id/edit",
+                        path: ":work_id/edit",
                         name: "work.edit",
                         component: () => import('./components/Work/Edit.vue'),
                     }, {
-                        path: ":id/report",
+                        path: ":work_id/report",
                         name: "work.report",
                         component: () => import("./components/Work/Report.vue"),
                     }, {
@@ -34,7 +34,7 @@ const routes = [
                     }
                 ],
             }, {
-                path: "invoice",
+                path: "work/:work_id/invoice",
                 component: () => import("./components/Invoice/Base.vue"),
                 children: [
                     {
@@ -48,18 +48,18 @@ const routes = [
                         component: () => import("./components/Invoice/Create.vue"),
                     },
                     {
-                        path: ":id",
+                        path: ":invoice_id",
                         name: "invoice.show",
                         component: () => import("./components/Invoice/Show.vue"),
                     },
                     {
-                        path: ":id/edit",
+                        path: ":invoice_id/edit",
                         name: "invoice.edit",
                         component: () => import("./components/Invoice/Edit.vue"),
                     },
                 ]
             }, {
-                path: "payment",
+                path: "work/:work_id/invoice/:invoice_id/payment",
                 component: () => import("./components/Payment/Base.vue"),
                 children: [
                     {
@@ -71,17 +71,17 @@ const routes = [
                         name: "payment.create",
                         component: () => import("./components/Payment/Create.vue"),
                     }, {
-                        path: ":id",
+                        path: ":payment_id",
                         name: "payment.show",
                         component: () => import("./components/Payment/Show.vue"),
                     }, {
-                        path: ":id/edit",
+                        path: ":payment_id/edit",
                         name: "payment.edit",
                         component: () => import("./components/Payment/Edit.vue"),                    
                     }
                 ]
             }, {
-                path: "receive",
+                path: "work/:work_id'/invoice/:invoice_id/receive",
                 component: () => import("./components/Receive/Base.vue"),
                 children: [
                     {
@@ -93,11 +93,11 @@ const routes = [
                         name: "receive.create",
                         component: () => import("./components/Receive/Create.vue"),
                     }, {
-                        path: ":id",
+                        path: ":receive_id",
                         name: "receive.show",
                         component: () => import("./components/Receive/Show.vue"),
                     }, {
-                        path: ":id/edit",
+                        path: ":receive_id/edit",
                         name: "receive.edit",
                         component: () => import("./components/Receive/Edit.vue"),                     
                     }

@@ -183,6 +183,9 @@ export default {
                 description: (this.work) ? `Công trình ${this.work.name}` : "Công trình",
             }
         },
+        payments() {
+            return this.invoice.payments;
+        }
         /*
         sum_payment() {
             if (this.payments) {
@@ -198,6 +201,7 @@ export default {
         invoice: {
             default: false,
             get() {
+                
                 return this.$store.dispatch("invoice/getSingleInvoiceInstance", {'invoice_id': parseInt(this.$route.params.id)});
             }
         },

@@ -9,12 +9,15 @@ const getters = {
 }
 const actions = {
     'getUser': async ({getters, commit}) => {
-        try {
-            const response = await helpers.axios.get('user');
-            commit('STORE_USER', response.data.data);
-        } catch (e) {
-            console.log(e);
+        if (!getters.user) {
+            try {
+                const response = await helpers.axios.get('user');
+                commit('STORE_USER', response.data.data);
+            } catch (e) {
+                console.log(e);
+            }
         }
+
     }
     
 }

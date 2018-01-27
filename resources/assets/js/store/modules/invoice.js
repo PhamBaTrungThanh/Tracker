@@ -43,20 +43,51 @@ const actions = {
             console.log(error);
         }
     },
-    'getSingleInvoiceInstance': async ({getters, commit}, {invoice_id}) => {
-        try {
-            let invoice = getters.invoice(invoice_id);
-            if (!invoice) {
-                const response = await helpers.axios.get(`invoice/${invoice_id}`);
-                invoice = response.data.data;
-                commit('STORE_SINGLE_INVOICE', invoice);
-                
+    'getSingleInvoiceInstance': async ({getters, commit, rootGetters, dispatch}, {invoice_id}) => {
+
+        let payments = rootGetters["payment/paymentsForInvoice"](invoice_id);
+
+        let invoice = getters.invoice(invoice_id);
+        if (!invoice) {
+            
+            let response = false;
+            try {
+                response = await helpers.axios.get(`invoice/${invoice_id}`, {
+                    'params': {
+                        'without_payments': payments.map( p => p.id).join(",")
+                    }
+                });
+            } catch (e) {
+                console.log(e);
+            } finally {
+                if (response) {
+                    if (response.data.related.payments) {
+                        dispatch("payment/storePayments", response.data.related.payments, {root: true});
+                    }
+                    commit('STORE_SINGLE_INVOICE', response.data.data);    
+
+                    return Object.assign({}, response.data.data, {payments: payments});       
+                }
             }
-            console.log(invoice);
-        } catch (e) {
-            console.log(e);
+            //invoice = response.data.data;
+
+        } else {
+
+            let params = {
+                without_payments: undefined,
+                without_receives: undefined,
+            }
+            if (payments.length !== invoice.payments_count) {
+                params.without_payments = payments.map( p => p.id).join(",");
+            }
+            const response = await helpers.axios.get(`invoice/${invoice_id}/related`, {'params': params});
+            if (response.data.related.payments) {
+                dispatch("payment/storePayments", response.data.related.payments, {root: true});
+            }
         }
+        return Object.assign({}, invoice, {payments: payments});
     }
+    
 }
 const mutations = {
     STORE_INVOICES(state, invoices) {

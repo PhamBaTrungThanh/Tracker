@@ -71,7 +71,7 @@
                                     </tr>
                                     <tr v-for="(invoice, index) in invoices" :key="index" >
                                         <td><b>{{index + 1}}</b></td>
-                                        <td><router-link :to="{'name': 'invoice.show', 'params': {'id': invoice.id}}">{{invoice.name}}</router-link></td>
+                                        <td><router-link :to="{'name': 'invoice.show', 'params': {'invoice_id': invoice.id}}">{{invoice.name}}</router-link></td>
                                         <td><b>{{invoice.signed_at}}</b></td>
                                         <td>{{ provider(invoice.provider_id).name}}</td>
                                         <td>{{comma(invoice.total * 1.1)}}</td>
@@ -125,7 +125,7 @@ export default {
         work: {
             default: false,
             get() {
-                return this.$store.dispatch("work/getWork", {work_id: parseInt(this.$route.params.id)});
+                return this.$store.dispatch("work/getWork", {work_id: parseInt(this.$route.params.work_id)});
             }
         }
     },

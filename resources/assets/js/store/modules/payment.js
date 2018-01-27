@@ -14,10 +14,14 @@ const getters = {
     }, []),
 }
 const actions = {
-
+    'storePayments': ({commit}, data) => {
+        commit("STORE_MUTIPLE_PAYMENTS", data);
+    }
 }
 const mutations = {
-
+    STORE_MUTIPLE_PAYMENTS(state, data) {
+        state.data.push(...data);
+    }
 }
 
 export default {

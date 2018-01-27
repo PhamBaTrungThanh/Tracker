@@ -18,7 +18,7 @@ use App\Models\Receive;
 use App\Models\Tracker;
 use App\Models\Work;
 use App\Models\Provider;
-
+use App\Models\Payment;
 
 class InvoiceController extends Controller
 {
@@ -42,6 +42,20 @@ class InvoiceController extends Controller
                 return $query->whereNotIn('id', $not_in_array);
             })->get();
         return InvoiceResource::collection($invoices);
+    }
+    public function related(int $invoice_id, Request $request)
+    {
+        $payments = false;
+        if ($request->has('without_payments')) {
+            $not_in_array = explode(",", $request->query('not_in'));
+            $payments = Payment::where('invoice_id', $invoice_id)->whereNotIn('id', $not_in_array)->get();
+        }
+
+        return response()->json([
+            'related' => [
+                'payments' => ($payments) ? PaymentResource::collection($payments) : false,
+            ],
+        ]);
     }
     /**
      * Show the form for creating a new resource.
@@ -180,7 +194,15 @@ class InvoiceController extends Controller
             'trackers' => TrackerResource::collection($invoice->trackers),
         ]]);
         */
-        return (new InvoiceResource($invoice));        
+        if ($request->has('without_payments')) {
+            $not_in_array = explode(",", $request->query('without_payments'));
+            $payments = $invoice->payments()->whereNotIn('id', $not_in_array)->get();
+        }
+        return (new InvoiceResource($invoice))->additional([
+            'related' => [
+                'payments' => PaymentResource::collection($payments),
+            ],
+        ]);        
     }
 
     /**

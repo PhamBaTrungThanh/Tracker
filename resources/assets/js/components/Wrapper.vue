@@ -78,11 +78,15 @@ export default {
         guard() {
             this.$store.dispatch('user/getUser');
             this.$store.dispatch('provider/getProviders');
+            this.$store.dispatch('getData');
         }
     },
 
     beforeRouteEnter(to, from, next) {
         next(vm => vm.guard());
+    },
+    beforeRouteUpdate(to, from) {
+        this.guard();
     }
 } 
 </script>

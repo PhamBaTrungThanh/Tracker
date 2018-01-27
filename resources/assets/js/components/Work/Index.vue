@@ -7,7 +7,7 @@
                     <div class="work_index--wrapper" v-if="works" >
                         <div class="tile is-ancestor">
                             <div v-for="work in works" :key="work.id" class="tile is-3">
-                                <router-link class="card is-hoverable" tag="article" :to="{ 'name': 'work.show', 'params': {'id': work.id} }">
+                                <router-link class="card is-hoverable" tag="article" :to="{ 'name': 'work.show', 'params': {'work_id': work.id} }">
                                     <div class="card-image">
                                         <figure class="image is-4by3">
                                             <img :src="work.image_cover" alt="">
@@ -54,15 +54,11 @@ export default {
             'ready': false,
         }
     },
-
-    asyncComputed: {
-        works: {
-            default: false,
-            get() {
-                return this.$store.dispatch("work/getWorks");
-            }
-        }
-    },
+    computed: {
+        ...mapGetters('work', [
+            'works',
+        ]),
+    }
 }
 </script>
 

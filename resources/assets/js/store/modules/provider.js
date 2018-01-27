@@ -9,13 +9,16 @@ const getters = {
     'provider': state => id => state.data.find( p => p.id === id)
 }
 const actions = {
-    'getProviders': async ({getters, commit}) => {
-        try {
-            const response = await helpers.axios.get('provider');
-            commit('STORE_PROVIDERS', response.data.data);
-        } catch (e) {
-            console.log(e);
+    'getProviders': async ({state, commit}) => {
+        if (!state.data) {
+            try {
+                const response = await helpers.axios.get('provider');
+                commit('STORE_PROVIDERS', response.data.data);
+            } catch (e) {
+                console.log(e);
+            }
         }
+
     }
     
 }

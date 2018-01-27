@@ -19,6 +19,8 @@ Route::prefix('v1')->middleware('auth:api')->namespace('Api_v1')->group(function
     /* Custom routes */
 
     Route::get('/work/{work_id}/invoices', 'InvoiceController@fromWork');
+    Route::get('invoice/{invoice_id}/related', 'InvoiceController@related');
+
     Route::Resource('/user', 'UserController');
 
     Route::Resource('/provider', 'ProviderController');
