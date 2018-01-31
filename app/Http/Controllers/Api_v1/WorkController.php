@@ -8,16 +8,37 @@ use App\Http\Controllers\Controller;
 
 use App\Models\Work;
 use App\Models\Provider;
-use App\Models\Contract;
 use App\Models\Invoice;
-use App\Models\Category;
 use App\Models\Tracker;
+use App\Models\Material;
+use App\Models\User;
+use App\Models\Payment;
+use App\Models\Receive;
 
 use App\Http\Resources\WorkResource;
-use App\Http\Resources\CategoryResource;
 use App\Http\Resources\MaterialResource;
+use App\Http\Resources\TrackerResource;
+use App\Http\Resources\InvoiceResource;
+use App\Http\Resources\ProviderResource;
+use App\Http\Resources\ReceiveResource;
+use App\Http\Resources\PaymentResource;
+use App\Http\Resources\UserResource;
+
 class WorkController extends Controller
 {
+    public function allData() 
+    {
+        return response()->json([
+            'works' => WorkResource::collection(Work::all()),
+            'materials' => MaterialResource::collection(Material::all()),
+            'trackers' => TrackerResource::collection(Tracker::all()),
+            'providers' => ProviderResource::collection(Provider::all()),
+            'invoices' => InvoiceResource::collection(Invoice::all()),
+            'payments' => PaymentResource::collection(Payment::all()),
+            'receives' => ReceiveResource::collection(Receive::all()),
+            'users' => UserResource::collection(User::all()),
+        ]);
+    }
     public function index()
     {
         return WorkResource::collection(Work::all());

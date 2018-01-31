@@ -15,7 +15,9 @@ const getters = {
     }, []),
 }
 const actions = {
-
+    'storeInvoices': ({commit}, data) => {
+        commit('STORE_INVOICES', data);
+    },
     'getInvoicesForWork': async ({getters, commit, rootGetters}, {work_id}) => {
         try {
             let invoices = getters.invoicesInWork(work_id);

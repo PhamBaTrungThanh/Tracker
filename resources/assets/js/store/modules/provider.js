@@ -19,6 +19,9 @@ const actions = {
             }
         }
 
+    },
+    'storeProviders': ({commit}, data) => {
+        commit('STORE_PROVIDERS', data);
     }
     
 }

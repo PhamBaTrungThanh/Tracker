@@ -49,7 +49,11 @@ const actions = {
             const invoices = await dispatch('getRelatedInvoices', {'work_id': work_id, 'expect': work.invoices_count});
             return Object.assign({}, work, {'invoices': invoices});
         }
+    },
+    'storeWorks': async ({commit}, data) => {
+        commit('STORE_WORKS', data);
     }
+
 }
 const mutations = {
     STORE_WORKS(state, works) {
