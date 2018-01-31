@@ -31,11 +31,8 @@ const actions = {
         try {
             const invoices = rootGetters['invoice/invoicesInWork'](work_id);
             
-            if (invoices.length === expect) {
-                return invoices;
-            } else {
+            if (invoices.length !== expect) {
                 let requestInvoices = await dispatch('invoice/getInvoicesForWork', {'work_id': work_id}, {root: true});
-                return requestInvoices;
             }
         } catch (e) {
             console.log(e);

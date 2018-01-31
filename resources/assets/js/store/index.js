@@ -25,20 +25,5 @@ export default new Vuex.Store({
         payment,
         receive,
     },
-    actions: {
-        getData({dispatch}) {
-            helpers.axios.get(`data`).then(response => {
-            
-                dispatch("work/storeWorks", response.data.works, {root: true});
-                dispatch("work/storeProviders", response.data.providers, {root: true});
-                dispatch("work/storeInvoices", response.data.invoices, {root: true});
-                dispatch("work/storePayments", response.data.payments, {root: true});
-                dispatch("work/storeReceives", response.data.receives, {root: true});
-                dispatch("work/storeMaterials", response.data.materials, {root: true});
-                dispatch("work/storeTrackers", response.data.trackers, {root: true});
-
-            });
-        }
-    },
     strict: debug,
 });

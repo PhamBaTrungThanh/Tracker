@@ -103,7 +103,7 @@ export default {
             return this.$store.getters['user/user'];
         },
         invoices() {
-            return this.sortInvoices(this.work.invoices);
+            return this.sortInvoices(this.$store.getters['invoice/invoicesInWork'](this.work.id));
         },
         sum_invoices() {
             return this.invoices.reduce( (sum, invoice) => sum += parseFloat(invoice.total), 0);

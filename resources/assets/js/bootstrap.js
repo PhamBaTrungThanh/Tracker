@@ -26,6 +26,12 @@ const App = Object.freeze({
          * @param {*} number 
          * @return string
          */
+        'isEmptyObject': object => {
+            return Object.keys(object).length === 0;
+        },
+        'isEmptyArray': array => {
+            return array.length === 0;
+        },
         'monetize': number => {
             if (parseFloat(number) === 0) {
                 return "-";

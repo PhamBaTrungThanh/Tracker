@@ -14,7 +14,7 @@ const getters = {
     }, []),
 }
 const actions = {
-    'storetrackers': ({commit}, data) => {
+    'storeTrackers': ({commit}, data) => {
         commit("STORE_MUTIPLE_TRACKERS", data);
     }
 }

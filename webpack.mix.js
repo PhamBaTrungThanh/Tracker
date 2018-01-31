@@ -11,7 +11,3 @@ mix.copy("resources/assets/images", "public/images");
 mix.version();
 mix.sourceMaps();
 mix.disableSuccessNotifications();
-mix.browserSync({
-    proxy: 'tracker.dev',
-    open: false,
-});

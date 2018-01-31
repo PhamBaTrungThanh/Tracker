@@ -30,7 +30,7 @@ class WorkController extends Controller
     {
         return response()->json([
             'works' => WorkResource::collection(Work::all()),
-            'materials' => MaterialResource::collection(Material::all()),
+            'materials' => MaterialResource::collection(Material::with('boq')->get()),
             'trackers' => TrackerResource::collection(Tracker::all()),
             'providers' => ProviderResource::collection(Provider::all()),
             'invoices' => InvoiceResource::collection(Invoice::all()),

@@ -24,12 +24,6 @@
                         <router-link class="navbar-item router-link" to="/work">
                             <span>Dự án</span>
                         </router-link>
-                        <router-link class="navbar-item router-link" to="/invoice">
-                            <span>Đơn hàng</span>
-                        </router-link>
-                        <router-link class="navbar-item router-link" to="/payment">
-                            <span>Thanh toán</span>
-                        </router-link>
                     </div>
                     <div class="navbar-end">
                         <div class="navbar-item" v-if="user.name">
@@ -77,15 +71,11 @@ export default {
     methods: {
         guard() {
             this.$store.dispatch('user/getUser');
-            this.$store.dispatch('provider/getProviders');
-            this.$store.dispatch('getData');
+            //this.$store.dispatch('provider/getProviders');
+            //this.$store.dispatch('getData');
         }
     },
-
-    beforeRouteEnter(to, from, next) {
-        next(vm => vm.guard());
-    },
-    beforeRouteUpdate(to, from) {
+    mounted() {
         this.guard();
     }
 } 
