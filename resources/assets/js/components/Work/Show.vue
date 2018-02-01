@@ -102,8 +102,11 @@ export default {
         user() {
             return this.$store.getters['user/user'];
         },
+        work() {
+            return this.$store.getters['work/work'](parseInt(this.$route.params.work_id));
+        },
         invoices() {
-            return this.sortInvoices(this.$store.getters['invoice/invoicesInWork'](this.work.id));
+            return this.sortInvoices(this.$store.getters['invoice/invoicesInWork'](parseInt(this.$route.params.work_id)));
         },
         sum_invoices() {
             return this.invoices.reduce( (sum, invoice) => sum += parseFloat(invoice.total), 0);
@@ -121,15 +124,11 @@ export default {
         }
     },
     
-    asyncComputed: {
-        work: {
-            default: false,
-            get() {
-                return this.$store.dispatch("work/getWork", {work_id: parseInt(this.$route.params.work_id)});
-            }
-        }
-    },
     methods: {
+        guard() {
+            this.$store.dispatch("work/getWork", {work_id: parseInt(this.$route.params.work_id)});
+            this.$store.dispatch("work/getRelatedInvoices", {work_id: parseInt(this.$route.params.work_id)});
+        },
         ...mapGetters('provider', [
             'provider'
         ]),

@@ -8,9 +8,7 @@
 
 <script>
 export default {
-    mounted() {
-        this.$store.dispatch("work/getWorks");
-    }
+
 }
 </script>
 

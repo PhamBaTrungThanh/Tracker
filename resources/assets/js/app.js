@@ -42,7 +42,7 @@ const router = new VueRouter({
     base: "/",
 });
 
-const unsync = async(store, router) // done. Returns an unsync callback fn
+//const unsync = async(store, router) // done. Returns an unsync callback fn
 
 const app = new Vue({
     el: '#app',

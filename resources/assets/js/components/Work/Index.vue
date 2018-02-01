@@ -58,6 +58,9 @@ export default {
         ...mapGetters('work', [
             'works',
         ]),
+    },
+    mounted() {
+        this.$store.dispatch("work/getWorks");
     }
 }
 </script>

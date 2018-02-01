@@ -27,13 +27,19 @@ const actions = {
             console.log(e);
         }        
     },
-    'getRelatedInvoices': async ({getters, commit, dispatch, rootGetters, rootCommit}, {work_id, expect}) => {
+    'getRelatedInvoices': async ({state, getters, commit, dispatch, rootGetters, rootCommit}, {work_id}) => {
         try {
             const invoices = rootGetters['invoice/invoicesInWork'](work_id);
-            
-            if (invoices.length !== expect) {
-                let requestInvoices = await dispatch('invoice/getInvoicesForWork', {'work_id': work_id}, {root: true});
+            const work = state.data.find( w => w.id === work_id);
+           
+            if (work) {
+                if (invoices.length === work.invoices_count) {
+                    return invoices;
+                }
             }
+            let requestInvoices = await dispatch('invoice/getInvoicesForWork', {'work_id': work_id}, {root: true});
+            return requestInvoices;
+
         } catch (e) {
             console.log(e);
         }
@@ -42,10 +48,8 @@ const actions = {
         let work = getters.work(work_id);
         if (!work) {
             await dispatch("getWorks");
-        } else {
-            const invoices = await dispatch('getRelatedInvoices', {'work_id': work_id, 'expect': work.invoices_count});
-            return Object.assign({}, work, {'invoices': invoices});
         }
+        return work;
     },
     'storeWorks': async ({commit}, data) => {
         commit('STORE_WORKS', data);

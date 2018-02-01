@@ -110,6 +110,19 @@ export const Tracker = {
     install: (Vue) => {
         // Mixins
         Vue.mixin({
+            beforeRouteEnter(to, from, next) {
+                next(vm => {
+                    if (vm.guard instanceof Function) {
+                        vm.guard();
+                    }
+                });
+            },
+            beforeRouteUpdate(to, from, next) {
+                if (this.guard instanceof Function) {
+                    this.guard();
+                }
+                next();
+            },
             mounted() {
            
             },

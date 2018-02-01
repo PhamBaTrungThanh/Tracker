@@ -16,6 +16,9 @@ const getters = {
 const actions = {
     'storeTrackers': ({commit}, data) => {
         commit("STORE_MUTIPLE_TRACKERS", data);
+    },
+    'getTrackersForInvoice': ({commit, state}, {invoice_id}) => {
+        
     }
 }
 const mutations = {

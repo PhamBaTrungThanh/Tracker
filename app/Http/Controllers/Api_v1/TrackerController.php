@@ -3,8 +3,11 @@
 namespace App\Http\Controllers\Api_v1;
 
 use App\Models\Tracker;
-use Illuminate\Http\Request;
+
 use App\Http\Resources\TrackerResource;
+use App\Http\Resources\MaterialResource;
+
+use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 
 class TrackerController extends Controller
@@ -16,15 +19,21 @@ class TrackerController extends Controller
      */
     public function index(Request $request)
     {
-        $trackers = Tracker::when($request->filled('not_in'), function($query) use ($request) {
-            $not_in_array = explode(",", $request->query('not_in'));
-            return $query->whereNotIn('id', $not_in_array);
-        })->when($request->filled('invoice_id'), function($query) use ($request) {
-            return $query->where('invoice_id', $request->query('invoice_id'));
-        })->get();
-        return TrackerResource::collection($trackers);
-    }
 
+    }
+    public function fromInvoice(ini $invoice_id, Request $request) 
+    {
+        $trackers = Tracker::when($request->filled('disclude'), function($query) use ($request) {
+            $not_in_array = explode(",", $request->query('disclude'));
+            return $query->whereNotIn('id', $not_in_array);
+        })->where('invoice_id', $invoice_id)
+        ->with(['material', 'material.boq'])
+        ->get();
+
+        return TrackerResource::collection($trackers)->additional([
+            'materials' => MaterialResource::collection($trackers->pluck('material')),
+        ]);
+    }
     /**
      * Show the form for creating a new resource.
      *

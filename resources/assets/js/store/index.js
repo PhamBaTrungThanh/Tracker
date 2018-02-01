@@ -24,6 +24,8 @@ export default new Vuex.Store({
         work,
         payment,
         receive,
+        tracker,
+        material,
     },
     strict: debug,
 });

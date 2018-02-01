@@ -78,7 +78,7 @@
                                             </tr>
                                             <tr v-for="(payment, index) in payments" :key="payment.id">
                                                 <td><b>{{index + 1}}</b></td>
-                                                <td><router-link :to="{'name': 'payment.show', 'params': {'id': payment.id}}">{{payment.name}}</router-link></td>
+                                                <td><router-link :to="{'name': 'payment.show', 'params': {'payment_id': payment.id}}">{{payment.name}}</router-link></td>
                                                 <td>{{payment.paid_on}}</td>
                                                 <td>{{__(payment.method)}}</td>
                                                 <td>{{comma(payment.amount)}}</td>
@@ -133,7 +133,7 @@
                                             </tr>
                                             <tr v-for="(payment, index) in payments" :key="payment.id">
                                                 <td><b>{{index + 1}}</b></td>
-                                                <td><router-link :to="{'name': 'payment.show', 'params': {'id': payment.id}}">{{payment.name}}</router-link></td>
+                                                <td><router-link :to="{'name': 'payment.show', 'params': {'payment_id': payment.id}}">{{payment.name}}</router-link></td>
                                                 <td>{{payment.paid_on}}</td>
                                                 <td>{{__(payment.method)}}</td>
                                                 <td>{{comma(payment.amount)}}</td>
@@ -157,7 +157,6 @@
                 </div>
             </section>
             {{trackers.length}}
-            {{materials.length}}
         </div>
     </transition>
 </template>
@@ -177,16 +176,22 @@ export default {
         ...mapGetters('user',[
             'user',
         ]),
+        invoice() {
+            return this.$store.getters["invoice/invoice"](parseInt(this.$route.params.invoice_id));
+        },
+        payments() {
+            return this.$store.getters["payment/paymentsForInvoice"](parseInt(this.$route.params.invoice_id));;
+        },
+        trackers() {
+            return this.$store.getters["tracker/trackersForInvoice"](parseInt(this.$route.params.invoice_id));
+        },
         page() {
             return {
                 title: (this.invoice) ? `Đơn hàng ${this.invoice.name}` : "Đơn hàng",
                 description: (this.work) ? `Công trình ${this.work.name}` : "Công trình",
             }
         },
-        payments() {
-            return this.invoice.payments;
-        }
-        /*
+        
         sum_payment() {
             if (this.payments) {
                 return this.payments.reduce( (sum, p) => sum + parseFloat(p.amount), 0);
@@ -195,16 +200,9 @@ export default {
                 return 0;
             }
         },
-        */
+        
     },
     asyncComputed: {
-        invoice: {
-            default: false,
-            get() {
-                
-                return this.$store.dispatch("invoice/getSingleInvoiceInstance", {'invoice_id': parseInt(this.$route.params.id)});
-            }
-        },
         /*
         work: {
             lazy: true,
@@ -240,6 +238,11 @@ export default {
         */
     }, 
     methods: {
+        guard() {
+            this.$store.dispatch("invoice/getSingleInvoiceInstance", {'invoice_id': parseInt(this.$route.params.invoice_id)});
+            this.$store.dispatch("invoice/getRelatedPayments", {'invoice_id': parseInt(this.$route.params.invoice_id)});
+            this.$store.dispatch("invoice/getRelatedTrackers", {'invoice_id': parseInt(this.$route.params.invoice_id)});
+        },
         initializePaymentsChart(payments) {
             if (payments) {
                 let $_data = [];

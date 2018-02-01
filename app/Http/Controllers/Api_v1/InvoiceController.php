@@ -37,8 +37,8 @@ class InvoiceController extends Controller
         $invoices = Invoice::withCount(['trackers', 'payments', 'receives'])
             ->where('type', 'invoice')
             ->where('work_id', $work_id)
-            ->when($request->filled('not_in'), function($query) use ($request) {
-                $not_in_array = explode(",", $request->query('not_in'));
+            ->when($request->filled('disclude'), function($query) use ($request) {
+                $not_in_array = explode(",", $request->query('disclude'));
                 return $query->whereNotIn('id', $not_in_array);
             })->get();
         return InvoiceResource::collection($invoices);
@@ -194,15 +194,7 @@ class InvoiceController extends Controller
             'trackers' => TrackerResource::collection($invoice->trackers),
         ]]);
         */
-        if ($request->has('without_payments')) {
-            $not_in_array = explode(",", $request->query('without_payments'));
-            $payments = $invoice->payments()->whereNotIn('id', $not_in_array)->get();
-        }
-        return (new InvoiceResource($invoice))->additional([
-            'related' => [
-                'payments' => PaymentResource::collection($payments),
-            ],
-        ]);        
+        return new InvoiceResource($invoice);  
     }
 
     /**

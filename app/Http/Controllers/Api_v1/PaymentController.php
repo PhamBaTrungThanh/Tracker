@@ -96,7 +96,15 @@ class PaymentController extends Controller
         ]);
 
     }
-
+    public function fromInvoice(int $invoice_id, Request $request)
+    {
+        $payments = Payment::where('invoice_id', $invoice_id)
+            ->when($request->filled('disclude'), function ($query) use ($request) {
+                $not_in = explode(",", $request->query('disclude'));
+                return $query->whereNotIn('id', $not_in);
+            })->get();
+        return PaymentResource::collection($payments);
+    }
     /**
      * Display the specified resource.
      *
