@@ -24,7 +24,8 @@ class MaterialTreeResource extends Resource
             'brand' => $this->brand,
             'type' => 'material',
             'currency' => $this->currency,
-            'children' => self::collection($this->children),
+            'parent_id' => $this->parent_id,
+            'has_children' => (count($this->children) > 0) ? true : false,
         ];
     }
 }

@@ -311,6 +311,7 @@ export default {
     methods: {
         guard() {
             this.$store.dispatch("invoice/getRelatedWork", {'work_id': parseInt(this.$route.params.work_id)});
+            this.$store.dispatch("material/getTree");
         },
         chooseMaterials(values) {
             let _list = [];
