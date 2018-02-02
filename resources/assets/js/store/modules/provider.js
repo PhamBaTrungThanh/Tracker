@@ -13,22 +13,24 @@ const actions = {
         
         if (helpers.isEmptyArray(getters.providers)) {
             try {
-                const response = await helpers.axios.get('provider');
-                commit('STORE_PROVIDERS', response.data.data);               
+                const _providers = document.querySelector("meta[name='_providers']").getAttribute('content');
+                if (_providers) {
+                    commit('STORE_PROVIDERS', JSON.parse(unescape(_providers)));
+                } else {
+                    const response = await helpers.axios.get('provider');
+                    commit('STORE_PROVIDERS', response.data.data);    
+                }
+           
             } catch (e) {
                 console.log(e);
             }
         }
 
-    },
-    'storeProviders': ({commit}, data) => {
-        commit('STORE_PROVIDERS', data);
-    }
-    
+    },    
 }
 const mutations = {
     STORE_PROVIDERS(state, providers) {
-        state.data.push(...providers);
+        state.data = providers;
     }
 }
 export default {

@@ -21,7 +21,7 @@ class TrackerController extends Controller
     {
 
     }
-    public function fromInvoice(ini $invoice_id, Request $request) 
+    public function fromInvoice( int $invoice_id, Request $request ) 
     {
         $trackers = Tracker::when($request->filled('disclude'), function($query) use ($request) {
             $not_in_array = explode(",", $request->query('disclude'));

@@ -2,8 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Provider;
+
 use Illuminate\Http\Request;
 use App\Http\Resources\UserResource;
+use App\Http\Resources\ProviderResource;
 class HomeController extends Controller
 {
     /**
@@ -12,9 +15,11 @@ class HomeController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function index()
-    {
-        $chunk = explode("/", request()->path());
-        
-        return view('home')->with('user', (new UserResource(auth()->user())));
+    {      
+        $user = (new UserResource(auth()->user()))->toArray(request());
+        $providers = ProviderResource::collection(Provider::all())->toArray(request());
+        return view('home')
+            ->with('user', json_encode($user))
+            ->with('providers', json_encode($providers));
     }
 }

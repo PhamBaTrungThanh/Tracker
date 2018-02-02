@@ -1,90 +1,139 @@
 <template>
     <transition v-if="is_ready">
         <div class="create_invoice--container">
-            <div class="card">
-                <h3 class="card-header  text-center">Tạo đơn hàng mới</h3>
-                
-                <div class="card-body">
-                    <div class="row">
-                        <div class="col">
-                            <h5 class="text-center">Thông tin chung</h5>
-                            <div class="form-group">
-                                <label for="invoice_name">Tên đơn hàng</label>
-                                <input type="text" :class="{'form-control': true, 'is-invalid': errors.has('invoice_name')}" name="invoice_name" v-model="invoice_name" v-validate="'required'">
-                                <span class="invalid-feedback">
-                                    Tên đơn hàng không được để trống.
-                                </span>
-                            </div>
-                            <div class="form-group">
-                                <treeselect :options="invoice_type_options" v-model="invoice_type"></treeselect>
-                            </div>
-                            <div class="form-group">
-                                <div class="row">
-                                    <div class="col">
-                                        <label for="signed_at">Ngày ký</label>
-                                        <input type="date" :class="{'form-control': true, 'is-invalid': errors.has('signed_at')}" name="signed_at" v-model="signed_at" v-validate="'required|date_format:YYYY-MM-DD'">
-                                        <span class="invalid-feedback" v-show="errors.firstByRule('signed_at', 'required')">
-                                            Ngày không được để trống.
-                                        </span>   
-                                        <span class="invalid-feedback" v-show="errors.firstByRule('signed_at', 'date_format')">
-                                            Ngày không hợp lệ.
-                                        </span>                                    
-                                    </div>
-                                    <div class="col">
-                                        <label for="contract_number">Số hợp đồng</label>
-                                        <input type="text" class="form-control" id="contract_number" v-model="contract_number">
-                                    </div>
-                                </div>
-                            </div>
-
-                        </div>
-                        <div class="col">
-                            <h5 class="text-center">Nhà cung cấp</h5>
-                            <div class="form-group">
-                                <div :class="{'is-invalid': errors.has('provider_id'), 'form-control': true}">
-                                    <label for="">Chọn nhà cung cấp</label>
-                                    <treeselect :load-root-options="fetchProviders"  v-model="provider_id" placeholder="Chọn nhà cung cấp" v-validate.initial="'required'" name="provider_id"></treeselect>
-                                </div>
-                                <div class="invalid-feedback">
-                                    Hãy chọn nhà cung cấp
-                                </div>
-                            </div>
-                            
-                            <div v-if="provider_id === 0">
-                                <div class="form-group">
-                                    <div class="row">
-                                        <div class="col">
-                                            <input type="text" :class="{'is-invalid': errors.has('new_provider_name'), 'form-control': true}" v-model="new_provider.name" placeholder="Tên nhà cung cấp" v-validate.initial="'required'" name="new_provider_name">
-                                            <div class="invalid-feedback">
-                                                Xin hãy nhập tên nhà cung cấp.
+            <hero-header :page="pageMeta" />
+            <div class="navbar has-shadow">
+                <div class="container">
+                    <div class="navbar-tabs" v-if="work">
+                        <router-link :to="{'name': 'work.show', 'params': {'work_id': work.id}}" class="navbar-item is-tab">
+                            <span class="icon">
+                                <i class="mdi mdi-chevron-left"></i>
+                            </span>
+                            <span>Quay lại</span>
+                        </router-link>
+                    </div>
+                </div>
+            </div>
+            <section class="section">
+                <div class="container">
+                    <div class="tile is-ancestor">
+                        <div class="tile is-parent">
+                            <div class="tile is-child box">
+                                <p class="title is-4">Tạo đơn hàng mới</p>
+                                <hr />
+                                <div class="columns">
+                                    <div class="column">
+                                        <p class="subtitle is-5">Thông tin chung</p>
+                                        <div class="field">
+                                            <label class="label">Tên đơn hàng</label>
+                                            <div class="control">
+                                                <input type="text" :class="{'input': true, 'is-danger': errors.has('invoice_name')}" name="invoice_name" v-model="new_invoice.name" v-validate.initial="'required'">
+                                            </div>
+                                            <p class="help has-text-danger" v-show="errors.has('invoice_name')">Tên đơn hàng không được để trống.</p>
+                                        </div>
+                                        <div class="columns">
+                                            <div class="column">
+                                                <div class="field">
+                                                    <label class="label">Loại đơn hàng</label>
+                                                    <div class="control">
+                                                        <div class="select">
+                                                            <select v-model="new_invoice.type">
+                                                                <option value="invoice">Hợp đồng kinh tế / Đơn hàng</option>
+                                                                <option value="contract">Hợp đồng nguyên tắc</option>
+                                                            </select>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="column">
+                                                <div class="field">
+                                                    <label class="label">Ngày ký</label>
+                                                    <p class="control">
+                                                        <cleave :options="new_invoice_date" v-model="new_invoice.signed_at" :class="{'input': true, 'is-danger': errors.has('invoice_date')}" name="invoice_date" v-validate.initial="'required|date_format:DD/MM/YYYY'" :raw="false" :disabled="onSubmit"></cleave>
+                                                    </p>
+                                                    <p class="help is-danger" v-show="errors.firstByRule('invoice_date', 'required')">
+                                                        Ngày không được để trống.
+                                                    </p>   
+                                                    <p class="help is-danger" v-show="errors.firstByRule('invoice_date', 'date_format')">
+                                                        Ngày không hợp lệ. Nhập ngày theo dạng DD/MM/YYYY
+                                                    </p>   
+                                                </div>
                                             </div>
                                         </div>
-                                        <div class="col">
-                                            <input type="text" class="form-control" v-model="new_provider.tax_number" placeholder="Mã số thuế">
+                                        <div class="field">
+                                            <label class="label">Số hợp đồng</label>
+                                            <div class="control">
+                                                <input type="text" class="input" id="contract_number" v-model="new_invoice.contract_number">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="column">
+                                        <p class="subtitle is-5">Thông tin nhà cung cấp</p>
+                                        <div class="field">
+                                            <label :class="{'label': true, 'has-text-danger': errors.has('provider_id')}">Chọn nhà cung cấp</label>
+                                            <p class="control">
+                                                <treeselect :load-root-options="fetchProviders"  v-model="provider_id" placeholder="Chọn nhà cung cấp" v-validate="'required'" name="provider_id"></treeselect>
+                                            </p>
+                                        </div>
+                                        <div class="columns">
+                                            <div class="column">
+                                                <div class="field">
+                                                    <label class="label">Tên nhà cung cấp</label>
+                                                    <div class="control" v-if="provider_id === 0">
+                                                        <input type="text" :class="{'input': true, 'is-danger': errors.has('new_provider_name')}" v-model="new_provider.name"  name="new_provider_name" v-validate="'required'">
+                                                        <p class="help has-text-danger" v-if="errors.has('new_provider_name')">Không được để trống</p>
+                                                    </div>
+                                                    <div class="control" v-else>
+                                                        <input type="text" class="input" disabled :value="selectedProvider.name">
+                                                        
+                                                    </div>
+                                                </div>
+                                                <div class="field">
+                                                    <label class="label">Mã số thuế</label>
+                                                    <div class="control" v-if="provider_id === 0">
+                                                        <input type="text" class="input" v-model="new_provider.tax_number">
+                                                    </div>
+                                                    <div class="control" v-else>
+                                                        <input type="text" class="input" disabled :value="selectedProvider.tax_number">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="column">
+                                                <div class="field">
+                                                    <label class="label">Địa chỉ</label>
+                                                    <div class="control" v-if="provider_id === 0">
+                                                        <input type="text" class="input" v-model="new_provider.address">
+                                                    </div>
+                                                    <div class="control" v-else>
+                                                        <input type="text" class="input" disabled :value="selectedProvider.address">
+                                                    </div>
+                                                </div>
+                                                <div class="field">
+                                                    <label class="label">Mô tả</label>
+                                                    <div class="control" v-if="provider_id === 0">
+                                                        <input type="text" class="input" v-model="new_provider.description">
+                                                    </div>
+                                                    <div class="control" v-else>
+                                                        <input type="text" class="input" disabled :value="selectedProvider.description">
+                                                    </div>
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
-                                <div class="form-group">
-                                    <div class="row">
-                                        <div class="col">
-                                            <input type="text" class="form-control" v-model="new_provider.description" placeholder="Mô tả">
-                                        </div>
-                                        <div class="col">
-                                            <input type="text" class="form-control" v-model="new_provider.address" placeholder="Địa chỉ">
-                                        </div>
-                                    </div>            
-                                </div>
+                                <hr />
+                                <p class="subtitle is-5">Danh sách vật tư</p>
+                                <treeselect :multiple="true" :options="false" :open-on-focus="true" :close-on-select="false" :disableBranchNodes="false" placeholder="Chọn vật tư theo danh sách" @close="chooseMaterials"></treeselect>
                             </div>
                         </div>
                     </div>
                 </div>
+            </section>
+            <div class="card">
 
                 <hr>
                 <div class="card-body">
-                    <h5>Danh sách vật tư</h5>
-                    <div class="form-group">
-                            <treeselect :multiple="true" :options="nested_categories" :open-on-focus="true" :close-on-select="false" :disableBranchNodes="false" placeholder="Chọn vật tư theo danh sách" @close="chooseMaterials"></treeselect>
-                    </div>
+
                     <div class="form-group">
                         <table class="table boq-table">
                             <thead class="thead-light text-center">
@@ -122,7 +171,7 @@
                                         <td class="editable"><input type="text" class="inline-td" v-model="material.unit" @focus="$event.target.select()"></td>
                                         <td class="editable"><cleave type="text" class="inline-td" v-model="material.price" @focus="$event.target.select()" :options="options.price"></cleave></td>
                                         <td class="editable"><cleave type="text" class="inline-td" v-model="material.vat" @focus="$event.target.select()" :options="options.vat"></cleave></td>
-                                        <td>{{ $comma(material.price * material.unit) }}</td>
+                                        <td>{{ comma(material.price * material.unit) }}</td>
                                         <td :class="{editable: material.is_new}"><input type="text" class="inline-td" :disabled="!material.is_new" v-model="material.boq_unit" @focus="$event.target.select()"></td>
                                         <td :class="{editable: material.is_new}"><input type="text" class="inline-td" :disabled="!material.is_new" v-model="material.boq_price" @focus="$event.target.select()"></td>                               
                                         <td class="editable"><input type="text" class="inline-td" :v-model="material.note" @focus="$event.target.select()"></td>
@@ -139,12 +188,12 @@
                                 <tr class="sum">
                                     <td colspan="5"></td>
                                     <td colspan="3" class="text-center"><b>Tổng tiền </b></td>
-                                    <td colspan="4" class="text-center">{{ $comma(sum)}}</td>
+                                    <td colspan="4" class="text-center">{{ comma(sum)}}</td>
                                 </tr>
                                 <tr class="sum">
                                     <td colspan="5"></td>
                                     <td colspan="3" class="text-center"><b>Sau VAT </b></td>
-                                    <td colspan="4" class="text-center">{{ $comma(sum*1.1)}}</td>
+                                    <td colspan="4" class="text-center">{{ comma(sum*1.1)}}</td>
                                 </tr>
                             </tbody>
                         </table>
@@ -164,10 +213,11 @@
 
 <script>
 import Treeselect from '@riophae/vue-treeselect';
+import { mapGetters } from 'vuex';
 export default {
     data() {
         return {
-            is_ready: false,
+            is_ready: true,
             materials_list: [],
             options: {
                 price: {
@@ -178,33 +228,29 @@ export default {
                     numeral: true,
                 }
             },
-            invoice_type_options: [
-                {
-                    id: "invoice",
-                    label: "Hợp đồng kinh tế / Đơn Hàng",
-                }, {
-                    id: "contract",
-                    label: "Hợp đồng nguyên tắc"
-                }
-            ],
-            invoice_type: "invoice",
-            invoice_name: "",
+            'new_invoice': {
+                'name': "",
+                'type': "invoice",
+                'signed_at': "",
+                'contract_number': "",
+            },
+            'new_invoice_date': {
+                'date': true,
+                'datePattern' : ["d", "m", "Y"],
+            },
             provider_id: null,
-            providers: [],
-            signed_at: new Date().toISOString().substr(0, 10),
-            contract_number: "",
             new_provider: {
                 name: "",
                 tax_number: "",
                 description: "",
                 address: "",
             },
-            work: false,
             onSubmit: false,
         }
     },
 
     computed: {
+        /*
         nested_categories() {
             return this.work.categories.map( category => {
                 return {
@@ -221,6 +267,17 @@ export default {
                     }, []),
                 }
             });
+        },
+        */
+        selectedProvider() {
+            return (this.providers && this.provider_id) ? this.providers.find( p => p.id === this.provider_id) : {};
+        },
+        pageMeta() {
+            return {
+                'title': "Tạo đơn hàng mới",
+                'description': (this.work) ? `Công trình ${this.work.name}` : "Công trình",
+                'color': "success",
+            }
         },
         validation() {
             if (this.onSubmit) {
@@ -242,10 +299,19 @@ export default {
                 }
                 return sum;
             }, 0);
+        },
+        ...mapGetters("provider", [
+            "providers"
+        ]),
+        work() {
+            return this.$store.getters["work/work"](parseInt(this.$route.params.work_id));
         }
     },
 
     methods: {
+        guard() {
+            this.$store.dispatch("invoice/getRelatedWork", {'work_id': parseInt(this.$route.params.work_id)});
+        },
         chooseMaterials(values) {
             let _list = [];
             let addedCategories = [];
@@ -321,7 +387,7 @@ export default {
                 "per": (material) ? material.per : "m",
                 "uid": this.uid(),
                 "boq_unit": (material) ? material.boq_unit : "-",
-                "boq_price": (material) ? this.$comma(material.boq_price) : "-",
+                "boq_price": (material) ? this.comma(material.boq_price) : "-",
                 "brand": (material) ? material.brand : "",
                 "is_new": (material) ? false : true,
                 "unit":  0,
@@ -357,7 +423,7 @@ export default {
                + (new Date()).getTime().toString(36).substring(10);
         },
         fetchProviders(callback) {
-            callback(null, [{id: 0, label: "Tạo nhà cung cấp mới"}].concat(this.providers.map( provider => { return {id: provider.id, label: provider.name} })));
+            callback(null, [{id: 0, label: `TẠO NHÀ CUNG CẤP MỚI`}].concat(this.providers.map( provider => { return {id: provider.id, label: provider.name} })));
         },
         ready() {
             
@@ -436,28 +502,7 @@ export default {
 
         }
     },
-    created() {
-        axios.get(`${this.$store.state.apiBase}/provider`).then (response => {
-            this.providers = response.data;
-        });
-        if (this.$route.query.work_id) {
-            if (parseInt(this.$route.query.work_id) === this.$store.state.currentWork.id) {
-                console.log('get from $store');
-                this.work = this.$store.state.currentWork;
-                this.ready();
 
-            } else {
-                console.log('REST get');
-                axios.get(`${this.$store.state.apiBase}/work/${this.$route.query.work_id}`).then (response => {
-
-                    this.work = response.data.data;
-                    this.ready();
-                }); 
-            }
-        } else {
-
-        }
-    },
     directives: {
         focus: {
             // directive definition

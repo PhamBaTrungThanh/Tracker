@@ -24,7 +24,7 @@ const actions = {
             const inHand = invoices.map( i => i.id ).join(",");
             const response = await helpers.axios.get(`work/${work_id}/invoices`, {
                 params: {
-                    'disclude': inHand,
+                    'disclude': (inHand) ? inHand : undefined,
                 },
                 
             });
@@ -50,6 +50,20 @@ const actions = {
             console.log(error);
         }
     },
+    'getRelatedReceives': ({getters, dispatch, rootGetters}, {invoice_id}) => {
+        try {
+            const invoice = getters.invoice(invoice_id);
+            if (invoice) {
+                let receives = rootGetters["receive/receivesForInvoice"](invoice_id);
+                if (receives.length === invoice.receives_count) {
+                    return;
+                }                
+            }
+            dispatch("receive/getReceivesForInvoice", {'invoice_id': invoice_id}, {root: true});
+        } catch (error) {
+            console.log(error);
+        }
+    },
     'getRelatedTrackers': ({getters, dispatch, rootGetters}, {invoice_id}) => {
         try {
             const invoice = getters.invoice(invoice_id);
@@ -60,6 +74,16 @@ const actions = {
                 }                
             }
             dispatch("tracker/getTrackersForInvoice", {'invoice_id': invoice_id}, {root: true});
+        } catch (error) {
+            console.log(error);
+        }
+    },
+    'getRelatedWork': ({dispatch, rootGetters}, {work_id}) => {
+        try {
+            const work = rootGetters["work/work"](work_id);
+            if (!work) {
+                dispatch("work/getWorks", null, {root: true});
+            }
         } catch (error) {
             console.log(error);
         }

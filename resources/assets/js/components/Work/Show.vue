@@ -11,12 +11,16 @@
                             </span>
                             <span>Quay lại</span>
                         </router-link>
-                        <router-link :to="{'name': 'invoice.create', 'query': {'work_id': work.id}}" class="navbar-item is-tab">
-                            Thêm đơn hàng
+                        <router-link :to="{'name': 'invoice.create'}" class="navbar-item is-tab">
+                            <span class="icon">
+                                <i class="mdi mdi-library-plus has-text-success"></i>
+                            </span>
+                            <span class="has-text-success">Thêm đơn hàng</span>
                         </router-link>
                     </div>
                 </div>
             </div>
+            
             <section class="show_work--container section">
                 <article role="work" class="">
                     <div class="container">
@@ -79,12 +83,12 @@
                                         <td></td>
                                     </tr>
                                 </tbody>
-
                             </table>
                         </div>
                     </div>
                 </article>               
             </section>
+            
         </div>
     </transition>
 </template>
@@ -108,8 +112,11 @@ export default {
         invoices() {
             return this.sortInvoices(this.$store.getters['invoice/invoicesInWork'](parseInt(this.$route.params.work_id)));
         },
+        trackers() {
+            return this.$store.getters['tracker/trackersForInvoice'](parseInt(this.$route.params.work_id));
+        },
         sum_invoices() {
-            return this.invoices.reduce( (sum, invoice) => sum += parseFloat(invoice.total), 0);
+            return this.invoices.reduce( (sum, invoice) => sum += parseFloat(invoice.total), 0) * 1.1;
         },
         sum_payments() {
             return this.invoices.reduce( (sum, invoice) => sum += parseFloat(invoice.payment_total), 0);
@@ -123,15 +130,14 @@ export default {
             }
         }
     },
-    
     methods: {
         guard() {
             this.$store.dispatch("work/getWork", {work_id: parseInt(this.$route.params.work_id)});
             this.$store.dispatch("work/getRelatedInvoices", {work_id: parseInt(this.$route.params.work_id)});
         },
-        ...mapGetters('provider', [
-            'provider'
-        ]),
+        provider(id) {
+            return this.$store.getters["provider/provider"](id);
+        },
         viewReport() {
             this.$router.push({
                 name: "work.report",

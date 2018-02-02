@@ -9,9 +9,11 @@ const getters = {
 }
 const actions = {
     'getUser': async ({getters, commit}) => {
+        
         if (helpers.isEmptyObject(getters.user)) {
             try {
                 const _meta = document.querySelector("meta[name='_user']").getAttribute('content');
+                
                 if (_meta) {
                     commit('STORE_USER', JSON.parse(unescape(_meta)));
                 } else {

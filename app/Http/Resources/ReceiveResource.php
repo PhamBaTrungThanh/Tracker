@@ -19,6 +19,8 @@ class ReceiveResource extends Resource
             'name' => $this->name,
             'description' => $this->description,
             'received_at' => $this->received_at->format('d/m/Y'),
+            'invoice_id' => $this->invoice_id,
+            'type' => "receive",
         ];
     }
 }

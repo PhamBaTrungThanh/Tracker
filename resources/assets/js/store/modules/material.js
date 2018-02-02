@@ -12,15 +12,22 @@ const getters = {
         }
         return materials;
     }, []),
+    'materials': state => state.data,
+    'material': state => id => state.data.find( m => m.id === id),
 }
 const actions = {
-    'storematerials': ({commit}, data) => {
-        commit("STORE_MUTIPLE_MATERIALS", data);
+    'storeMaterials': ({commit}, data) => {
+        commit("STORE_MATERIALS", data);
     }
 }
 const mutations = {
-    STORE_MUTIPLE_MATERIALS(state, data) {
-        state.data.push(...data);
+    STORE_MATERIALS(state, materials) {
+        for (let i = materials.length - 1; i >= 0; i--) {
+            
+            if ((state.data.findIndex( m => m.id === materials[i].id)) === -1) {
+                state.data.push(materials[i]);
+            }
+        }
     }
 }
 

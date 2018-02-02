@@ -1,5 +1,5 @@
 <template>
-    <section :class="['hero', 'is-primary', {'is-medium': isBigHero}]">
+    <section :class="classes">
         <div class="hero-body is-relative">
             <div class="is-overlay background-cover">
                 <img :src="background" v-if="background">
@@ -22,10 +22,14 @@ export default {
                 description: "",
                 isBigHero: false,
                 background: false,
+                color: "primary"
             }
         },
     },
     computed: {
+        classes() {
+            return `hero ${(this.isBigHero ? 'is-medium': '')} is-${this.color}`;
+        },
         title() {
             return (this.page.title) ? this.page.title : "MEC";
         },
@@ -34,6 +38,9 @@ export default {
         },
         isBigHero() {
             return (this.page.isBigHero) ? true : false;
+        },
+        color() {
+            return (this.page.color) ? this.page.color : "primary";
         },
         background() {
             return (this.page.background) ? this.page.background : false;

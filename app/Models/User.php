@@ -19,6 +19,7 @@ class User extends Authenticatable
         'name', 'email', 'password',
     ];
 
+
     /**
      * Role means:
      * 0: Admin

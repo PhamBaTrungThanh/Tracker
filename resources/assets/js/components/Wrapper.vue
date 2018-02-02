@@ -53,7 +53,6 @@
     </div>
 </template>
 <script>
-import { mapGetters } from 'vuex';
 export default {
     data: () => ({
         eatTheBurger: false,
@@ -64,18 +63,17 @@ export default {
         }
     }),
     computed: {
-        ...mapGetters('user',[
-            'user',
-        ]),
+        user() {
+            return this.$store.getters["user/user"];
+        }
     },
     methods: {
         guard() {
             this.$store.dispatch('user/getUser');
+            this.$store.dispatch('provider/getProviders');
         }
     },
-    mounted() {
-        this.guard();
-    }
+
     
 } 
 </script>

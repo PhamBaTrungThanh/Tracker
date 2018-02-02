@@ -21,6 +21,8 @@ Route::prefix('v1')->middleware('auth:api')->namespace('Api_v1')->group(function
     Route::get('/work/{work_id}/invoices', 'InvoiceController@fromWork');
     Route::get('invoice/{invoice_id}/payments', 'PaymentController@fromInvoice');
     Route::get('invoice/{invoice_id}/trackers', 'TrackerController@fromInvoice');
+    Route::get('invoice/{invoice_id}/receives', 'ReceiveController@fromInvoice');
+
     Route::Resource('/user', 'UserController');
 
     Route::Resource('/provider', 'ProviderController');

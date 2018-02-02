@@ -10,18 +10,12 @@ use App\Models\Material;
 
 use App\Http\Resources\TrackerResource;
 use App\Http\Resources\MaterialResource;
+use App\Http\Resources\MaterialTreeResource;
 class MaterialController extends Controller
 {
     public function index(Request $request) 
     {
-        if ($request->filled('invoice_id')) {
-            $materials = Tracker::where('invoice_id', $request->query('invoice_id'))->with('material')->get()->pluck('material');
-            return MaterialResource::collection($materials);
-        }
-        if ($request->filled('in')) {
-            $materials = Material::whereIn('id', explode(",", $request->query('in')))->with('boq')->get();
-            return MaterialResource::collection($materials);
-        }
+        return MaterialTreeResource::collection(Material::all()->toTree());
     }
 
     public function store(Request $request)

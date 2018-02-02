@@ -12,6 +12,7 @@ import payment from "./modules/payment";
 import receive from "./modules/receive";
 import material from "./modules/material";
 import tracker from "./modules/tracker";
+
 Vue.use(Vuex)
 
 const debug = process.env.NODE_ENV !== 'production'

@@ -4,7 +4,7 @@ namespace App\Http\Resources;
 
 use Illuminate\Http\Resources\Json\Resource;
 
-class MaterialResource extends Resource
+class MaterialTreeResource extends Resource
 {
     /**
      * Transform the resource into an array.
@@ -24,12 +24,7 @@ class MaterialResource extends Resource
             'brand' => $this->brand,
             'type' => 'material',
             'currency' => $this->currency,
-            'boq_unit' => ($this->boq) ? $this->boq->unit : 0,
-            'boq_price' => ($this->boq) ? $this->boq->price : 0,
-            'boq_total' => ($this->boq) ? $this->boq->unit * $this->boq->price : 0,
-            'total_unit' => $this->total_unit,
-            'total_sum' => $this->total_price,
-            'received_unit' => $this->received_unit,
+            'children' => self::collection($this->children),
         ];
     }
 }

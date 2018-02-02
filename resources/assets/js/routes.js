@@ -38,11 +38,6 @@ const routes = [
                 component: () => import("./components/Invoice/Base.vue"),
                 children: [
                     {
-                        path: "",
-                        name: "invoice.index",
-                        component: () => import("./components/Invoice/Index.vue"),
-                    }, 
-                    {
                         path: "create",
                         name: "invoice.create",
                         component: () => import("./components/Invoice/Create.vue"),
@@ -63,10 +58,6 @@ const routes = [
                 component: () => import("./components/Payment/Base.vue"),
                 children: [
                     {
-                        path: "",
-                        name: "payment.index",
-                        component: () => import("./components/Payment/Index.vue"),
-                    }, {
                         path: "create",
                         name: "payment.create",
                         component: () => import("./components/Payment/Create.vue"),
@@ -81,14 +72,10 @@ const routes = [
                     }
                 ]
             }, {
-                path: "work/:work_id'/invoice/:invoice_id/receive",
+                path: "work/:work_id/invoice/:invoice_id/receive",
                 component: () => import("./components/Receive/Base.vue"),
                 children: [
                     {
-                        path: "",
-                        name: "receive.index",
-                        component: () => import("./components/Receive/Index.vue"),
-                    }, {
                         path: "create",
                         name: "receive.create",
                         component: () => import("./components/Receive/Create.vue"),

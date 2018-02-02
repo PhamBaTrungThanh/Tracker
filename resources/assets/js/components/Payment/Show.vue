@@ -5,12 +5,18 @@
             <div class="navbar has-shadow">
                 <div class="container">
                     <div class="navbar-tabs" v-if="invoice">
-                        <router-link :to="{'name': 'invoice.show', 'params': {'id': invoice.id}}" class="navbar-item is-tab">
+                        <router-link :to="{'name': 'invoice.show', 'params': {'invoice_id': invoice.id}}" class="navbar-item is-tab">
                             <span class="icon">
                                 <i class="mdi mdi-chevron-left"></i>
                             </span>
                             <span>Về đơn hàng</span>
                         </router-link>
+                        <a class="navbar-item is-tab" @click="deletePayment">
+                            <span class="icon">
+                                <i class="mdi mdi-delete has-text-danger"></i>
+                            </span>
+                            <span class="has-text-danger">Xóa thanh toán</span>
+                        </a>
                     </div>
                 </div>
             </div>
@@ -141,7 +147,7 @@
                                     </button>
                                 </div>
                                 <div class="control">
-                                    <router-link class="button is-outlined" :to="{'name': 'invoice.show', 'params': {'id': invoice.id}}">
+                                    <router-link class="button is-outlined" :to="{'name': 'invoice.show', 'params': {'invoice_id': invoice.id}}">
                                         <span class="icon">
                                             <span class="mdi mdi-chevron-left"></span>
                                         </span>
@@ -167,7 +173,13 @@ export default {
     }),
     computed: {
         user() {
-            return this.$store.state.user
+            return this.$store.getters["user/user"];
+        },
+        invoice() {
+            return this.$store.getters["invoice/invoice"](parseInt(this.$route.params.invoice_id));
+        },
+        payment() {
+            return this.$store.getters["payment/payment"](parseInt(this.$route.params.payment_id));
         },
         pageMeta() {
             return {
@@ -176,22 +188,12 @@ export default {
             }
         }
     },
-    asyncComputed: {
-        payment: {
-            default: false,
-            get() {
-                return this.$store.dispatch("getPayment", {payment_id: this.$route.params.id, fetchNew: true});
-            }
-        },
-        invoice: {
-            default: false,
-            lazy: true,
-            get() {
-                return this.$store.dispatch("getInvoice", {invoice_id: this.payment.invoice_id});
-            }
-        }
-    },
+
     methods: {
+        guard() {
+            this.$store.dispatch("payment/getSinglePaymentInstance", {payment_id: parseInt(this.$route.params.payment_id)});
+            this.$store.dispatch("payment/getRelatedInvoice", {invoice_id: parseInt(this.$route.params.invoice_id)});
+        },
         deletePayment() {
             this.swal({
                 'title': "Xác nhận xóa!",
