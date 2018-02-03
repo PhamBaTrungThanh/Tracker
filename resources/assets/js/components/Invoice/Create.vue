@@ -123,7 +123,7 @@
                                 </div>
                                 <hr />
                                 <p class="subtitle is-5">Danh sách vật tư</p>
-                                <treeselect :multiple="true" :options="false" :open-on-focus="true" :close-on-select="false" :disableBranchNodes="false" placeholder="Chọn vật tư theo danh sách" @close="chooseMaterials"></treeselect>
+                                <treeselect :multiple="true" :load-root-options="fetchTree" :open-on-focus="true" :close-on-select="false" :disableBranchNodes="false" placeholder="Chọn vật tư theo danh sách" @close="chooseMaterials"></treeselect>
                             </div>
                         </div>
                     </div>
@@ -143,7 +143,7 @@
                                     <th rowspan="2" class="per-col">Đơn vị tính</th>
                                     <th rowspan="2" class="currency-col">Loại tiền</th>
                                     <th rowspan="2" class="brand-col">Hãng</th>
-                                    <th colspan="4" class="invoice-col"><span v-if="invoice_type === 'invoice'">Đơn hàng</span><span v-else>Hợp đồng</span></th>
+                                    <th colspan="4" class="invoice-col"><span v-if="new_invoice.type === 'invoice'">Đơn hàng</span><span v-else>Hợp đồng</span></th>
                                     <th colspan="2" class="boq-col">BOQ</th>
                                     <th rowspan="2" class="notes-col">Ghi chú</th>
                                 </tr>
@@ -159,7 +159,7 @@
                             <tbody>
                                 <template v-for="(category, index) in materials_list">
                                     <tr :key="category.uid" class="category-row">
-                                        <td class="controls-col" @click.self="addMaterial(category.id)"><span class="index">{{ $romanize(index + 1) }}</span><span class="delete-this">-</span></td>
+                                        <td class="controls-col" @click.self="addMaterial(category.id)"><span class="index">{{ (index + 1) }}</span><span class="delete-this">-</span></td>
                                         <td colspan="11"><input type="text" class="inline-td" v-model="category.name" @focus="$event.target.select()"></td>
                                     </tr>                                 
                                     <tr v-for="(material, mat_index) in category.children" :key="material.uid" class="material-row">
@@ -279,6 +279,34 @@ export default {
                 'color': "success",
             }
         },
+        tree() {
+            return this.$store.getters["material/tree"];
+        },
+        flatList() {
+            let _flatList = [];
+            const _nested = (data) => {
+                let _r = [data];
+                if (_r.has_children) {
+                    const children = this.$store.getters["material/children"](data.id);
+                    console.log(children);
+                    for (let i = 0; i < children.length; i++) {
+                        if (children[i].has_children) {
+                            _r.push(..._nested(children[i]));
+                        } else {
+                            _r.push(children[i]);
+                        }
+                    }
+                }
+                console.log(_r);
+                return _r;
+            }
+            this.materials_list.forEach( id => {
+                const _m = this.$store.getters["material/material"](id);
+                console.log("_m", _m);
+                _flatList.push(..._nested(_m));
+            });
+            return _flatList;
+        },
         validation() {
             if (this.onSubmit) {
                 return {
@@ -290,7 +318,8 @@ export default {
                 }
             }
         },
-        sum() {
+        sum() { 
+            /*
             return this.materials_list.reduce( (sum, category) => {
                 if (category.children.length > 0) {
                     sum += category.children.reduce( (child_sum, material) => {
@@ -298,11 +327,12 @@ export default {
                     }, 0);
                 }
                 return sum;
-            }, 0);
+            }, 0);*/
         },
         ...mapGetters("provider", [
             "providers"
         ]),
+
         work() {
             return this.$store.getters["work/work"](parseInt(this.$route.params.work_id));
         }
@@ -314,6 +344,9 @@ export default {
             this.$store.dispatch("material/getTree");
         },
         chooseMaterials(values) {
+            this.materials_list = values;
+            /*
+
             let _list = [];
             let addedCategories = [];
             const get = (str) => { 
@@ -352,7 +385,7 @@ export default {
                 }
             });
             this.materials_list = _list;
-
+            */
         },
 
         addCategory() {
@@ -425,6 +458,9 @@ export default {
         },
         fetchProviders(callback) {
             callback(null, [{id: 0, label: `TẠO NHÀ CUNG CẤP MỚI`}].concat(this.providers.map( provider => { return {id: provider.id, label: provider.name} })));
+        },
+        fetchTree(callback) {
+            callback(null, this.tree);
         },
         ready() {
             

@@ -25,7 +25,7 @@ class MaterialTreeResource extends Resource
             'type' => 'material',
             'currency' => $this->currency,
             'parent_id' => $this->parent_id,
-            'has_children' => (count($this->children) > 0) ? true : false,
+            'has_children' => ($this->children_count > 0) ? true : false,
         ];
     }
 }

@@ -15,7 +15,7 @@ class MaterialController extends Controller
 {
     public function index(Request $request) 
     {
-        return MaterialTreeResource::collection(Material::all()->toFlatTree());
+        return MaterialTreeResource::collection(Material::withCount('children')->get()->toFlatTree());
     }
 
     public function store(Request $request)

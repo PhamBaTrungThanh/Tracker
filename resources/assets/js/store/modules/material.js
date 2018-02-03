@@ -16,23 +16,55 @@ const getters = {
     }, []),
     'materials': state => state.data,
     'material': state => id => state.data.find( m => m.id === id),
+    'children': state => parent_id => state.data.reduce ( (materials, material) => {
+        if (material.parent_id === parent_id) {
+            materials.push(material);
+        }
+        return materials;
+    }, []),
     'tree': state => {
         let _materials = [];
-        for (let i = 0; i < state.data.length; i++) {
-            if (state.data[i].has_children) {
-                let _m = state.data[i];
+        let _walker = (index) => {
+
+            let _m = state.data[index];
+            if (_m.has_children) {
                 _m.children = [];
-                for (let j = i + 1; j < state.data.length; j++) {
+                for (let j = index + 1; j < state.data.length; j++) {
                     if (state.data[j].parent_id === _m.id) {
-                        _m.children.push(state.data[j]);
+                        _m.children.push(_walker(j));
                     } else {
                         break;
                     }
                 }
-                _materials.push(_m);
             }
+
+            return _m;
         }
-        return _materials;
+
+        return _walker(0);
+    },
+    'flatList': ({state, getters}) => id => {
+        let _materials = [];
+        let _program = (data) => {
+            let _m = [];
+            _m.push(data);
+            if (data.children) {
+                for (let i = 0; i < data.children.length; i++) {
+                    _m.push(..._program(data.children[i]));
+                }
+            } 
+            return _m;
+        }
+
+        let _nested = (data) => {
+            let _m = [];
+            m.push(data);
+            if (data.has_children) {
+
+            }
+            return _m;
+        }
+        
     }
 }
 const actions = {
@@ -55,7 +87,7 @@ const mutations = {
         for (let i = oldData.length - 1; i >= 0; i--) {
             let index = tree.findIndex( m => m.id === oldData[i].id);
             if (index !== -1) {
-                tree.splice(index, 1, oldData[i]);
+                tree.splice(index, 1, Object.assign({}, tree[index], oldData[i]));
             }
         }        
         state.data = tree;
