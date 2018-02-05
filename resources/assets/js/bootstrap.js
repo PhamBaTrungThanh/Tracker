@@ -33,7 +33,9 @@ const App = Object.freeze({
             return array.length === 0;
         },
         'monetize': number => {
-            if (parseFloat(number) === 0) {
+            if (Number.isNaN(number)) {
+                return 0;
+            } else if (parseFloat(number) === 0) {
                 return "-";
             } else {
                 var parts = parseFloat(number).toFixed(3).toString().split(".");
@@ -85,6 +87,17 @@ const App = Object.freeze({
             return new swal(merged);
         },
         'axios': _axios,
+        'colorWheels': (id) => {
+            if (type(id) === "string") {
+                return (chartColors[id]) ? chartColors[id] : chartColors['red'];
+            }
+            if (type(id) === "number") {
+                return (chartColors[Object.keys(chartColors)[id]]) ? chartColors[Object.keys(chartColors)[id]] : chartColors['red'];
+            }
+            else {
+                return chartColors['red'];
+            }
+        }
     }
 });
 
@@ -97,7 +110,7 @@ export const chartColors = {
 	blue: 'rgb(54, 162, 235)',
 	purple: 'rgb(153, 102, 255)',
 	grey: 'rgb(201, 203, 207)'
-        };
+};
 
 //Chart.defaults.global.tooltips.intersect = false;
 export const ChartJs = Chart; 

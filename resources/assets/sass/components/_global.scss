@@ -49,3 +49,29 @@
     z-index: 999;
 }
 
+.table.has-text-centered-cell {
+    td,th  {
+        text-align: center;
+    }
+}
+
+.table.has-text-left-cell {
+    td {
+        text-align: center;
+    }
+}
+
+.menu.right-click {
+    position: absolute;
+    left: 0;
+    top: 0;
+    z-index: 9999;
+    background: #ffffff;
+    padding: 20px;
+    border: 1px solid #999;
+    transition: opacity 0.2s ease 0;
+    opacity: 0;
+}
+.menu.right-click.active {
+    opacity: 1;
+}

@@ -49,7 +49,7 @@
                                                 <div class="field">
                                                     <label class="label">Ngày ký</label>
                                                     <p class="control">
-                                                        <cleave :options="new_invoice_date" v-model="new_invoice.signed_at" :class="{'input': true, 'is-danger': errors.has('invoice_date')}" name="invoice_date" v-validate.initial="'required|date_format:DD/MM/YYYY'" :raw="false" :disabled="onSubmit"></cleave>
+                                                        <cleave :options="options.date" v-model="new_invoice.signed_at" :class="{'input': true, 'is-danger': errors.has('invoice_date')}" name="invoice_date" v-validate.initial="'required|date_format:DD/MM/YYYY'" :raw="false" :disabled="onSubmit"></cleave>
                                                     </p>
                                                     <p class="help is-danger" v-show="errors.firstByRule('invoice_date', 'required')">
                                                         Ngày không được để trống.
@@ -123,12 +123,84 @@
                                 </div>
                                 <hr />
                                 <p class="subtitle is-5">Danh sách vật tư</p>
-                                <treeselect :multiple="true" :load-root-options="fetchTree" :open-on-focus="true" :close-on-select="false" :disableBranchNodes="false" placeholder="Chọn vật tư theo danh sách" @close="chooseMaterials"></treeselect>
+                                <div class="columns">
+                                    <div class="column">
+                                        <treeselect :multiple="true" :load-root-options="fetchTree" :open-on-focus="true" :close-on-select="false" :disableBranchNodes="false" placeholder="Chọn vật tư theo danh sách" @close="chooseMaterials"></treeselect>
+                                    </div>
+                                    <div class="column is-narrow">
+                                        <button class="button is-primary" @click="newMaterial">Thêm danh mục mới</button>
+                                    </div>
+                                </div>
+                                
+                                <div class="columns">
+                                    <div class="column">
+                                        <table class="table has-text-centered-cell is-bordered is-striped is-narrow is-hoverable is-fullwidth" v-if="flatList">
+                                            <thead>
+                                                <tr>
+                                                    <th rowspan="2" class=""></th>
+                                                    <th rowspan="2" class="has-text-left">Tên vật tư / Danh mục</th>
+                                                    <th rowspan="2" style="width: 80px">Đơn vị tính</th>
+                                                    <th rowspan="2" style="width: 80px">Loại tiền</th>
+                                                    <th rowspan="2" style="width: 120px">Hãng</th>
+                                                    <th colspan="4" class=""><span v-if="new_invoice.type === 'invoice'">Đơn hàng</span><span v-else>Hợp đồng</span></th>
+                                                    <th colspan="2" class="">BOQ</th>
+                                                    <th rowspan="2" class="">Ghi chú</th>
+                                                </tr>
+                                                <tr>
+                                                    <th style="width: 100px">Số lượng</th>
+                                                    <th style="width: 100px">Đơn giá</th>
+                                                    <th style="width: 80px">VAT (%)</th>
+                                                    <th style="width: 120px">Thành tiền</th>
+                                                    <th style="width: 100px">Số lượng</th>
+                                                    <th style="width: 100px">Đơn giá</th>
+                                                    
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr v-for="(material, index) in flatList" :key="index" :class="`depth-${material.depth}`" @click.right="addMaterial(material.uid, $event)">
+                                                    <template v-if="!material.is_new">
+                                                        <td>{{index + 1}}</td>
+                                                        <td class="has-text-left">{{material.name}}</td>
+                                                        <td>{{material.per}}</td>
+                                                        <td>{{material.currency}}</td>
+                                                        <td>{{material.brand}}</td>
+                                                        <td class="control"><input type="text" class="input" v-model="material.tracker.unit" @focus="$event.target.select()"></td>
+                                                        <td class="control"><cleave type="text" class="input" v-model="material.tracker.price" @focus="$event.target.select()" :options="options.price"></cleave></td>
+                                                        <td class="control"><cleave type="text" class="input has-text-centered" v-model="material.tracker.vat" @focus="$event.target.select()" :options="options.vat"></cleave></td>
+                                                        <td>{{ comma((material.tracker.unit * material.tracker.price) * ((material.tracker.vat/100) + 1)) }}</td>
+                                                        <td></td>
+                                                        <td></td>
+                                                        <td></td>
+                                                    </template>
+                                                    <template v-else >
+                                                        <td>{{index + 1}}</td>
+                                                        <td class="has-text-left control"><input type="text" class="input" v-model="material.name" @focus="$event.target.select()"></td>
+                                                        <td class="control"><input type="text" class="input has-text-centered" @focus="$event.target.select()" v-model="material.per"></td>
+                                                        <td class="control"><input type="text" class="input has-text-centered" @focus="$event.target.select()" v-model="material.currency"></td>
+                                                        <td class="control"><input type="text" class="input" @focus="$event.target.select()" v-model="material.brand"></td>
+                                                        <td class="control"><input type="text" class="input" v-model="material.tracker.unit" @focus="$event.target.select()"></td>
+                                                        <td class="control"><cleave type="text" class="input" v-model="material.tracker.price" @focus="$event.target.select()" :options="options.price"></cleave></td>
+                                                        <td class="control"><cleave type="text" class="input has-text-centered" v-model="material.tracker.vat" @focus="$event.target.select()" :options="options.vat"></cleave></td>
+                                                        <td>{{ comma((material.tracker.unit * material.tracker.price) * ((material.tracker.vat/100) + 1)) }}</td>
+                                                        <td></td>
+                                                        <td></td>
+                                                        <td></td>
+                                                    </template>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                        <p>
+                                            <button class="button is-primary" @click="newMaterial">Thêm danh mục mới</button>
+                                        </p>
+                                    </div>
+                                </div>
+                                
                             </div>
                         </div>
                     </div>
                 </div>
             </section>
+            <!--
             <div class="card">
 
                 <hr>
@@ -207,6 +279,18 @@
 
                 </div>               
             </div>
+            -->
+            <aside :class="{'menu': true, 'right-click': true, 'active': rightClick.isActive}" :style="{'top': rightClick.x, 'left': rightClick.y}">
+                <p class="menu-label">
+                    Tùy chọn
+                </p>
+                <ul class="menu-list">
+                    <li>
+                        <a>Thêm danh mục</a>
+                        <a>Xóa danh mục</a>
+                    </li>
+                </ul>
+            </aside>
         </div>           
     </transition>
 </template>
@@ -217,15 +301,25 @@ import { mapGetters } from 'vuex';
 export default {
     data() {
         return {
-            is_ready: true,
-            materials_list: [],
-            options: {
-                price: {
-                    numeral: true,
-                    numeralThousandsGroupStyle: 'thousand'
+            'is_ready': true,
+            'materials_list': [],
+            'flatList': [],
+            'rightClick': {
+                'isActive': false,
+                'x': 0,
+                'y': 0,
+            },
+            'options': {
+                'price': {
+                    'numeral': true,
+                    'numeralThousandsGroupStyle': 'thousand'
                 },
-                vat: {
-                    numeral: true,
+                'vat': {
+                    'numeral': true,
+                },
+                'date': {
+                    'date': true,
+                    'datePattern' : ["d", "m", "Y"],                    
                 }
             },
             'new_invoice': {
@@ -234,18 +328,14 @@ export default {
                 'signed_at': "",
                 'contract_number': "",
             },
-            'new_invoice_date': {
-                'date': true,
-                'datePattern' : ["d", "m", "Y"],
+            'provider_id': null,
+            'new_provider': {
+                'name': "",
+                'tax_number': "",
+                'description': "",
+                'address': "",
             },
-            provider_id: null,
-            new_provider: {
-                name: "",
-                tax_number: "",
-                description: "",
-                address: "",
-            },
-            onSubmit: false,
+            'onSubmit': false,
         }
     },
 
@@ -281,32 +371,9 @@ export default {
         },
         tree() {
             return this.$store.getters["material/tree"];
+            
         },
-        flatList() {
-            let _flatList = [];
-            const _nested = (data) => {
-                let _r = [data];
-                if (_r.has_children) {
-                    const children = this.$store.getters["material/children"](data.id);
-                    console.log(children);
-                    for (let i = 0; i < children.length; i++) {
-                        if (children[i].has_children) {
-                            _r.push(..._nested(children[i]));
-                        } else {
-                            _r.push(children[i]);
-                        }
-                    }
-                }
-                console.log(_r);
-                return _r;
-            }
-            this.materials_list.forEach( id => {
-                const _m = this.$store.getters["material/material"](id);
-                console.log("_m", _m);
-                _flatList.push(..._nested(_m));
-            });
-            return _flatList;
-        },
+
         validation() {
             if (this.onSubmit) {
                 return {
@@ -343,8 +410,67 @@ export default {
             this.$store.dispatch("invoice/getRelatedWork", {'work_id': parseInt(this.$route.params.work_id)});
             this.$store.dispatch("material/getTree");
         },
+        generateFlatList() {
+            let list = this.materials_list;
+            let _flatList = this.$store.getters["material/materials"].map( value => Object.assign({}, value, {
+                'active': false,
+                'children': null,
+                'is_new': false,
+                'tracker': {
+                    'vat': 10,
+                    'price': 0,
+                    'unit': 0,
+                    
+                }
+            }));
+
+            let _trackBackward = (id) => {
+                let index = _flatList.findIndex( i => i.id === id);
+                _flatList[index].active = true;
+                if (_flatList[index].parent_id) {
+                    _trackBackward(_flatList[index].parent_id);
+                }
+            }
+            let _trackForward = (id, index) => {
+                for (let i = index + 1; i < _flatList.length; i++) {
+                    if (_flatList[i].parent_id === id) {
+                         _flatList[i].active = true;
+                         if (_flatList[i].has_children) {
+                             _trackForward(_flatList[i].id, i);
+                         }
+                    }
+                   
+                }
+
+            }
+            for (let i = list.length - 1;  i >= 0; i--) {
+                let index = _flatList.findIndex( m => m.id === list[i]);
+                if (index !== -1) {
+                    _flatList[index].active = true;
+                    if(_flatList[index].parent_id) {
+                        _trackBackward(_flatList[index].parent_id);
+                    }
+                    if(_flatList[index].has_children) {
+                        _trackForward(_flatList[index].id, index);
+                    }
+                }
+            }
+            
+
+            return _flatList.reduce( (materials, material) => {
+                if (material.active === true) {
+                    if (material.children) {
+                        material.children = null;
+                    }
+                    materials.push(material);
+                }
+                return materials;
+            }, []);
+        },
         chooseMaterials(values) {
             this.materials_list = values;
+            this.flatList = this.generateFlatList();
+
             /*
 
             let _list = [];
@@ -388,10 +514,6 @@ export default {
             */
         },
 
-        addCategory() {
-            this.materials_list.push(this.categoryResource());
-        },
-        
         categoryResource(id = 0, merge = {}) {
             let _category = false;
             if (typeof id === "number" && id !== 0) {
@@ -413,27 +535,33 @@ export default {
             }
             return _return;
         },
-        materialResource(material = false, override = {}) {
-            const _material = {
-                "name": (material) ? material.name : "",
+        materialResource(parent_uid = false) {
+            return {
+                "name": "",
                 "type": "material",
-                "currency": (material) ? material.currency : "vnđ",
-                "per": (material) ? material.per : "m",
+                "currency": "vnđ",
+                "per": "m",
                 "uid": this.uid(),
-                "boq_unit": (material) ? material.boq_unit : "-",
-                "boq_price": (material) ? this.comma(material.boq_price) : "-",
-                "brand": (material) ? material.brand : "",
-                "is_new": (material) ? false : true,
-                "unit":  0,
-                "price": 0,   
-                "id": (material) ? material.id : 0,
-                "category_id": (material) ? material.category_id : 0,
-                "note": "",
-                "vat": 10,
+                "brand": "",
+                "is_new": true,
+                'tracker': {
+                    'vat': 10,
+                    'price': 0,
+                    'unit': 0
+                },
+                "id": 0,
+                'parent_uid': (parent_uid) ? parent_uid : "",
             }
-            return Object.assign({}, _material, override);
+            
         },
         addMaterial(category_uid, event = false) {
+            this.rightClick = {
+                'isActive': true,
+                'x': event.pageX,
+                'y': event.pageY,
+            };
+ 
+            /*
             const index = this.materials_list.findIndex( category => category.uid === category_uid);
             let merge = {
                 "category_id": this.materials_list[index].id,
@@ -442,8 +570,11 @@ export default {
 
             
             this.materials_list[index].children.push(this.materialResource(false, merge));
-            if (event) event.target.value = "";
+            if (event) event.target.value = "";*/
 
+        },
+        newMaterial() {
+            return this.flatList.push(this.materialResource());
         },
         deleteFrom(category_uid, material_uid) {
             const index = this.materials_list.findIndex( category => category.uid === category_uid);

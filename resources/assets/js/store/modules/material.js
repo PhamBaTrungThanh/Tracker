@@ -23,49 +23,50 @@ const getters = {
         return materials;
     }, []),
     'tree': state => {
-        let _materials = [];
-        let _walker = (index) => {
-
-            let _m = state.data[index];
-            if (_m.has_children) {
-                _m.children = [];
-                for (let j = index + 1; j < state.data.length; j++) {
-                    if (state.data[j].parent_id === _m.id) {
-                        _m.children.push(_walker(j));
-                    } else {
-                        break;
+        let _materials = state.data;
+        if (_materials.length === 0) {
+            return [];
+        } else {
+            let _maxDepth = _materials.reduce( (max, m) => max > m.depth ? max : m.depth);
+            for (let i = _maxDepth; i >= 1; i--) {
+                // get all the parents
+                let _parents = _materials.reduce( (materials, material) => {
+                    if (material.depth === i - 1) {
+                        materials.push(material);
+                    }
+                    return materials;
+                }, []);
+                
+                for (let j = _parents.length - 1; j >= 0; j--) {
+                    if (_parents[j].has_children) {
+                        _parents[j].children = _materials.reduce( (materials, material) => {
+                            if (material.parent_id === _parents[j].id) {
+                                materials.push(material);
+                            }
+                            return materials;
+                        }, []);
+                        
                     }
                 }
-            }
-
-            return _m;
-        }
-
-        return _walker(0);
-    },
-    'flatList': ({state, getters}) => id => {
-        let _materials = [];
-        let _program = (data) => {
-            let _m = [];
-            _m.push(data);
-            if (data.children) {
-                for (let i = 0; i < data.children.length; i++) {
-                    _m.push(..._program(data.children[i]));
+                // Get all left;
+                if (i > 0) {
+                    let _unused = _materials.reduce( (materials, material) => {
+                        if (material.depth === i - 2) {
+                            materials.push(material);
+                        }
+                        return materials;
+                    }, []);
+                    _materials = [..._parents, ..._unused];
+                } else {
+                    _materials = _parents;
                 }
-            } 
-            return _m;
-        }
-
-        let _nested = (data) => {
-            let _m = [];
-            m.push(data);
-            if (data.has_children) {
-
+    
             }
-            return _m;
+            return _materials;
         }
-        
-    }
+
+    },
+
 }
 const actions = {
     'storeMaterials': ({commit}, data) => {
