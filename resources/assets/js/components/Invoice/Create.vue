@@ -157,7 +157,7 @@
                                                 </tr>
                                             </thead>
                                             <tbody>
-                                                <tr v-for="(material, index) in flatList" :key="index" :class="`depth-${material.depth}`" @click.right="addMaterial(material.uid, $event)">
+                                                <tr v-for="(material, index) in flatList" :key="index" :class="`depth-${material.depth}`" @click.right.prevent="addMaterial(material.uid, $event)">
                                                     <template v-if="!material.is_new">
                                                         <td>{{index + 1}}</td>
                                                         <td class="has-text-left">{{material.name}}</td>
@@ -280,7 +280,7 @@
                 </div>               
             </div>
             -->
-            <aside :class="{'menu': true, 'right-click': true, 'active': rightClick.isActive}" :style="{'top': rightClick.x, 'left': rightClick.y}">
+            <aside :class="{'menu': true, 'right-click': true, 'active': rightClick.isActive}" ref="rightClick">
                 <p class="menu-label">
                     Tùy chọn
                 </p>
@@ -306,8 +306,6 @@ export default {
             'flatList': [],
             'rightClick': {
                 'isActive': false,
-                'x': 0,
-                'y': 0,
             },
             'options': {
                 'price': {
@@ -555,11 +553,12 @@ export default {
             
         },
         addMaterial(category_uid, event = false) {
+        
             this.rightClick = {
                 'isActive': true,
-                'x': event.pageX,
-                'y': event.pageY,
             };
+            this.$refs.rightClick.style.top = event.pageY + "px";
+            this.$refs.rightClick.style.left = event.pageX + "px";
  
             /*
             const index = this.materials_list.findIndex( category => category.uid === category_uid);
