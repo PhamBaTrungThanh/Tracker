@@ -50,6 +50,15 @@
         <div class="page----content">
             <router-view></router-view>
         </div>
+        <footer class="footer">
+            <div class="container">
+                <div class="content has-text-centered">
+                    <p>
+
+                    </p>
+                </div>
+            </div>
+        </footer>
     </div>
 </template>
 <script>

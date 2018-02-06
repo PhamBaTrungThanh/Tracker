@@ -125,10 +125,19 @@
                                 <p class="subtitle is-5">Danh sách vật tư</p>
                                 <div class="columns">
                                     <div class="column">
-                                        <treeselect :multiple="true" :load-root-options="fetchTree" :open-on-focus="true" :close-on-select="false" :disableBranchNodes="false" placeholder="Chọn vật tư theo danh sách" @close="chooseMaterials"></treeselect>
+                                        <treeselect :multiple="true" :load-root-options="fetchTree" :open-on-focus="true" :close-on-select="false" :disableBranchNodes="false" placeholder="Chọn vật tư theo danh sách" @close="chooseMaterials" :disabled="materialSelect.disabled"></treeselect>
                                     </div>
                                     <div class="column is-narrow">
-                                        <button class="button is-primary" @click="newMaterial">Thêm danh mục mới</button>
+                                        <div class="field is-grouped">
+                                            <div class="control">
+                                                <div class="button is-warning" @click="openMaterialSelect" :disabled="!materialSelect.dirty">Thay đổi</div>
+                                            </div>
+                                            <div class="control">
+                                                <button class="button is-primary" @click="newMaterial">Thêm danh mục gốc</button>
+                                            </div>
+                                            
+                                        </div>
+                                       
                                     </div>
                                 </div>
                                 
@@ -137,61 +146,112 @@
                                         <table class="table has-text-centered-cell is-bordered is-striped is-narrow is-hoverable is-fullwidth" v-if="flatList">
                                             <thead>
                                                 <tr>
-                                                    <th rowspan="2" class=""></th>
+                                                    
                                                     <th rowspan="2" class="has-text-left">Tên vật tư / Danh mục</th>
                                                     <th rowspan="2" style="width: 80px">Đơn vị tính</th>
                                                     <th rowspan="2" style="width: 80px">Loại tiền</th>
-                                                    <th rowspan="2" style="width: 120px">Hãng</th>
+                                                    <th rowspan="2" style="width: 100px">Hãng</th>
                                                     <th colspan="4" class=""><span v-if="new_invoice.type === 'invoice'">Đơn hàng</span><span v-else>Hợp đồng</span></th>
-                                                    <th colspan="2" class="">BOQ</th>
+                                                    <th colspan="4" class="">BOQ</th>
                                                     <th rowspan="2" class="">Ghi chú</th>
                                                 </tr>
                                                 <tr>
                                                     <th style="width: 100px">Số lượng</th>
                                                     <th style="width: 100px">Đơn giá</th>
-                                                    <th style="width: 80px">VAT (%)</th>
+                                                    <th style="width: 60px">VAT (%)</th>
                                                     <th style="width: 120px">Thành tiền</th>
                                                     <th style="width: 100px">Số lượng</th>
                                                     <th style="width: 100px">Đơn giá</th>
-                                                    
+                                                    <th style="width: 60px">VAT (%)</th>
+                                                    <th style="width: 100px">Thành tiền</th>                                                    
                                                 </tr>
                                             </thead>
                                             <tbody>
-                                                <tr v-for="(material, index) in flatList" :key="index" :class="`depth-${material.depth}`" @click.right.prevent="addMaterial(material.uid, $event)">
+                                                <tr v-for="(material, index) in flatList" :key="index" :class="`depth-${material.depth} ${(rightClick.selectedUID === material.uid) ? 'is-selected': ''}`" @click.right.prevent="openMenu(index, $event)">
                                                     <template v-if="!material.is_new">
-                                                        <td>{{index + 1}}</td>
-                                                        <td class="has-text-left">{{material.name}}</td>
+                                                        
+                                                        <td class="has-text-left">
+                                                            <span class="icon">
+                                                                <i class="mdi mdi-chevron-down" v-if="material.has_children"></i>
+                                                                <i class="mdi mdi-chevron-right" v-else></i>
+                                                            </span>
+                                                            <span>{{material.name}}</span></td>
                                                         <td>{{material.per}}</td>
                                                         <td>{{material.currency}}</td>
                                                         <td>{{material.brand}}</td>
-                                                        <td class="control"><input type="text" class="input" v-model="material.tracker.unit" @focus="$event.target.select()"></td>
-                                                        <td class="control"><cleave type="text" class="input" v-model="material.tracker.price" @focus="$event.target.select()" :options="options.price"></cleave></td>
-                                                        <td class="control"><cleave type="text" class="input has-text-centered" v-model="material.tracker.vat" @focus="$event.target.select()" :options="options.vat"></cleave></td>
-                                                        <td>{{ comma((material.tracker.unit * material.tracker.price) * ((material.tracker.vat/100) + 1)) }}</td>
-                                                        <td></td>
-                                                        <td></td>
-                                                        <td></td>
                                                     </template>
-                                                    <template v-else >
-                                                        <td>{{index + 1}}</td>
-                                                        <td class="has-text-left control"><input type="text" class="input" v-model="material.name" @focus="$event.target.select()"></td>
-                                                        <td class="control"><input type="text" class="input has-text-centered" @focus="$event.target.select()" v-model="material.per"></td>
-                                                        <td class="control"><input type="text" class="input has-text-centered" @focus="$event.target.select()" v-model="material.currency"></td>
-                                                        <td class="control"><input type="text" class="input" @focus="$event.target.select()" v-model="material.brand"></td>
-                                                        <td class="control"><input type="text" class="input" v-model="material.tracker.unit" @focus="$event.target.select()"></td>
-                                                        <td class="control"><cleave type="text" class="input" v-model="material.tracker.price" @focus="$event.target.select()" :options="options.price"></cleave></td>
-                                                        <td class="control"><cleave type="text" class="input has-text-centered" v-model="material.tracker.vat" @focus="$event.target.select()" :options="options.vat"></cleave></td>
-                                                        <td>{{ comma((material.tracker.unit * material.tracker.price) * ((material.tracker.vat/100) + 1)) }}</td>
+                                                    <template v-else >        
+                                                        <td class="has-text-left">
+                                                            <div class="field">
+                                                                <div class="control has-icons-left">
+                                                                    <span class="icon is-left is-small">
+                                                                        <i class="mdi mdi-chevron-down" v-if="material.has_children"></i>
+                                                                        <i class="mdi mdi-chevron-right" v-else></i>
+                                                                    </span>
+                                                                    <input type="text" :class="{'input': true, 'is-small': true, 'is-danger': errors.has(`material_name_${material.uid}`)}" v-model="material.name" @focus="$event.target.select()" v-validate.initial="'required'" :name="`material_name_${material.uid}`">
+                                                                </div>
+
+                                                            </div>          
+                                                        </td>    
+                                                        <td class="control"><input type="text" class="input is-small" v-model="material.per"></td>
+                                                        <td class="control"><input type="text" class="input is-small" v-model="material.currency"></td>
+                                                        <td class="control"><input type="text" class="input is-small" v-model="material.brand"></td>
+                                                    </template>  
+                                                        <template v-if="material.is_dirty">
+                                                            <td class="control"><input type="text" :class="{'input': true, 'is-small': true, 'is-danger': errors.has(`tracker_unit_${material.uid}`)}" v-model="material.tracker.unit" @focus="$event.target.select()" validate.initial="'required'" :name="`tracker_unit_${material.uid}`"></td>
+                                                            <td class="control"><cleave type="text" :class="{'input': true, 'is-small': true, 'is-danger': errors.has(`tracker_price_${material.uid}`)}" v-model="material.tracker.price" @focus="$event.target.select()" :options="options.price" validate.initial="'required'" :name="`tracker_price_${material.uid}`"></cleave></td>
+                                                            <td class="control"><cleave type="text" :class="{'input': true, 'is-small': true, 'has-text-centered': true, 'is-danger': errors.has(`tracker_vat_${material.uid}`)}" v-model="material.tracker.vat" @focus="$event.target.select()" :options="options.vat" validate.initial="'required'" :name="`tracker_vat_${material.uid}`"></cleave></td>
+                                                            <td>{{ comma((material.tracker.unit * material.tracker.price) * ((material.tracker.vat/100) + 1)) }}</td>
+                                                        </template>
+                                                        <template v-else>
+                                                            <td colspan="4">
+                                                                <a @click="material.is_dirty = true" class="button is-success">Thêm đơn hàng</a>
+                                                            </td>
+                                                        </template>
+                                                        <template v-if="material.boqs.length > 0">
+                                                            <td>
+                                                                <p v-for="boq in material.boqs" :key="boq.id" :class="{'has-text-centered': !boq.is_new, 'control': boq.is_new, 'has-spliter': true}">
+                                                                    <input v-if="boq.is_new" type="text" class="input is-small" v-model="boq.unit" />
+                                                                    <span v-else>{{comma(boq.unit)}}</span>
+                                                                </p>
+                                                            </td>
+                                                            <td>
+                                                                <p v-for="boq in material.boqs" :key="boq.id" :class="{'has-text-centered': !boq.is_new, 'control': boq.is_new, 'has-spliter': true}">
+                                                                    <cleave v-if="boq.is_new" type="text" class="input is-small" v-model="boq.price" :options="options.price"></cleave>
+                                                                    <span v-else>{{comma(boq.price)}}</span>
+                                                                </p>
+                                                            </td>
+                                                            <td>
+                                                                <p v-for="boq in material.boqs" :key="boq.id" :class="{'has-text-centered': !boq.is_new, 'control': boq.is_new, 'has-spliter': true}">
+                                                                    
+                                                                    <input v-if="boq.is_new" type="text" class="input is-small" v-model="boq.vat" />
+                                                                    <span v-else>{{boq.vat}}</span>
+                                                                </p>
+                                                            </td>
+                                                            <td>
+                                                                <p v-for="boq in material.boqs" :key="boq.id" class="has-text-centered has-spliter">
+                                                                    <span v-if="boq.is_new">{{comma(boq.unit * boq.price * (boq.vat/100 + 1))}}</span>
+                                                                    <span v-else>{{comma(boq.total)}}</span>
+                                                                </p>
+                                                            </td>
+                                                        </template>
+                                                        <template v-else>
+                                                            <td colspan="4" class="has-text-center">
+                                                                <a class="button is-link" @click="newBOQ(index)">Thêm BOQ</a>
+                                                            </td>
+                                                        </template>
                                                         <td></td>
-                                                        <td></td>
-                                                        <td></td>
-                                                    </template>
                                                 </tr>
                                             </tbody>
                                         </table>
-                                        <p>
-                                            <button class="button is-primary" @click="newMaterial">Thêm danh mục mới</button>
-                                        </p>
+                                        <div class="field is-grouped-centered is-grouped">
+                                            <div class="control">
+                                                <button :class="{'button': true ,'is-success': true, 'is-loading': onSubmit}" @click="submit">Lưu</button>
+                                            </div>
+                                            <div class="control">
+                                                <router-link class="button is-outlined" :to="{'name': 'work.show', 'params': {'work_id': this.$route.params.work_id}}">Hủy</router-link>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                                 
@@ -200,94 +260,17 @@
                     </div>
                 </div>
             </section>
-            <!--
-            <div class="card">
-
-                <hr>
-                <div class="card-body">
-
-                    <div class="form-group">
-                        <table class="table boq-table">
-                            <thead class="thead-light text-center">
-                                <tr>
-                                    <th rowspan="2" class="controls-col text-center"></th>
-                                    <th rowspan="2" class="text-left name-col" >Tên vật tư / Danh mục</th>
-                                    <th rowspan="2" class="per-col">Đơn vị tính</th>
-                                    <th rowspan="2" class="currency-col">Loại tiền</th>
-                                    <th rowspan="2" class="brand-col">Hãng</th>
-                                    <th colspan="4" class="invoice-col"><span v-if="new_invoice.type === 'invoice'">Đơn hàng</span><span v-else>Hợp đồng</span></th>
-                                    <th colspan="2" class="boq-col">BOQ</th>
-                                    <th rowspan="2" class="notes-col">Ghi chú</th>
-                                </tr>
-                                <tr>
-                                    <th class="text-center boq-unit-col">Số lượng</th>
-                                    <th class="text-center boq-price-col">Đơn giá</th>
-                                    <th class="text-center boq-price-col">VAT</th>
-                                    <th class="text-center boq-total-col">Thành tiền</th>
-                                    <th class="text-center boq-unit-col">Số lượng</th>
-                                    <th class="text-center boq-price-col">Đơn giá</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <template v-for="(category, index) in materials_list">
-                                    <tr :key="category.uid" class="category-row">
-                                        <td class="controls-col" @click.self="addMaterial(category.id)"><span class="index">{{ (index + 1) }}</span><span class="delete-this">-</span></td>
-                                        <td colspan="11"><input type="text" class="inline-td" v-model="category.name" @focus="$event.target.select()"></td>
-                                    </tr>                                 
-                                    <tr v-for="(material, mat_index) in category.children" :key="material.uid" class="material-row">
-                                        <td class="controls-col"><span class="index">{{ (mat_index + 1) }}</span><span class="delete-this" @click.self="deleteFrom(category.uid, material.uid)">-</span></td>
-                                        <td :class="{editable: material.is_new}"><input type="text" class="inline-td" :disabled="!material.is_new" v-model="material.name" @focus="$event.target.select()"></td>
-                                        <td :class="{editable: material.is_new}"><input type="text" class="inline-td" :disabled="!material.is_new" v-model="material.per" @focus="$event.target.select()"></td>
-                                        <td :class="{editable: material.is_new}"><input type="text" class="inline-td" :disabled="!material.is_new" v-model="material.currency" @focus="$event.target.select()"></td>
-                                        <td :class="{editable: material.is_new}"><input type="text" class="inline-td" :disabled="!material.is_new" v-model="material.brand" @focus="$event.target.select()"></td>
-                                        <td class="editable"><input type="text" class="inline-td" v-model="material.unit" @focus="$event.target.select()"></td>
-                                        <td class="editable"><cleave type="text" class="inline-td" v-model="material.price" @focus="$event.target.select()" :options="options.price"></cleave></td>
-                                        <td class="editable"><cleave type="text" class="inline-td" v-model="material.vat" @focus="$event.target.select()" :options="options.vat"></cleave></td>
-                                        <td>{{ comma(material.price * material.unit) }}</td>
-                                        <td :class="{editable: material.is_new}"><input type="text" class="inline-td" :disabled="!material.is_new" v-model="material.boq_unit" @focus="$event.target.select()"></td>
-                                        <td :class="{editable: material.is_new}"><input type="text" class="inline-td" :disabled="!material.is_new" v-model="material.boq_price" @focus="$event.target.select()"></td>                               
-                                        <td class="editable"><input type="text" class="inline-td" :v-model="material.note" @focus="$event.target.select()"></td>
-                                    </tr>
-                                    <tr :key="category.uid + 1" class="new-material">
-                                        <td class="controls-col">∗</td>
-                                        <td colspan="11"><input type="text" placeholder="Thêm vật tư" class="inline-td" @focus="$event.target.select()" @keyup.enter="addMaterial(category.uid, $event)"></td>
-                                    </tr>
-                                </template>
-                                <tr class="add-more" @click="addCategory">
-                                    <td class="controls-col">+</td>
-                                    <td colspan="11">Thêm danh mục</td>
-                                </tr>
-                                <tr class="sum">
-                                    <td colspan="5"></td>
-                                    <td colspan="3" class="text-center"><b>Tổng tiền </b></td>
-                                    <td colspan="4" class="text-center">{{ comma(sum)}}</td>
-                                </tr>
-                                <tr class="sum">
-                                    <td colspan="5"></td>
-                                    <td colspan="3" class="text-center"><b>Sau VAT </b></td>
-                                    <td colspan="4" class="text-center">{{ comma(sum*1.1)}}</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-                 <div class="card-body">
-                     <p class="card-text text-center">
-                        <submit :on-submit="submitData" :on-success="saved"></submit>
-                        <button class="btn" @click="cancel">Bỏ qua</button>
-                     </p>
-
-                </div>               
-            </div>
-            -->
+            
             <aside :class="{'menu': true, 'right-click': true, 'active': rightClick.isActive}" ref="rightClick">
                 <p class="menu-label">
                     Tùy chọn
                 </p>
                 <ul class="menu-list">
                     <li>
-                        <a>Thêm danh mục</a>
-                        <a>Xóa danh mục</a>
+                        <a class="has-text-primary" @click="addChildMaterial">Thêm danh mục con</a>
+                        <a class="has-text-danger" @click="deleteMaterial">Xóa danh mục</a>
+                        <a class="has-text-info" @click="addBOQ">Thêm BOQ</a>
+                        <a class="has-text-success" @click="closeMenu">Hủy</a>
                     </li>
                 </ul>
             </aside>
@@ -306,6 +289,13 @@ export default {
             'flatList': [],
             'rightClick': {
                 'isActive': false,
+                'selectedUID': null,
+                'clickHandle': null,
+                'selectedIndex': null,
+            },
+            'materialSelect': {
+                'disabled': false,
+                'dirty': false,
             },
             'options': {
                 'price': {
@@ -371,29 +361,6 @@ export default {
             return this.$store.getters["material/tree"];
             
         },
-
-        validation() {
-            if (this.onSubmit) {
-                return {
-                    provider_id: (typeof this.provider_id === "number") ? true : false,
-                }
-            } else {
-                return {
-                    provider_id: true,
-                }
-            }
-        },
-        sum() { 
-            /*
-            return this.materials_list.reduce( (sum, category) => {
-                if (category.children.length > 0) {
-                    sum += category.children.reduce( (child_sum, material) => {
-                        return child_sum += material.price * material.unit;
-                    }, 0);
-                }
-                return sum;
-            }, 0);*/
-        },
         ...mapGetters("provider", [
             "providers"
         ]),
@@ -406,7 +373,10 @@ export default {
     methods: {
         guard() {
             this.$store.dispatch("invoice/getRelatedWork", {'work_id': parseInt(this.$route.params.work_id)});
-            this.$store.dispatch("material/getTree");
+            this.$store.dispatch("material/getTree", {'work_id': parseInt(this.$route.params.work_id)});
+        },
+        boqs(material_id) {
+            return this.$store.getters["boq/boqsForMaterial"](material_id);
         },
         generateFlatList() {
             let list = this.materials_list;
@@ -414,12 +384,13 @@ export default {
                 'active': false,
                 'children': null,
                 'is_new': false,
+                'uid': null,
                 'tracker': {
                     'vat': 10,
                     'price': 0,
                     'unit': 0,
-                    
-                }
+                },
+                'is_dirty': true,
             }));
 
             let _trackBackward = (id) => {
@@ -460,6 +431,8 @@ export default {
                     if (material.children) {
                         material.children = null;
                     }
+                    material.uid = this.uid();
+                    material.boqs = this.boqs(material.id);
                     materials.push(material);
                 }
                 return materials;
@@ -468,77 +441,17 @@ export default {
         chooseMaterials(values) {
             this.materials_list = values;
             this.flatList = this.generateFlatList();
-
-            /*
-
-            let _list = [];
-            let addedCategories = [];
-            const get = (str) => { 
-                const t = str.split("--");
-                return {
-                    id: parseInt(t[0]),
-                    type: t[1],
-                }
-            };
-
-            values.forEach( value => {
-                const t = get(value);
-                if (t.type === "cat") {
-                    
-                    const children = this.work.flatten.reduce( (materials, material) => {
-                        if (material.category_id === t.id) {
-                            materials.push(this.materialResource(material));
-                        }
-                        return materials;
-                    }, []);
-                    _list.push(this.categoryResource(t.id, {"children": children}));
-                    addedCategories.push(t.id)
-                }
-                if (t.type === "mat") {
-                    // Get material
-                    const _material = this.work.flatten.find( material => material.id === t.id );
-                    // First we check if the category of this material is already added
-                    // If not found, add it first
-                    let _index = addedCategories.indexOf( _material.category_id );
-                    if (_index === -1) {
-                        _list.push(this.categoryResource(_material.category_id));
-
-                        _index = addedCategories.push(_material.category_id) - 1;
-                    }
-                    _list[ _index ].children.push(this.materialResource(_material));
-                }
-            });
-            this.materials_list = _list;
-            */
-        },
-
-        categoryResource(id = 0, merge = {}) {
-            let _category = false;
-            if (typeof id === "number" && id !== 0) {
-                _category = this.work.flatten.find( category => category.id === id );
-            } else if (typeof id === "object") {
-                _category = id;
+            this.materialSelect.disabled = true; 
+            if (!this.materialSelect.dirty) {
+                this.materialSelect.dirty = true;
             }
-            let _return  = {
-                "type": "category",
-                "name": (_category) ? _category.name : "",
-                "uid": this.uid(),
-                "is_new": (_category) ? false : true,      
-                "id": (_category) ? _category.id : 0,    
-                "children": [],
-            };
-            if (merge) {
-                _return  = Object.assign({}, _return, merge);
-
-            }
-            return _return;
         },
-        materialResource(parent_uid = false) {
+        materialResource(depth = 0) {
             return {
                 "name": "",
                 "type": "material",
-                "currency": "vnđ",
-                "per": "m",
+                "currency": "",
+                "per": "",
                 "uid": this.uid(),
                 "brand": "",
                 "is_new": true,
@@ -547,41 +460,115 @@ export default {
                     'price': 0,
                     'unit': 0
                 },
+                'is_dirty': (depth === 0) ? false : true,
                 "id": 0,
-                'parent_uid': (parent_uid) ? parent_uid : "",
+                'parent_uid': null,
+                'parent_id': null,
+                'depth': depth,
+                'boqs': [],
             }
             
         },
-        addMaterial(category_uid, event = false) {
-        
-            this.rightClick = {
-                'isActive': true,
-            };
+        closeMenu() {
+            this.rightClick.isActive = false;
+            this.rightClick.selectedUID = null;
+            this.rightClick.selectedIndex = null;
+            this.$refs.rightClick.style.top = "-999px";
+            this.$refs.rightClick.style.left = "-999px";        
+            document.removeEventListener("click", this.rightClick.clickHandle);
+        },
+        openMenu(index, event = false) {
+            this.closeMenu();
             this.$refs.rightClick.style.top = event.pageY + "px";
-            this.$refs.rightClick.style.left = event.pageX + "px";
- 
-            /*
-            const index = this.materials_list.findIndex( category => category.uid === category_uid);
-            let merge = {
-                "category_id": this.materials_list[index].id,
-                "name": (event) ? event.target.value : "",
+            this.$refs.rightClick.style.left = event.pageX + "px";        
+            this.rightClick.isActive = true;
+            this.rightClick.selectedUID = this.flatList[index].uid;
+            this.rightClick.selectedIndex = index;
+            this.rightClick.clickHandle = (event) => {
+                if (event.button === 0) {
+                    if (!this.$refs.rightClick.contains(event.target)) {
+                        this.closeMenu();
+                    }
+                }
             }
-
-            
-            this.materials_list[index].children.push(this.materialResource(false, merge));
-            if (event) event.target.value = "";*/
-
+            document.addEventListener("click", this.rightClick.clickHandle);
         },
         newMaterial() {
-            return this.flatList.push(this.materialResource());
+            if (!this.materialSelect.dirty) {
+                this.materialSelect.dirty = true;
+            }
+            this.flatList.push(this.materialResource(0));
         },
-        deleteFrom(category_uid, material_uid) {
-            const index = this.materials_list.findIndex( category => category.uid === category_uid);
-            const mat_index = this.materials_list[index].children.findIndex( material => material.uid === material_uid);
-            this.materials_list[index].children.splice(mat_index, 1);
+        deleteMaterial() {
+            const index = this.rightClick.selectedIndex;
+            let parentIds = [this.flatList[index].id];
+            let parentUids = [this.flatList[index].uid];
+            let count = 1;
+            for (let i = index + 1; i < this.flatList.length; i++) {
+                if ((parentIds.indexOf(this.flatList[i].parent_id) !== -1) || (parentUids.indexOf(this.flatList[i].parent_uid) !== -1)) {
+                    if (this.flatList[i].has_children) {
+                        if (this.flatList[i].is_new) {
+                            parentUids.push(this.flatList[i].uid);
+                        } else {
+                            parentIds.push(this.flatList[i].id);
+                        }
+                        
+                    }
+                    count++;
+                } else {
+                    break;
+                }
+            }
+            this.flatList.splice(index, count);
+            this.closeMenu();
+        },
+        addChildMaterial() {
+            const index = this.rightClick.selectedIndex;
+            let material = this.materialResource(this.flatList[index].depth + 1);
             
-        },
+            if (!this.flatList[index].is_new) {
+                material.parent_id = this.flatList[index].id;
+            } else {
+                 material.parent_uid = this.flatList[index].uid;
+            }
+            
+            this.flatList[index].has_children = true;
 
+            let parentIds = [this.flatList[index].id];
+            let parentUids = [this.flatList[index].uid];
+
+            let count = 0;
+            for (let i = index + 1; i < this.flatList.length; i++) {
+                if ((parentIds.indexOf(this.flatList[i].parent_id) !== -1) || (parentUids.indexOf(this.flatList[i].parent_uid) !== -1)) {
+                    if (this.flatList[i].has_children) {
+                        if (this.flatList[i].is_new) {
+                            parentUids.push(this.flatList[i].uid);
+                        } else {
+                            parentIds.push(this.flatList[i].id);
+                        }
+                        
+                    }
+                    count++;
+                } else {
+                    break;
+                }
+            }
+            this.flatList.splice(index + 1 + count, 0, material);
+            this.newBOQ(index + 1 + count);
+        },
+        newBOQ(material_index) {
+            this.flatList[material_index].boqs.push({
+                'unit': 0,
+                'price': 0,
+                'vat': 0,
+                'total': 0,
+                'is_new': true,
+            });
+        },
+        addBOQ() {
+            const index = this.rightClick.selectedIndex;
+            this.newBOQ(index);
+        },
         uid() {
             return Math.random().toString(36).substring(2) 
                + (new Date()).getTime().toString(36).substring(10);
@@ -592,82 +579,52 @@ export default {
         fetchTree(callback) {
             callback(null, this.tree);
         },
-        ready() {
-            
-            this.invoice_name = `Hóa đơn ${this.work.invoices.length}`;
-            this.is_ready = true;
-        },
-        cancel() {
-            this.$router.push({
-                name: "work.show",
-                params: {
-                    id: this.work.id
+        openMaterialSelect() {
+            this.swal({
+                'title': "Xác nhận",
+                'text': "Thay đổi này sẽ xóa hết các dữ liệu đã nhập trong bảng, tiếp tục?",
+                'type': "warning",
+            }).then(result => {
+                if (result) {
+                    this.materialSelect.disabled = false;
                 }
             });
         },
-        saved(response) {
-            
-            this.$router.push({
-                name: "work.show",
-                params: {
-                    id: this.$route.query.work_id,
-                }
-            });
-        },
-        submitData() {
+
+        submit() {
             if (this.errors.any()) {
                 return false;
             } else {
-                const list = this.materials_list.reduce( (categories, category) => {
-                    if (category.name !== "") {
-                        categories.push(category);
-                    }
-                    return categories;
-                }, []);
-                return {
-                    "method": "POST",
-                    "url": "invoice",
-                    "data": {
-                        "work_id": this.$route.query.work_id,
-                        "provider_id": this.provider_id,
-                        "new_provider": this.new_provider,
-                        "name": this.invoice_name,
-                        "type": this.invoice_type,
-                        "list": list,
-                        "signed_at": this.signed_at,
-                        "contract_number": this.contract_number,
-                    }
-                }
-            }
-        },
-        submit() {
-            this.onSubmit = true;
-            if (typeof this.provider_id === "number") {
-               
-
-                axios.post(`${this.$store.state.apiBase}/invoice`, {
-
+                //this.onSubmit = true;
+                this.axios.post(`invoice`, {
+                    'work_id': this.$route.params.work_id,
+                    'provider_id': (this.provider_id !== 0) ? this.provider_id : undefined,
+                    'new_provider': (this.provider_id === 0) ? this.new_provider : undefined,
+                    'new_invoice': this.new_invoice,
+                    'list': this.flatList,
                 }).then( response => {
                     if (response.status === 200) {
-
-                        this.$swal("Hoàn tất", "Cập nhật thành công", "success").then( result => {
-                            axios.get(`${this.$store.state.apiBase}/work/${this.$route.query.work_id}`).then( response => {    
-                                if (response.status === 200) {
-
+                        this.$store.dispatch("invoice/store", response.data.data);
+                        if (response.data.provider) {
+                            this.$store.dispatch("provider/store", response.data.provider);
+                        }/*
+                        this.swal({
+                            'title': "Thành công",
+                            'text': "Đã tạo đơn hàng",
+                            'type': "success",
+                            'timer': 3000
+                        }).then (result => {
+                            this.$router.push({
+                                'name': "work.show",
+                                'params': {
+                                    'work_id': this.$route.params.work_id,
                                 }
-                            }).catch( error => {
-                                console.log(error)
-                            });   
-
-                        });
+                            });
+                        });*/
                     }
                 });
-            } else {
-                this.onSubmit = false;
-                return true;
             }
-
-        }
+        },
     },
 
     directives: {

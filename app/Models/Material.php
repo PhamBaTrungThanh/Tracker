@@ -15,9 +15,9 @@ class Material extends Model
     {
         return $this->hasMany(Tracker::class);
     }
-    public function boq() 
+    public function boqs() 
     {
-        return $this->hasOne(Boq::class);
+        return $this->hasMany(Boq::class);
     }
     public function work()
     {

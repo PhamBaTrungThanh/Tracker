@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\DB;
 use App\Models\Invoice;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-
+use	Carbon\Carbon;
 use App\Http\Resources\InvoiceResource;
 use App\Http\Resources\PaymentResource;
 use App\Http\Resources\ReceiveResource;
@@ -75,35 +75,38 @@ class InvoiceController extends Controller
      */
     public function store(Request $request)
     {
-        if ($request->provider_id === 0) {
-            if (!$request->input('new_provider.name')) {
-                return response()->json(['error' => 'No provider name'], 400);
-            } else {
-                $provider = new Provider();
-                $provider->name = $request->input('new_provider.name');
-                $provider->description = $request->input('new_provider.description');
-                $provider->address = $request->input('new_provider.address');
-                $provider->tax_number = $request->input('new_provider.tax_number');
-                $provider->slug = str_slug($provider->name);
-                $provider->save();
-                $provider_id = $provider->id;
-            }
+        if ($request->filled('provider_id')) {
+            $provider_id = $request->input('provider_id');
+            $new_provider = false;
+
+        } else if ($request->filled('new_provider')) {
+            $new_provider = true;
+            $provider = new Provider();
+            $provider->name = $request->input('new_provider.name');
+            $provider->description = $request->input('new_provider.description');
+            $provider->address = $request->input('new_provider.address');
+            $provider->tax_number = $request->input('new_provider.tax_number');
+            $provider->slug = str_slug($provider->name);
+            $provider->save();
+            $provider_id = $provider->id;
         } else {
-            $provider_id = $request->provider_id;
+            return response()->json(['error' => 'no provider'], 400);
         }
+
         $work = Work::find($request->work_id);
+
         $total = 0;
         $invoice = new Invoice();
-        $invoice->name = $request->name;
-        $invoice->work_id = $request->work_id;
-        $invoice->signed_at = $request->signed_at;
+        $invoice->name = $request->input('new_invoice.name');
+        $invoice->signed_at = Carbon::createFromFormat('d/m/Y', $request->input('new_invoice.signed_at'));
         $invoice->slug = str_slug($invoice->name);
-        $invoice->type = $request->type;
-        $invoice->uid = $request->contract_number;
+        $invoice->type = $request->input('new_invoice.type');
+        $invoice->uid = $request->input('new_invoice.contract_number');
         $invoice->provider_id = $provider_id;
         $invoice->payment_total = 0;
-        $invoice->save();
 
+        dd($request->input('list'));
+        /*
         foreach ($request->list as $node) {
             if ($node["id"] === 0) {
                 $category = $work->categories()->create(['name' => $node['name']]);               
@@ -149,10 +152,15 @@ class InvoiceController extends Controller
                 }
             }
         }
+        */
         $invoice->total = $total;
-        $invoice->save();
-        return response()->json(['message' => 'success']);
-    
+        $work->invoices()->save($invoice);
+        
+        $invoice->total = $total;
+        return (new InvoiceResource($invoice))->additional([
+            'provider' => ($new_provider) ? (new ProviderResource($provider)) : false,
+        ]);
+        
     }
 
     /**

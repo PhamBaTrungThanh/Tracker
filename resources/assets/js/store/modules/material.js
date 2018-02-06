@@ -72,11 +72,14 @@ const actions = {
     'storeMaterials': ({commit}, data) => {
         commit("STORE_MATERIALS", data);
     },
-    'getTree': async({state, commit}) => {
+    'getTree': async({state, commit, dispatch}, {work_id}) => {
         if (!state.treeLoaded) {
-            const response = await helpers.axios.get(`material`);
+            const response = await helpers.axios.get(`work/${work_id}/materials`);
             if (response.status === 200) {
                 commit('STORE_TREE', response.data.data);
+                if (response.data.boqs) {
+                    dispatch("boq/storeBoqsFromTree", response.data.boqs, {root: true});
+                }
             }
         }
         return true;

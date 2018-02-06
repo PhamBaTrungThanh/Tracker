@@ -12,7 +12,7 @@ import payment from "./modules/payment";
 import receive from "./modules/receive";
 import material from "./modules/material";
 import tracker from "./modules/tracker";
-
+import boq from "./modules/boq";
 Vue.use(Vuex)
 
 const debug = process.env.NODE_ENV !== 'production'
@@ -27,6 +27,7 @@ export default new Vuex.Store({
         receive,
         tracker,
         material,
+        boq,
     },
     strict: debug,
 });

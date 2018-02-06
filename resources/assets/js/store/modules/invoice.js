@@ -105,9 +105,22 @@ const actions = {
                 }
             }
         }
+    },
+    'delete': async ({commit}, {invoice_id}) => {
+        const response = await helpers.axios.delete(`invoice/${invoice_id}`);
+        if (response.status === 200) {
+            commit('DELETE_INVOICE', invoice_id);
+        }
+    },
+    'store': ({commit}, invoice) => {
+        commit('STORE_SINGLE_INVOICE', invoice);
     }
 }
 const mutations = {
+    DELETE_INVOICE(state, invoice_id) {
+        const index = state.data.findIndex( i => i.id === invoice_id);
+        state.data.splice(index, 1);
+    },
     STORE_INVOICES(state, invoices) {
 
         for (let i = invoices.length - 1; i >= 0; i--) {

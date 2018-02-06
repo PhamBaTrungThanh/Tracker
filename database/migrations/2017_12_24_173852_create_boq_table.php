@@ -19,8 +19,11 @@ class CreateBoqTable extends Migration
             $table->string('name');
             $table->string('description');
             $table->bigInteger('unit')->unsigned();
+            $table->float('vat', 4,2);
             $table->decimal('price', 20,4)->unsigned();
             $table->decimal('total', 40,10)->unsigned();
+            $table->decimal('vat_sum', 40,10)->unsigned();
+
             $table->timestamps();
         });
     }
@@ -32,6 +35,6 @@ class CreateBoqTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('boq');
+        Schema::dropIfExists('boqs');
     }
 }

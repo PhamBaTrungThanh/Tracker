@@ -52,12 +52,14 @@
 .table.has-text-centered-cell {
     td,th  {
         text-align: center;
+        vertical-align: middle;
     }
 }
 
 .table.has-text-left-cell {
     td {
         text-align: center;
+        vertical-align: middle;
     }
 }
 
@@ -72,6 +74,26 @@
     transition: opacity 0.2s ease 0;
     opacity: 0;
 }
+p.has-spliter:not(:last-child) {
+    margin-bottom: 5px;
+    border-bottom: 1px solid #ddd;
+    padding-bottom: 5px;
+}
 .menu.right-click.active {
     opacity: 1;
+}
+tr.depth-1 > td:first-child {
+    padding-left: 20px;
+}
+tr.depth-2 > td:first-child {
+    padding-left: 40px;
+}
+tr.depth-3 > td:first-child {
+    padding-left: 60px;
+}
+tr.depth-4 > td:first-child {
+    padding-left: 80px;
+}
+tr.depth-5 > td:first-child {
+    padding-left: 100px;
 }

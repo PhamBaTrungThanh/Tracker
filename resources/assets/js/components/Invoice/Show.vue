@@ -24,7 +24,7 @@
                             <span class="icon">
                                 <i class="mdi mdi-delete has-text-danger"></i>
                             </span>
-                            <span class="has-text-danger">Xóa đơn hàng</span>
+                            <span class="has-text-danger" @click="deleteInvoice">Xóa đơn hàng</span>
                         </a>
                     </div>
                 </div>
@@ -309,6 +309,7 @@ export default {
         material(id) {
             return this.$store.getters["material/material"](id);
         },
+
         guard() {
             this.$store.dispatch("invoice/getSingleInvoiceInstance", {'invoice_id': parseInt(this.$route.params.invoice_id)});
             this.$store.dispatch("invoice/getRelatedPayments", {'invoice_id': parseInt(this.$route.params.invoice_id)});
@@ -316,7 +317,25 @@ export default {
             this.$store.dispatch("invoice/getRelatedReceives", {'invoice_id': parseInt(this.$route.params.invoice_id)});
             this.$store.dispatch("invoice/getRelatedWork", {'work_id': parseInt(this.$route.params.work_id)});
         },
-
+        deleteInvoice() {
+            const invoice_id = parseInt(this.$route.params.invoice_id);
+            this.swal({
+                'title': "Xác nhận xóa",
+                'text': "Thao tác này sẽ không thể khôi phục",
+                'type': "error",
+            }).then( result => {
+                if (result) {
+                    this.$store.dispatch("invoice/delete", {invoice_id}).then( response => {
+                        this.$router.push({
+                            'name': "work.show",
+                            'params': {
+                                'work_id': this.$route.params.work_id,
+                            }
+                        });
+                    });       
+                }
+            });
+        },
         updatePaymentsChart(value) {
                 this.chartRefs.payments.data.labels = value.labels;
                 this.chartRefs.payments.data.datasets[0].data = value.data;

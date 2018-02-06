@@ -25,10 +25,15 @@ const actions = {
                 console.log(e);
             }
         }
-
-    },    
+    },   
+    'store': ({commit}, data) => {
+        commit('STORE_SINGLE_PROVIDER', data);
+    } 
 }
 const mutations = {
+    STORE_SINGLE_PROVIDER(state, data) {
+        state.data.push(data);
+    },
     STORE_PROVIDERS(state, providers) {
         state.data = providers;
     }
