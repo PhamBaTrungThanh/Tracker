@@ -8,6 +8,16 @@ const routes = [
                 name: "root.dashboard",
                 component: () => import('./components/Dashboard.vue'),
             }, {
+                path: "hr",
+                component: () => import('./components/HR/Base.vue'),
+                children: [
+                    {
+                        path: "",
+                        name: "hr.index",
+                        component: () => import('./components/HR/Index.vue'),
+                    }
+                ]
+            }, {
                 path: "work",
                 component: () => import('./components/Work/Base.vue'),
                 children: [

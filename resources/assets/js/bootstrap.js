@@ -5,6 +5,10 @@ import concat from 'unique-concat';
 import type from 'type-detect';
 import swal from 'sweetalert2';
 
+import * as moment from 'moment';
+import 'moment/locale/vi';
+moment.locale('vi');
+
 /**
  * SETUP
  */
@@ -97,7 +101,9 @@ const App = Object.freeze({
             else {
                 return chartColors['red'];
             }
-        }
+        },
+        'monent': new moment,
+        
     }
 });
 

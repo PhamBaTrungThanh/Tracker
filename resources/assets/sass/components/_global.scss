@@ -74,6 +74,9 @@
     transition: opacity 0.2s ease 0;
     opacity: 0;
 }
+.has-text-capitalized {
+    text-transform: capitalize;
+}
 p.has-spliter:not(:last-child) {
     margin-bottom: 5px;
     border-bottom: 1px solid #ddd;
@@ -96,4 +99,10 @@ tr.depth-4 > td:first-child {
 }
 tr.depth-5 > td:first-child {
     padding-left: 100px;
+}
+.select.is-expanded {
+    width: 100%;
+    select {
+        width: 100%;
+    }
 }
