@@ -72,6 +72,9 @@ const actions = {
     'storeMaterials': ({commit}, data) => {
         commit("STORE_MATERIALS", data);
     },
+    'affected': ({commit}, data) => {
+        commit("STORE_MATERIALS", data);
+    },
     'getTree': async({state, commit, dispatch}, {work_id}) => {
         if (!state.treeLoaded) {
             const response = await helpers.axios.get(`work/${work_id}/materials`);

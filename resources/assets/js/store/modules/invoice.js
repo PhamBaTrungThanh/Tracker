@@ -112,8 +112,27 @@ const actions = {
             commit('DELETE_INVOICE', invoice_id);
         }
     },
-    'store': ({commit}, invoice) => {
-        commit('STORE_SINGLE_INVOICE', invoice);
+    'store': async ({commit, dispatch}, data) => {
+        const response = await helpers.axios.post(`invoice`, {
+            'work_id': data.work_id,
+            'provider_id': data.provider_id,
+            'new_provider': data.provider_id,
+            'new_invoice': data.new_invoice,
+            'list': data.flatList,
+        });
+        if (response.status === 200) {
+            commit('STORE_SINGLE_INVOICE', response.data.data);
+            if (response.data.trackers) {
+                dispatch("tracker/affected", response.data.trackers, {root: true});
+            }
+            if (response.data.boqs) {
+                dispatch("boqs/affected", response.data.boqs, {root: true});
+            }
+            if (response.data.materials) {
+                dispatch("material/affected", response.data.materials, {root: true});
+            }
+        }
+        
     }
 }
 const mutations = {

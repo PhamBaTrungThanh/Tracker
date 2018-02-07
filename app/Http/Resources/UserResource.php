@@ -30,6 +30,10 @@ class UserResource extends Resource
             "can_add_receive" => $this->can_add_receive(),
             
             "can_add_user" => $this->can_add_user(),
+
+            "can_add_work" => $this->can_add_work(),
+            "can_edit_work" => $this->can_edit_work(),
+            "can_delete_work" => $this->can_delete_work(),
         ];
     }
 }

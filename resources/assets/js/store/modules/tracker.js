@@ -17,6 +17,9 @@ const actions = {
     'storeTrackers': ({commit}, data) => {
         commit("STORE_MUTIPLE_TRACKERS", data);
     },
+    'affected': ({commit}, data) => {
+        commit("STORE_TRACKERS", data);
+    },
     'getTrackersForInvoice': async ({commit, getters, dispatch}, {invoice_id}) => {
         try {
             let trackers = getters.trackersForInvoice(invoice_id);

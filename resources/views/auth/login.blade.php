@@ -4,53 +4,54 @@
 <div class="login---wrapper">
     <div class="login--content">
         <div class="login-title">
-            <i class="material-icons">track_changes</i>
-            <h2>MEC</h2>
+            <p class="title is-1 has-text-white">MEC</p>
         </div>
         <div class="login-body">
             <form class="form-horizontal" method="POST" action="{{ route('login') }}">
                 {{ csrf_field() }}
-                <div class="form-group{{ $errors->has('email') ? ' has-error' : '' }}">
-                    <div class="input-group">
-                        <div class="input-group-prepend">
-                            <div class="input-group-text" id="emailL"><i class="material-icons">face</i></div>
-                        </div>        
-                        <input id="email" type="email"  aria-describedby="emailL" class="form-control" name="email" value="{{ old('email') }}" required autofocus>                    
+                <div class="field">
+                    <label class="label has-text-white">Tên đăng nhập</label>
+                    <div class="control has-icons-left">
+                        <span class="icon is-left">
+                            <i class="mdi mdi-account"></i>
+                        </span>
+                        <input id="email" type="email" class="input {{ $errors->has('email') ? ' has-error' : '' }}" name="email" value="{{ old('email') }}" required autofocus>
                         @if ($errors->has('email'))
-                            <span class="help-block">
-                                <strong>{{ $errors->first('email') }}</strong>
-                            </span>
+                            <p class="help is-danger">
+                                {{ $errors->first('email') }}
+                            </p>
                         @endif
                     </div>
-                        
-                </div>  
-                <div class="form-group{{ $errors->has('password') ? ' has-error' : '' }}">
-                    <div class="input-group">
-                        <div class="input-group-prepend">
-                                <div class="input-group-text" id="emailL"><i class="material-icons">fingerprint</i></div>
-                            </div>        
-                            <input id="password" type="password" class="form-control" name="password" required>
-
+                </div>
+                <div class="field">
+                    <label class="label has-text-white">Mật khẩu</label>
+                    <div class="control has-icons-left">
+                        <span class="icon is-left">
+                            <i class="mdi mdi-lock"></i>
+                        </span>
+                        <input id="password" type="password" class="input {{ $errors->has('password') ? ' has-error' : '' }}" name="password" required >
                         @if ($errors->has('password'))
-                            <span class="help-block">
-                                <strong>{{ $errors->first('password') }}</strong>
-                            </span>
+                            <p class="help is-danger">
+                                {{ $errors->first('password') }}
+                            </p>
                         @endif
                     </div>
-
                 </div>
 
-                <div class="form-group">
-                    <button type="submit" class="login-btn btn btn-secondary">
-                        Đăng nhập
-                    </button>
-                </div>
-                <div class="form-group">
-                    <div class="checkbox text-white">
-                        <label>
-                            <input type="checkbox" name="remember" {{ old('remember') ? 'checked' : '' }}> Lưu đăng nhập
-                        </label>
+                <div class="field">
+                    <div class="control">
+                        <button type="submit" class="button is-primary">
+                            Đăng nhập
+                        </button>
                     </div>
+
+                </div>
+                
+
+                <div class="field">
+                    <label class="checkbox">
+                        <input type="checkbox" name="remember" {{ old('remember') ? 'checked' : '' }}> <span class="has-text-white">Lưu đăng nhập</span>
+                    </label>
                 </div>
             </form>
         </div>

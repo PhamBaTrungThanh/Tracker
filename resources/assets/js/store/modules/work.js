@@ -53,12 +53,33 @@ const actions = {
     },
     'storeWorks': async ({commit}, data) => {
         commit('STORE_WORKS', data);
-    }
+    },
+    'store': async ({commit}, data) => {
+        try {
+            const response = await helpers.axios.post('work', {
+                'name': data.name,
+                'client': data.client,
+                'description': data.description,
+                'started_at': data.started_at
+            });
+            console.log(response.data.data);
+            if (response.status === 200) {
+                commit('STORE_WORK', response.data.data);
+
+            }
+        } catch (e) {
+            console.log(e);
+        }
+        
+    },
 
 }
 const mutations = {
     STORE_WORKS(state, works) {
         state.data = works;
+    },
+    STORE_WORK(state, data) {
+        state.data.push(data);
     }
 }
 

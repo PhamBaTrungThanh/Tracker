@@ -45,6 +45,7 @@
   "dependencies": {
     "moment": "^2.20.1",
     "sweetalert2": "^7.6.3",
+    "vue-datetime": "0.7.1",
     "vuex-router-sync": "^5.0.0"
   }
 }

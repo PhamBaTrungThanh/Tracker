@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Api_v1;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-
+use Carbon\Carbon;
 
 use App\Models\Work;
 use App\Models\Provider;
@@ -58,11 +58,9 @@ class WorkController extends Controller
         $work->name = $request->input('name');
         $work->description = ($request->input('description')) ? $request->input('description') : "Mô tả";
         $work->client = $request->input('client');
-        $work->started_at = $request->input('started_at');
+        $work->started_at = Carbon::createFromFormat('d/m/Y', $request->input('started_at'));
         $work->save();
-        return response()->JSON([
-            'message' => 'success',
-        ]);
+        return new WorkResource($work);
     }
     public function show(Work $work)
     {

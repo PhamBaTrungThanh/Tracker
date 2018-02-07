@@ -17,6 +17,9 @@ const actions = {
     'storeBoqsFromTree': ({commit}, data) => {
         commit("STORE_BOQS", data);
     },
+    'affected': ({commit}, data) => {
+        commit("STORE_BOQS", data);
+    },
     'getBoqsForMaterial': async ({commit, getters}, {invoice_id}) => {
         try {
             let receives = getters.receivesForInvoice(invoice_id);

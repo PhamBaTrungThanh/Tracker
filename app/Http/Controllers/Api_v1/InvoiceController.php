@@ -8,17 +8,22 @@ use App\Models\Invoice;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use	Carbon\Carbon;
+
 use App\Http\Resources\InvoiceResource;
 use App\Http\Resources\PaymentResource;
 use App\Http\Resources\ReceiveResource;
 use App\Http\Resources\ProviderResource;
 use App\Http\Resources\TrackerResource;
+use App\Http\Resources\BoqResource;
+use App\Http\Resources\MaterialResource;
 
 use App\Models\Receive;
 use App\Models\Tracker;
 use App\Models\Work;
 use App\Models\Provider;
 use App\Models\Payment;
+use App\Models\Material;
+use App\Models\Boq;
 
 class InvoiceController extends Controller
 {
@@ -93,72 +98,96 @@ class InvoiceController extends Controller
             return response()->json(['error' => 'no provider'], 400);
         }
 
-        $work = Work::find($request->work_id);
 
         $total = 0;
         $invoice = new Invoice();
         $invoice->name = $request->input('new_invoice.name');
+        $invoice->work_id = $request->input('work_id');
         $invoice->signed_at = Carbon::createFromFormat('d/m/Y', $request->input('new_invoice.signed_at'));
         $invoice->slug = str_slug($invoice->name);
         $invoice->type = $request->input('new_invoice.type');
         $invoice->uid = $request->input('new_invoice.contract_number');
         $invoice->provider_id = $provider_id;
         $invoice->payment_total = 0;
+        $invoice->total = 0;
 
-        dd($request->input('list'));
-        /*
-        foreach ($request->list as $node) {
-            if ($node["id"] === 0) {
-                $category = $work->categories()->create(['name' => $node['name']]);               
-            } else {
-                $category = $work->categories()->find($node["id"]);
-            }
+        $invoice->save();
+
+        $trackers = [];
+        $materials = [];
+        $boqs = [];
+        $uid_to_id = [];
+        foreach ($request->input('list') as $node) {
+            $tracker = ($node['tracker']['unit'] === 0 && $node['tracker']['price'] === 0) ? false : $node['tracker'];
             
-            foreach ($node['children'] as $material) {
-                $total += ($material['unit'] * $material['price']);
-                if ($material['is_new']) {
-                    $material_eloquent = $category->materials()->create([
-                        'name' => $material['name'],
-                        'per' => ($material['per']) ? $material['per'] : "m",
-                        'currency' => $material['currency'],
-                        'brand' => $material['brand'],
-                    ]);
-                    $material_eloquent->boq()->create([
-                        'price' => $material['boq_price'],
-                        'unit' => $material['boq_unit'],
-                        'description' => "",
-                        'name' => "BOQ",
-                        'brand' => $material['brand'],
-                        'total' => (int) $material['boq_unit'] * (float) $material['boq_price'],
-                    ]);
-                } else {
-                    $material_eloquent = $category->materials()->find($material['id']);
+
+            if ($node['is_new']) {
+                $material = new Material;
+                $material->name = $node['name'];
+                $material->brand = $node['brand'];
+                $material->work_id =  $request->input('work_id');
+                $material->currency = ($node['currency']) ? $node['currency'] : "";
+                $material->total_unit = ($tracker) ? $tracker['unit'] : 0;
+                $material->total_price = ($tracker) ? ( floatval($tracker['unit']) * floatval($tracker['price']) * (floatval($tracker['vat'])/100 + 1) ) : 0;
+                $material->invoice_count = 1;
+                $material->received_unit = 0;
+
+                if ($node['parent_id']) {
+                    $material->parent_id = $node['parent_id'];
+                } else if ($node['parent_uid']) {
+                    $material->parent_id = $uid_to_id[$node['parent_uid']];
                 }
+                $material->save();
+                $materials[] = new MaterialResource($material);
+                if (isset($node['has_children'])) {
+                    $uid_to_id[$node['uid']] = $material->id;
+                }
+                $material_id = $material->id;
+            } else {
+                $material_id = $node['id'];
+            }
 
-                
-                $tracker = new Tracker();
-                $tracker->invoice_id = $invoice->id;
-                $tracker->material_id = $material_eloquent->id;
-                $tracker->unit = $material['unit'];
-                $tracker->cost = $material['price'];
-                $tracker->total = $material['unit'] * $material['price'];
-                $tracker->save();
+            if ($tracker) {
+                $tracker_eloquent = new Tracker;
+                $tracker_eloquent->material_id = $material_id;
+                $tracker_eloquent->invoice_id = $invoice->id;
+                $tracker_eloquent->bought_at = $invoice->signed_at;
+                $tracker_eloquent->unit = $tracker['unit'];
+                $tracker_eloquent->received_unit = 0;
+                $tracker_eloquent->cost = $tracker['price'];
+                $tracker_eloquent->vat = $tracker['vat'];
+                $tracker_eloquent->vat_sum = ( floatval($tracker['unit']) * floatval($tracker['price']) * (floatval($tracker['vat'])/100) );
+                $tracker_eloquent->total = ( floatval($tracker['unit']) * floatval($tracker['price']) * (floatval($tracker['vat'])/100 + 1) );
+                $tracker_eloquent->save();
+                $trackers[] = new TrackerResource($tracker_eloquent);
+            }
+            if (count($node['boqs']) > 0) {
+                foreach ($node['boqs'] as $boq) {
+                    if ($boq['is_new']) {
+                        if ($boq['price'] !== 0 && $boq['unit'] !== 0) {
+                            $boq_eloquent = new Boq;
+                            $boq_eloquent->material_id = $material_id;
+                            $boq_eloquent->name = "BOQ";
+                            $boq_eloquent->unit = $boq['unit'];
+                            $boq_eloquent->price = $boq['price'];
+                            $boq_eloquent->vat = $boq['vat'];
+                            $boq_eloquent->vat_sum = ( floatval($boq['unit']) * floatval($boq['price']) * (floatval($boq['vat'])/100) );
+                            $boq_eloquent->total = ( floatval($boq['unit']) * floatval($boq['price']) * (floatval($boq['vat'])/100 + 1) );
+                            $boq_eloquent->save();
 
-                if ($request->type === "invoice") {
-                    $material_eloquent->invoice_count += 1;
-                    $material_eloquent->total_unit += $material['unit'];
-                    $material_eloquent->total_price += $tracker->total;
-                    $material_eloquent->save();
+                            $boqs[] = new BoqResource($boq_eloquent);
+                        }    
+                    }
                 }
             }
         }
-        */
-        $invoice->total = $total;
-        $work->invoices()->save($invoice);
-        
-        $invoice->total = $total;
+      
+
         return (new InvoiceResource($invoice))->additional([
             'provider' => ($new_provider) ? (new ProviderResource($provider)) : false,
+            'trackers' => (count($trackers) > 0) ? $trackers : false,
+            'materials' => (count($materials) > 0) ? $materials : false,
+            'boqs' => (count($boqs) > 0) ? $boqs : false,
         ]);
         
     }

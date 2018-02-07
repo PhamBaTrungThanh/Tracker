@@ -458,7 +458,7 @@ export default {
                 'tracker': {
                     'vat': 10,
                     'price': 0,
-                    'unit': 0
+                    'unit': 0,
                 },
                 'is_dirty': (depth === 0) ? false : true,
                 "id": 0,
@@ -466,6 +466,7 @@ export default {
                 'parent_id': null,
                 'depth': depth,
                 'boqs': [],
+                'has_children': false,
             }
             
         },
@@ -596,32 +597,26 @@ export default {
                 return false;
             } else {
                 //this.onSubmit = true;
-                this.axios.post(`invoice`, {
+                this.$store.dispatch("invoice/store", {
                     'work_id': this.$route.params.work_id,
                     'provider_id': (this.provider_id !== 0) ? this.provider_id : undefined,
                     'new_provider': (this.provider_id === 0) ? this.new_provider : undefined,
                     'new_invoice': this.new_invoice,
                     'list': this.flatList,
                 }).then( response => {
-                    if (response.status === 200) {
-                        this.$store.dispatch("invoice/store", response.data.data);
-                        if (response.data.provider) {
-                            this.$store.dispatch("provider/store", response.data.provider);
-                        }/*
-                        this.swal({
-                            'title': "Thành công",
-                            'text': "Đã tạo đơn hàng",
-                            'type': "success",
-                            'timer': 3000
-                        }).then (result => {
-                            this.$router.push({
-                                'name': "work.show",
-                                'params': {
-                                    'work_id': this.$route.params.work_id,
-                                }
-                            });
-                        });*/
-                    }
+                    this.swal({
+                        'title': "Thành công",
+                        'text': "Đã tạo đơn hàng",
+                        'type': "success",
+                        'timer': 3000
+                    }).then (result => {
+                        this.$router.push({
+                            'name': "work.show",
+                            'params': {
+                                'work_id': this.$route.params.work_id,
+                            }
+                        });
+                    });                   
                 });
             }
         },

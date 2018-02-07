@@ -27,7 +27,7 @@ class TrackerController extends Controller
             $not_in_array = explode(",", $request->query('disclude'));
             return $query->whereNotIn('id', $not_in_array);
         })->where('invoice_id', $invoice_id)
-        ->with(['material', 'material.boq'])
+        ->with(['material', 'material.boqs'])
         ->get();
 
         return TrackerResource::collection($trackers)->additional([

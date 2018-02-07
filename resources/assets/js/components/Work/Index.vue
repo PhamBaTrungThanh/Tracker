@@ -1,6 +1,15 @@
 <template>
     <div class="wrap">
         <hero-header :page="pageMeta" />
+        <div class="navbar has-shadow">
+            <div class="container">
+                <div class="navbar-tabs">
+                    <router-link :to="{'name': 'work.create'}" class="navbar-item is-tab" v-if="user.can_add_work"> 
+                        <span>Thêm công trình </span>
+                    </router-link>
+                </div>
+            </div>
+        </div>        
         <section class="section">
             <div class="container">
                 <transition name="slide-fade">
@@ -57,6 +66,9 @@ export default {
     computed: {
         ...mapGetters('work', [
             'works',
+        ]),
+        ...mapGetters('user', [
+            'user',
         ]),
     },
     mounted() {

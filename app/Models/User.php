@@ -82,4 +82,16 @@ class User extends Authenticatable
     {
         return in_array($this->role, [0, 1]);
     }
+    public function can_add_work()
+    {
+        return in_array($this->role, [0, 1]);
+    }
+    public function can_edit_work()
+    {
+        return in_array($this->role, [0, 1]);
+    }
+    public function can_delete_work()
+    {
+        return in_array($this->role, [0, 1]);
+    }
 }
