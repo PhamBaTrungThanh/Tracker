@@ -62,6 +62,11 @@
                                 <button class="button is-primary" @click="addJob">+ Thêm </button>
                             </div>
                         </div>
+                        <div class="field is-grouped is-grouped-centered">
+                            <div class="control">
+                                <button class="button is-large is-success">Luu</button>
+                            </div>
+                        </div>
                     </article>
                 </div>
             </section>
