@@ -27,6 +27,9 @@ class MaterialTreeResource extends Resource
             'parent_id' => $this->parent_id,
             'has_children' => ($this->children_count > 0) ? true : false,
             'depth' => $this->depth,
+            'invoice_count' => $this->invoice_count,
+            'total' => $this->total_price,
+            'received_unit' => $this->received_unit
         ];
     }
 }

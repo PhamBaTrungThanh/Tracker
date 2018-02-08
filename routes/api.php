@@ -40,6 +40,7 @@ Route::prefix('v1')->middleware('auth:api')->namespace('Api_v1')->group(function
 
     Route::get('/task/today', 'TaskController@today');
     Route::patch('/task/update', 'TaskController@massUpdate');
+    Route::delete('/task/delete', 'TaskController@massDelete');
     Route::resource('/task', 'TaskController');
 
 });

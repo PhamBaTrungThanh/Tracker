@@ -11,6 +11,12 @@
                             </span>
                             <span>Quay lại</span>
                         </router-link>
+                        <router-link :to="{'name': 'work.report'}" class="navbar-item is-tab">
+                            <span class="icon">
+                                <i class="mdi mdi-file-chart has-text-link"></i>
+                            </span>
+                            <span class="has-text-link">Xem báo cáo</span>
+                        </router-link>
                         <router-link :to="{'name': 'invoice.create'}" class="navbar-item is-tab">
                             <span class="icon">
                                 <i class="mdi mdi-library-plus has-text-success"></i>

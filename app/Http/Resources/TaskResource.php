@@ -13,7 +13,7 @@ class TaskResource extends Resource
      * @return array
      */
     private function toShortTime($string) {
-        $str = explode(":", $this->from);
+        $str = explode(":", $string);
         return $str[0].$str[1];
     }
     public function toArray($request)

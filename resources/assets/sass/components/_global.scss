@@ -62,7 +62,9 @@
         vertical-align: middle;
     }
 }
-
+.table.has-text-small {
+    font-size: 0.8rem;
+}
 .menu.right-click {
     position: absolute;
     left: 0;
@@ -85,19 +87,19 @@ p.has-spliter:not(:last-child) {
 .menu.right-click.active {
     opacity: 1;
 }
-tr.depth-1 > td:first-child {
+tr.depth-1 > td.depth-padding {
     padding-left: 20px;
 }
-tr.depth-2 > td:first-child {
+tr.depth-2 > td.depth-padding {
     padding-left: 40px;
 }
-tr.depth-3 > td:first-child {
+tr.depth-3 > td.depth-padding {
     padding-left: 60px;
 }
-tr.depth-4 > td:first-child {
+tr.depth-4 > td.depth-padding {
     padding-left: 80px;
 }
-tr.depth-5 > td:first-child {
+tr.depth-5 > td.depth-padding {
     padding-left: 100px;
 }
 .select.is-expanded {

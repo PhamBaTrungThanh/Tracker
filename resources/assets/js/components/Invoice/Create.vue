@@ -170,7 +170,7 @@
                                                 <tr v-for="(material, index) in flatList" :key="index" :class="`depth-${material.depth} ${(rightClick.selectedUID === material.uid) ? 'is-selected': ''}`" @click.right.prevent="openMenu(index, $event)">
                                                     <template v-if="!material.is_new">
                                                         
-                                                        <td class="has-text-left">
+                                                        <td class="has-text-left depth-padding">
                                                             <span class="icon">
                                                                 <i class="mdi mdi-chevron-down" v-if="material.has_children"></i>
                                                                 <i class="mdi mdi-chevron-right" v-else></i>

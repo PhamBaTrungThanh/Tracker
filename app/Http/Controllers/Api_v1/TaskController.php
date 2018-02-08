@@ -74,24 +74,6 @@ class TaskController extends Controller
         //
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\models\Task  $task
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(Task $task)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\models\Task  $task
-     * @return \Illuminate\Http\Response
-     */
     public function massUpdate(Request $request, Task $task)
     {
         if ($request->filled('tasks')) {
@@ -116,7 +98,20 @@ class TaskController extends Controller
             return response()->json([], 400);
         }
     }
-
+    public function massDelete(Request $request)
+    {
+        if ($request->filled('ids')) {
+            $tasks = explode(",", $request->query('ids'));
+            
+            Task::destroy($tasks);
+            
+            return response()->json([
+                'data' => $tasks,
+            ], 200);
+        } else {
+            return response()->json([], 400);
+        }
+    }
     /**
      * Remove the specified resource from storage.
      *

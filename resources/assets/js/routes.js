@@ -12,10 +12,20 @@ const routes = [
                 component: () => import('./components/HR/Base.vue'),
                 children: [
                     {
+                        path: "user",
+                        name: "hr.user",
+                        component: () => import("./components/HR/User.vue"),
+                    },
+                    {
+                        path: "user/:user_id/today",
+                        name: "task.today",
+                        component: () => import('./components/HR/TaskToday.vue'),
+                    },
+                    {
                         path: "",
                         name: "hr.index",
-                        component: () => import('./components/HR/Index.vue'),
-                    }
+                        component: () => import("./components/HR/Index.vue"),
+                    },
                 ]
             }, {
                 path: "work",

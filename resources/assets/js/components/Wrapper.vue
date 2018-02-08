@@ -27,7 +27,7 @@
                     </div>
                     <div class="navbar-end">
                         <div class="navbar-item" v-if="user.name">
-                            <span>Xin chào </span><h6 class="text-center text-light"> {{ user.name }}</h6>
+                           <h6 class="text-center text-light"> {{ user.name }}</h6>
                         </div>
                         <div class="navbar-item">
                             <div class="field is-grouped">

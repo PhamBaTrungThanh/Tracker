@@ -9,6 +9,7 @@
                 <h2 class="subtitle">{{description}}</h2>
             </div>
         </div>
+        <slot name="footer"></slot>
     </section>
 </template>
 

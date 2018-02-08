@@ -1,6 +1,6 @@
 <template>
+    
     <div class="hr---wrapper">
-        
         <router-view></router-view>
     </div>
 

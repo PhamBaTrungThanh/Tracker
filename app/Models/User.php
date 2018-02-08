@@ -35,7 +35,7 @@ class User extends Authenticatable
         2 => "Phòng dự án",
         3 => "Phòng kế toán",
         4 => "Phòng kỹ thuật",
-        5 => "Kỹ sư công trường",
+        5 => "Phòng hành chính",
     ];
     /**
      * The attributes that should be hidden for arrays.

@@ -144,6 +144,7 @@ class InvoiceController extends Controller
                 }
                 $material_id = $material->id;
             } else {
+                Material::whereId($node['id'])->increment('invoice_count');
                 $material_id = $node['id'];
             }
 
