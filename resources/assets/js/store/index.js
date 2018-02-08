@@ -13,6 +13,7 @@ import receive from "./modules/receive";
 import material from "./modules/material";
 import tracker from "./modules/tracker";
 import boq from "./modules/boq";
+import task from "./modules/task";
 Vue.use(Vuex)
 
 const debug = process.env.NODE_ENV !== 'production'
@@ -28,6 +29,7 @@ export default new Vuex.Store({
         tracker,
         material,
         boq,
+        task,
     },
     strict: debug,
 });
