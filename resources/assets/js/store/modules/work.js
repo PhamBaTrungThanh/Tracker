@@ -11,6 +11,7 @@ const getters = {
 }
 const actions = {
     'getWorks': async ({getters, commit}) => {
+
         try {
             const works = getters.works;       
             if (works.length === 0) {

@@ -24,7 +24,10 @@ class MaterialController extends Controller
                 'boqs' => BoqResource::collection($boqs),
             ]);
     }
-
+    public function fromInvoice(int $invoice_id, Request $request)
+    {
+        
+    }
     public function store(Request $request)
     {
         /*

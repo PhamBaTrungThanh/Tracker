@@ -29,7 +29,7 @@
                                                 <a class="button is-static">Mã hóa đơn</a>
                                             </p>
                                             <p class="control has-icons-left  is-expanded">
-                                                <input type="text" name="invoice_id" readonly :value="$route.query.invoice_id" class="input ">
+                                                <input type="text" name="invoice_id" readonly :value="$route.params.invoice_id" class="input ">
                                                 <span class="icon is-left">
                                                     <i class="mdi mdi-file-outline"></i>
                                                 </span>
@@ -66,12 +66,12 @@
                                     <div class="field-body">
                                         <div class="field">
                                             <p class="control">
-                                                <cleave :options="cleave.date" v-model="received_on" :class="{'input': true, 'is-danger': errors.has('received_on')}" name="received_on" v-validate.initial="'required|date_format:DD/MM/YYYY'" :raw="false" :disabled="onSubmit"></cleave>
+                                                <cleave :options="options.date" v-model="received_at" :class="{'input': true, 'is-danger': errors.has('received_at')}" name="received_at" v-validate.initial="'required|date_format:DD/MM/YYYY'" :raw="false" :disabled="onSubmit"></cleave>
                                             </p>
-                                            <p class="help is-danger" v-show="errors.firstByRule('received_on', 'required')">
+                                            <p class="help is-danger" v-show="errors.firstByRule('received_at', 'required')">
                                                 Ngày không được để trống.
                                             </p>   
-                                            <p class="help is-danger" v-show="errors.firstByRule('received_on', 'date_format')">
+                                            <p class="help is-danger" v-show="errors.firstByRule('received_at', 'date_format')">
                                                 Ngày không hợp lệ. Nhập ngày theo dạng DD/MM/YYYY
                                             </p>     
                                         </div>
@@ -90,18 +90,20 @@
                                                             <th>#</th>
                                                             <th>Tên</th>
                                                             <th>Tổng</th>
+                                                            <th>Chưa nhận</th>
                                                             <th>Nhận đợt này</th>
                                                             <th>Còn lại</th>
                                                         </tr>
                                                     </thead>
 
                                                     <tbody v-if="receive_list">
-                                                        <tr v-for="(tracker, index) in receive_list" :key="index">
+                                                        <tr v-for="(tracker, index) in trackers" :key="index" v-if="tracker.unit - tracker.received_unit !== 0">
                                                             <td>{{index + 1}}</td>
-                                                            <td>{{tracker.name}}</td>
-                                                            <td>{{tracker.total}}</td>
-                                                            <td></td>            
-                                                            <td>{{tracker.total - tracker.value}}</td>                                                     
+                                                            <td>{{getMaterial(tracker.material_id).name}}</td>
+                                                            <td>{{tracker.unit}}</td>
+                                                            <td>{{tracker.unit - tracker.received_unit}}</td>
+                                                            <td class="control"><input type="text" class="input has-text-centered" v-model="receive_list[tracker.id]"></td>            
+                                                            <td><span v-if="typeof receive_list[tracker.id] === 'undefined'">{{tracker.unit - tracker.received_unit}}</span><span v-else>{{tracker.unit - tracker.received_unit - receive_list[tracker.id]}}</span></td>                                                     
                                                         </tr>
                                                     </tbody>
                                                     <tbody v-else>
@@ -144,10 +146,23 @@ import {mapGetters} from 'vuex';
 export default {
     data: () => ({
         'receive_name': "",
-        'received_on': "",
+        'received_at': "",
         'content': "",
         'receive_list': [],
         'onSubmit': false,
+        'options': {
+            'price': {
+                'numeral': true,
+                'numeralThousandsGroupStyle': 'thousand'
+            },
+            'vat': {
+                'numeral': true,
+            },
+            'date': {
+                'date': true,
+                'datePattern' : ["d", "m", "Y"],                    
+            }
+        },
     }),
     computed: {
         pageMeta() {
@@ -157,51 +172,55 @@ export default {
             }
         },
         user() {
-            return this.$store.state.user;
+            return this.$store.getters["user/user"];
         },
-        cleave() {
-            return this.$store.state.cleaveOptions;
+        trackers() {
+            const trackers = this.$store.getters["tracker/trackersForInvoice"](parseInt(this.$route.params.invoice_id));
+
+            return trackers;
+        },
+        invoice() {
+            return this.$store.getters["invoice/invoice"](parseInt(this.$route.params.invoice_id));
         },
     },
-    asyncComputed: {
-        invoice: {
-            default: false,
-            get() {
-                return this.$store.dispatch("getInvoice", {invoice_id: this.$route.query.invoice_id}).then( result => {
-                    this.receive_name = `Nhận hàng đợt ${result.receives_count + 1}`;
-                    return result;
-                });
-            }
-        },
-        trackers: {
-            
-            default: [],
-            get() {
-                return this.$store.dispatch("getRelatedTrackers", {'invoice_id': this.invoice.id, 'expect': this.invoice.trackers_count});
-            }
-        },
-        materials: {
-            
-            default: [],
-            get() {
-                return this.$store.dispatch("guaranteeMaterials", {'material_ids': this.trackers.map( t => t.material_id)}).then( materials => {
-                    let receive_list = [];
-                    console.log(materials);
-                    for (let i = 0; i < materials.length; i++) {
-                        receive_list.push({
-                            'name': materials[i].name,
-                            'total': this.trackers[i].unit,
-                            'value': 0,
-                        });
-                    }
-                    this.receive_list = receive_list;
-                    return materials;
-                });
-            }
-        }
-    },
+
     methods: {
-        submitReceive() {},
+        getMaterial(material_id) {
+            return this.$store.getters["material/material"](material_id);
+        },
+        guard() {
+            this.$store.dispatch("invoice/getSingleInvoiceInstance", {'invoice_id': parseInt(this.$route.params.invoice_id)});
+            this.$store.dispatch("invoice/getRelatedTrackers", {'invoice_id': parseInt(this.$route.params.invoice_id)});
+           // this.$store.dispatch("invoice/getRelatedMaterials", {'invoice_id': parseInt(this.$route.params.invoice_id)});
+        },
+        submitReceive() {
+            const list = Object.keys(this.receive_list).map(key => {
+                return {
+                    'tracker_id': key,
+                    'value': this.receive_list[key],
+                }
+            })
+            
+            this.$store.dispatch("receive/store", {data: {
+                'name': this.receive_name,
+                'received_at': this.received_at,
+                'receive_list': list,
+                'invoice_id': this.$route.params.invoice_id,
+            }}).then(result => {
+
+                this.swal({
+                    'title': "Hoàn tất",
+                    'text': "Đã lưu dữ liệu",
+                    'type': "success",
+                    'timer': 3000
+                }).then(r => {
+                    this.$router.push({
+                        'to': "invoice.show",
+                    });
+                })
+            
+            });
+        }
     }
 }
 </script>

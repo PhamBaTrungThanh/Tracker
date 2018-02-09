@@ -88,6 +88,20 @@ const actions = {
             console.log(error);
         }
     },
+    'getRelatedMaterials' : async ({dispatch, rootGetters, getters}, {invoice_id}) => {
+        try {
+            const materials = rootGetters["material/materialsForInvoice"](invoice_id);
+            const invoice = await getters.invoice(invoice_id);
+
+            if (invoice.trackers_count === materials.count) {
+                return true;
+            } else {
+                dispatch("material/getMaterialsForInvoice", {invoice_id}, {root: true});
+            }
+        } catch (e) {
+            console.log(e);
+        }
+    },
     'getSingleInvoiceInstance': async ({state, commit, rootGetters, dispatch}, {invoice_id}) => {
 
 

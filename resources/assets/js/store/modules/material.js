@@ -86,7 +86,18 @@ const actions = {
             }
         }
         return true;
-    }
+    },
+    'getMaterialsForInvoice': async ({commit}, invoice_id) => {
+        try {
+            const response = await helpers.axios.get(`invoice/${invoice_id}/materials`);
+            if (response.status === 200) {
+                commit("STORE_MATERIALS", response.data.data);
+                return true;
+            }
+        } catch (error) {
+            console.log(error);
+        }
+    },
 }
 const mutations = {
     STORE_TREE(state, tree) {

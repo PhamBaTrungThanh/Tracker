@@ -14,6 +14,20 @@ const getters = {
     }, []),
 }
 const actions = {
+    'store': async ({commit, dispatch}, {data}) => {
+        try {
+            let response = await helpers.axios.post("receive", data);
+            if (response.status === 200) {
+                commit("STORE_RECEIVES", response.data.data);
+                dispatch("material/affected", response.data.affected.materials, {root: true});
+                dispatch("tracker/affected", response.data.affected.trackers, {root: true});
+                return true;
+            }
+
+        } catch (e) {
+            console.log(e);
+        }
+    },
     'getReceivesForInvoice': async ({commit, getters}, {invoice_id}) => {
         try {
             let receives = getters.receivesForInvoice(invoice_id);
@@ -49,9 +63,11 @@ const mutations = {
     STORE_RECEIVES: (state, receives) => {
         
         for (let i = receives.length - 1; i >= 0; i--) {
-            
-            if ((state.data.findIndex( receive => receive.id === receives[i].id)) === -1) {
+            const index = state.data.findIndex( receive => receive.id === receives[i].id);
+            if (index === -1) {
                 state.data.push(receives[i]);
+            } else {
+                state.data.splice(index, 1, receives[i] );
             }
         }
     }

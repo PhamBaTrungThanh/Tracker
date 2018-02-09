@@ -29,11 +29,12 @@
                                                 <th class="has-text-left">Tên</th>
                                                 <th>Đơn vị</th>
                                                 <th>Loại tiền</th>
-                                                <th>Số lượng đặt hàng</th>
-                                                <th>Giá trị đặt hàng</th>
+                                                <th>Số đơn hàng</th>
+                                                <th>Tổng tiền hàng</th>
                                                 <th>Số lượng BOQ</th>
-                                                <th>Số lượng đã nhận</th>
                                                 <th>Giá trị BOQ</th>
+                                                <th>Số lượng đã nhận</th>
+                                                <th>Đã thanh toán</th>
                                                 <th>Số lượng chưa thực hiện</th>
                                                 <th>Giá trị chưa thực hiện</th>
                                                 <th>% chưa thực hiện</th>
@@ -64,11 +65,12 @@
                                                 <td class="has-text-left depth-padding">{{material.name}}</td>
                                                 <td>{{material.per}}</td>
                                                 <td>{{material.currency}}</td>
-                                                <td>{{material.invoice_count}}</td>
-                                                <td class="has-text-right">{{comma(material.total)}}</td>
-                                                <td>{{boqsForMaterial(material.id).length}}</td>
-                                                <td>{{material.received_unit}}</td>
-                                                <td class="has-text-right">{{comma(sum(boqsForMaterial(material.id)))}}</td>
+                                                <td><span v-if="material.invoice_count > 0">{{material.invoice_count}}</span></td>
+                                                <td class="has-text-right"><span v-if="material.total > 0">{{comma(material.total)}}</span></td>
+                                                <td><span v-if="material.boqs">{{material.boqs.unit}}</span></td>
+                                                <td class="has-text-right"><span v-if="material.sum_boqs > 0">{{comma(material.sum_boqs)}}</span></td>
+                                                <td><span v-if="material.received_unit > 0">{{material.received_unit}}</span></td>
+                                                <td><span v-if="material.received_unit > 0 && material.boqs">{{material.boqs.unit}}</span></td>
                                             </tr>
                                         </tbody> 
                                         <tfoot>
@@ -180,7 +182,15 @@ export default {
             }
         },
         materials() {
-            return this.$store.getters["material/materials"];
+            const materials = this.$store.getters["material/materials"];
+            return materials.map( material => {
+                const boqs = this.boqsForMaterial(material.id);
+                return Object.assign({}, material, {
+                    'boqs': (boqs.length > 0) ? boqs[0] : false,
+                    'sum_boqs': (boqs.length > 0) ? this.sum(boqs) : 0,
+
+                });
+            })
             
         },
         ...mapGetters("provider", [
@@ -205,6 +215,7 @@ export default {
                 if (data.length > 1) {
                     return data.reduce( (sum, node) => sum + node.total);
                 } else if (data.length === 1) {
+                    
                     return data[0].total;
                 }
             } 

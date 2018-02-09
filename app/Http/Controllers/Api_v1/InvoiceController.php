@@ -260,24 +260,6 @@ class InvoiceController extends Controller
     public function update(Request $request, Invoice $invoice)
     {
         
-        if ($request->type === "new_receive") {
-            $receive = new Receive;
-            $receive->name = $request->input('name');
-            $receive->received_at = $request->receive_at;
-            $invoice->receives()->save($receive);
-            foreach ($request->receive_list as $item) {
-                if ($item['value'] > 0) {
-                    $tracker = Tracker::find($item['id']);
-                    if ($tracker) {
-                        $tracker->received_unit += $item['value'];
-                        $tracker->save();
-                        $receive->trackers()->save($tracker, ['unit' => $item['value']]);
-                        $tracker->material->received_unit += $item['value'];
-                    }
-                }
-
-            }
-        }
     }
 
     /**

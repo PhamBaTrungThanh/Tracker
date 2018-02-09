@@ -17,6 +17,11 @@ const routes = [
                         component: () => import("./components/HR/User.vue"),
                     },
                     {
+                        path: "user/create",
+                        name: "hr.user.create",
+                        component: () => import("./components/HR/UserCreate.vue"),
+                    },
+                    {
                         path: "user/:user_id/today",
                         name: "task.today",
                         component: () => import('./components/HR/TaskToday.vue'),
