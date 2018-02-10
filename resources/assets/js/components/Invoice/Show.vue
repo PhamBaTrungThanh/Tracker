@@ -147,7 +147,7 @@
                                                 <td>{{ material(tracker.material_id).name }}</td>
                                                 <td>{{ tracker.unit}} </td>
                                                 <td v-for="(receive, re_index) in receives" :key="receive.id" class="has-text-centered">
-                                                    {{ receivesMap[index][re_index] }}
+                                                    <span v-if="receivesMap[index][re_index]">{{ receivesMap[index][re_index] }}</span><span v-else>-</span>
                                                 </td>
                                                 <td>{{ tracker.unreceive }}</td>
                                             </tr>

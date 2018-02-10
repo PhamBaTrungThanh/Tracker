@@ -80,7 +80,7 @@ export default {
         guard() {
             this.$store.dispatch('user/getUser');
             this.$store.dispatch('provider/getProviders');
-            //this.$store.dispatch("work/getWorks");
+            this.$store.dispatch("work/getWorks");
         }
     },
 

@@ -19,14 +19,13 @@ class ReceiveController extends Controller
         $receives = Receive::where('invoice_id', $invoice_id)->with('trackers')->get();
         
         $trackers = $receives->pluck('trackers');
-        if (count($trackers)) {
-            $pivot = $trackers[0]->pluck('pivot');
-            return ReceiveResource::collection($receives)->additional([
-                'pivot' => $pivot,
-            ]);
-        } else {
-            return ReceiveResource::collection($receives);
+        $pivots = [];
+        foreach ($trackers as $tracker) {
+            $pivots[] = $tracker->pluck('pivot');
         }
+        return ReceiveResource::collection($receives)->additional([
+            'pivot' => collect($pivots)->flatten(),
+        ]);
     }
     public function store(Request $request)
     {

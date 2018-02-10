@@ -29,7 +29,7 @@
                                                 <a class="button is-static">Mã hóa đơn</a>
                                             </p>
                                             <p class="control has-icons-left  is-expanded">
-                                                <input type="text" name="invoice_id" readonly :value="$route.query.invoice_id" class="input ">
+                                                <input type="text" name="invoice_id" readonly :value="$route.params.invoice_id" class="input ">
                                                 <span class="icon is-left">
                                                     <i class="mdi mdi-file-outline"></i>
                                                 </span>
@@ -83,7 +83,7 @@
                                     <div class="field-body">
                                         <div class="field">
                                             <p class="control">
-                                                <cleave :options="cleave.date" v-model="new_payment.paid_on" :class="{'input': true, 'is-danger': errors.has('payment_date')}" name="payment_date" v-validate.initial="'required|date_format:DD/MM/YYYY'" :raw="false" :disabled="onSubmit"></cleave>
+                                                <cleave :options="options.date" v-model="new_payment.paid_on" :class="{'input': true, 'is-danger': errors.has('payment_date')}" name="payment_date" v-validate.initial="'required|date_format:DD/MM/YYYY'" :raw="false" :disabled="onSubmit"></cleave>
                                             </p>
                                             <p class="help is-danger" v-show="errors.firstByRule('payment_date', 'required')">
                                                 Ngày không được để trống.
@@ -101,7 +101,7 @@
                                     <div class="field-body">
                                         <div class="field is-expanded">
                                             <p class="control">
-                                                <cleave v-model="new_payment.amount" :options="cleave.price" :class="{'input': true, 'is-danger': errors.has('payment_amount')}" name="payment_amount" placeholder="Số tiền" v-validate.initial="'required'" :disabled="onSubmit"></cleave>
+                                                <cleave v-model="new_payment.amount" :options="options.price" :class="{'input': true, 'is-danger': errors.has('payment_amount')}" name="payment_amount" placeholder="Số tiền" v-validate.initial="'required'" :disabled="onSubmit"></cleave>
                                             </p>
                                         </div>
                                     </div>
@@ -144,18 +144,31 @@
 <script>
 export default {
     data: () => ({
-        new_payment: {
-            name: "",
-            paid_on: "",
-            content: "",
-            amount: "",
-            method: "bank_transfer",
+        'new_payment': {
+            'name': "",
+            'paid_on': "",
+            'content': "",
+            'amount': "",
+            'method': "bank_transfer",
         },
-        onSubmit: false,
+        'onSubmit': false,
+        'options': {
+            'price': {
+                'numeral': true,
+                'numeralThousandsGroupStyle': 'thousand'
+            },
+            'vat': {
+                'numeral': true,
+            },
+            'date': {
+                'date': true,
+                'datePattern' : ["d", "m", "Y"],                    
+            }
+        },
     }),
     computed: {
-        cleave() {
-            return this.$store.state.cleaveOptions;
+        invoice() {
+            return this.$store.getters["invoice/invoice"](parseInt(this.$route.params.invoice_id));
         },
         payment_methods() {
             return this.$store.state.paymentMethods;
@@ -167,18 +180,16 @@ export default {
             }
         },
         user() {
-            return this.$store.state.user;
+            return this.$store.getters["user/user"];
         }
     },
-    asyncComputed: {
-        invoice: {
-            default: false,
-            get() {
-                return this.$store.dispatch("getInvoice", {invoice_id: this.$route.query.invoice_id});
-            }
-        }
-    },
+
     methods: {
+        guard() {
+            this.$store.dispatch("invoice/getSingleInvoiceInstance", {'invoice_id': parseInt(this.$route.params.invoice_id)});
+            //this.$store.dispatch("invoice/getRelatedTrackers", {'invoice_id': parseInt(this.$route.params.invoice_id)});
+           // this.$store.dispatch("invoice/getRelatedMaterials", {'invoice_id': parseInt(this.$route.params.invoice_id)});
+        },
         submitPayment() {
             if (this.errors.any()) {
                 return false;
