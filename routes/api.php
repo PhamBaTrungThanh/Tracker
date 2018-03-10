@@ -17,7 +17,7 @@ use Illuminate\Http\Request;
 Route::prefix('v1')->middleware('auth:api')->namespace('Api_v1')->group(function() {
 
     /* Custom routes */
-    Route::get('data', 'WorkController@allData');
+    Route::get('/data', 'WorkController@allData');
     Route::get('/work/{work_id}/invoices', 'InvoiceController@fromWork');
     Route::get('/work/{work_id}/materials', 'MaterialController@fromWork');
     Route::get('invoice/{invoice_id}/payments', 'PaymentController@fromInvoice');
@@ -25,7 +25,7 @@ Route::prefix('v1')->middleware('auth:api')->namespace('Api_v1')->group(function
     Route::get('invoice/{invoice_id}/receives', 'ReceiveController@fromInvoice');
     Route::get('invoice/{invoice_id}/materials', 'MaterialController@fromInvoice');
 
-    Route::get('/user/all', 'UserController@getAll');
+    Route::get('/users', 'UserController@getAll');
     Route::Resource('/user', 'UserController');
 
     Route::Resource('/provider', 'ProviderController');

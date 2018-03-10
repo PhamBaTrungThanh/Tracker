@@ -9,7 +9,7 @@ use App\Http\Resources\InvoiceResource;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-
+use Carbon\Carbon;
 class PaymentController extends Controller
 {
     /**
@@ -70,7 +70,7 @@ class PaymentController extends Controller
     {
         $payment = new Payment;
         $payment->name = $request->input('name');
-        $payment->paid_on = $request->input('paid_on');
+        $payment->paid_on = Carbon::createFromFormat("d/m/Y", $request->input('paid_on'));
         $payment->content = $request->input('content');
         $payment->amount = $request->input('amount');
         $payment->method = $request->input('method');

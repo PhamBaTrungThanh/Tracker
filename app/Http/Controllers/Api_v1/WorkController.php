@@ -14,29 +14,34 @@ use App\Models\Material;
 use App\Models\User;
 use App\Models\Payment;
 use App\Models\Receive;
+use App\Models\Boq;
 
 use App\Http\Resources\WorkResource;
 use App\Http\Resources\MaterialResource;
+use App\Http\Resources\MaterialTreeResource;
 use App\Http\Resources\TrackerResource;
 use App\Http\Resources\InvoiceResource;
 use App\Http\Resources\ProviderResource;
 use App\Http\Resources\ReceiveResource;
 use App\Http\Resources\PaymentResource;
 use App\Http\Resources\UserResource;
-
+use App\Http\Resources\BoqResource;
 class WorkController extends Controller
 {
     public function allData() 
     {
+        $materials = Material::withCount('children')->withDepth()->get();
+        
         return response()->json([
             'works' => WorkResource::collection(Work::all()),
-            'materials' => MaterialResource::collection(Material::with('boq')->get()),
+            'materials' => MaterialTreeResource::collection($materials->toFlatTree()),
             'trackers' => TrackerResource::collection(Tracker::all()),
             'providers' => ProviderResource::collection(Provider::all()),
             'invoices' => InvoiceResource::collection(Invoice::all()),
             'payments' => PaymentResource::collection(Payment::all()),
             'receives' => ReceiveResource::collection(Receive::all()),
             'users' => UserResource::collection(User::all()),
+            'boqs' => BoqResource::collection(Boq::all())
         ]);
     }
     public function index()

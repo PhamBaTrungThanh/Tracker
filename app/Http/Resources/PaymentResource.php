@@ -24,7 +24,7 @@ class PaymentResource extends Resource
             'type' => "payment",
             'invoice_id' => $this->invoice_id,
             'count_notes' => $this->notes_count,
-            'full_load' => ($request->route()->getName() === "payment.show") ? true : false,
+            'isFull' => false,
         ];
     }
 }

@@ -16,6 +16,7 @@ class InvoiceResource extends Resource
     {
         return [
             "id" => $this->id,
+            "uid" => $this->uid,
             "type" => $this->type,
             "name" => $this->name,
             "signed_at" => $this->signed_at->format('d/m/Y'),

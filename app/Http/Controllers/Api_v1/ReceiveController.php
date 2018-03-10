@@ -17,7 +17,6 @@ class ReceiveController extends Controller
     public function fromInvoice( int $invoice_id, Request $request)
     {
         $receives = Receive::where('invoice_id', $invoice_id)->with('trackers')->get();
-        
         $trackers = $receives->pluck('trackers');
         $pivots = [];
         foreach ($trackers as $tracker) {

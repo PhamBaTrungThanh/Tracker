@@ -106,7 +106,7 @@ class InvoiceController extends Controller
         $invoice->signed_at = Carbon::createFromFormat('d/m/Y', $request->input('new_invoice.signed_at'));
         $invoice->slug = str_slug($invoice->name);
         $invoice->type = $request->input('new_invoice.type');
-        $invoice->uid = $request->input('new_invoice.contract_number');
+        $invoice->uid = $request->input('new_invoice.uid');
         $invoice->provider_id = $provider_id;
         $invoice->payment_total = 0;
         $invoice->total = 0;
