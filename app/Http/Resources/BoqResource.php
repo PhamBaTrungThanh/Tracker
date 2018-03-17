@@ -22,6 +22,7 @@ class BoqResource extends Resource
             'vat' => $this->vat,
             'vat_sum' => $this->vat_sum,
             'total' => $this->total,
+            'is_new' => false,
         ];
     }
 }

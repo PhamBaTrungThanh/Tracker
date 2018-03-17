@@ -35,6 +35,7 @@ class ReceiveController extends Controller
         $receive->save();
         $trackers = [];
         $materials = [];
+        $units = [];
         foreach ($request->receive_list as $item) {
             if ($item['value'] > 0) {
                 $tracker = Tracker::find($item['tracker_id']);
@@ -46,6 +47,11 @@ class ReceiveController extends Controller
                     $tracker->material()->increment('received_unit', $value);
                     $trackers[] = new TrackerResource($tracker);
                     $materials[] = new MaterialResource($tracker->material);
+                    $units[] = [
+                        'tracker_id' => $tracker->id,
+                        'receive_id' => $receive->id,
+                        'unit' => $value,
+                    ];
                 }
             }
         }
@@ -54,6 +60,7 @@ class ReceiveController extends Controller
                 'trackers' => $trackers,
                 'materials' => $materials,
             ],
+            'units' => $units,
         ]);
     }
 }

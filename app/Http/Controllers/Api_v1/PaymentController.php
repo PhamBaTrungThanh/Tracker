@@ -87,9 +87,7 @@ class PaymentController extends Controller
         $invoice->payment_total += $payment->amount;
         $invoice->save();
 
-        return response()->json([
-            'message' => 'Success',
-            'created' => new PaymentResource($payment),
+        return (new PaymentResource($payment))->additional([
             'affected' => [
                 'invoice' => new InvoiceResource($invoice),
             ],

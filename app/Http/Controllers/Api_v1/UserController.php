@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\UserResource;
 use App\Models\User;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Auth;
 class UserController extends Controller
 {
     public function index(Request $request)
@@ -50,5 +51,17 @@ class UserController extends Controller
             $user->password = bcrypt($request->password);
             $user->save();
         }
+    }
+
+    public function logout(Request $request)
+    {
+        $request->user()->token()->revoke();
+
+        $json = [
+            'success' => true,
+            'code' => 200,
+            'message' => 'You are Logged out.',
+        ];
+        return response()->json($json, 200);
     }
 }

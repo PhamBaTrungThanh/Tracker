@@ -102,7 +102,7 @@ class InvoiceController extends Controller
         $total = 0;
         $invoice = new Invoice();
         $invoice->name = $request->input('new_invoice.name');
-        $invoice->work_id = $request->input('work_id');
+        $invoice->work_id = intval($request->input('work_id'));
         $invoice->signed_at = Carbon::createFromFormat('d/m/Y', $request->input('new_invoice.signed_at'));
         $invoice->slug = str_slug($invoice->name);
         $invoice->type = $request->input('new_invoice.type');
@@ -117,6 +117,7 @@ class InvoiceController extends Controller
         $materials = [];
         $boqs = [];
         $uid_to_id = [];
+        $sum = 0;
         foreach ($request->input('list') as $node) {
             $tracker = ($node['tracker']['unit'] === 0 && $node['tracker']['price'] === 0) ? false : $node['tracker'];
             
@@ -161,6 +162,7 @@ class InvoiceController extends Controller
                 $tracker_eloquent->total = ( floatval($tracker['unit']) * floatval($tracker['price']) * (floatval($tracker['vat'])/100 + 1) );
                 $tracker_eloquent->save();
                 $trackers[] = new TrackerResource($tracker_eloquent);
+                $sum += $tracker_eloquent->total;
             }
             if (count($node['boqs']) > 0) {
                 foreach ($node['boqs'] as $boq) {
@@ -183,7 +185,8 @@ class InvoiceController extends Controller
             }
         }
       
-
+        $invoice->total = $sum;
+        $invoice->save();
         return (new InvoiceResource($invoice))->additional([
             'provider' => ($new_provider) ? (new ProviderResource($provider)) : false,
             'trackers' => (count($trackers) > 0) ? $trackers : false,

@@ -29,7 +29,8 @@ class MaterialTreeResource extends Resource
             'depth' => $this->depth,
             'invoice_count' => $this->invoice_count,
             'total' => $this->total_price,
-            'received_unit' => $this->received_unit
+            'received_unit' => $this->received_unit,
+            'work_id' => $this->work_id,
         ];
     }
 }

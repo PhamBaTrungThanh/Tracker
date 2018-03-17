@@ -26,6 +26,7 @@ Route::prefix('v1')->middleware('auth:api')->namespace('Api_v1')->group(function
     Route::get('invoice/{invoice_id}/materials', 'MaterialController@fromInvoice');
 
     Route::get('/users', 'UserController@getAll');
+    Route::post('/logout', 'UserController@logout');
     Route::Resource('/user', 'UserController');
 
     Route::Resource('/provider', 'ProviderController');
