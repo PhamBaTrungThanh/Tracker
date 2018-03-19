@@ -42,6 +42,11 @@ class User extends Authenticatable
         4 => "Phòng kỹ thuật",
         5 => "Phòng hành chính",
     ];
+    public function workgroups() 
+    {
+        return $this->belongsToMany(Workgroup::class); 
+    }
+    
     /**
      * The attributes that should be hidden for arrays.
      *
@@ -96,6 +101,10 @@ class User extends Authenticatable
         return in_array($this->role, [0, 1]);
     }
     public function can_delete_work()
+    {
+        return in_array($this->role, [0, 1]);
+    }
+    public function can_add_user_to_workgroup()
     {
         return in_array($this->role, [0, 1]);
     }

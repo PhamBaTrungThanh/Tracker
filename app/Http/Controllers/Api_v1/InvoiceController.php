@@ -158,6 +158,7 @@ class InvoiceController extends Controller
                 $tracker_eloquent->received_unit = 0;
                 $tracker_eloquent->cost = $tracker['price'];
                 $tracker_eloquent->vat = $tracker['vat'];
+                $tracker_eloquent->buyer_id = $request->user()->id;
                 $tracker_eloquent->vat_sum = ( floatval($tracker['unit']) * floatval($tracker['price']) * (floatval($tracker['vat'])/100) );
                 $tracker_eloquent->total = ( floatval($tracker['unit']) * floatval($tracker['price']) * (floatval($tracker['vat'])/100 + 1) );
                 $tracker_eloquent->save();

@@ -15,7 +15,7 @@ class CreateTrackersTable extends Migration
     {
         Schema::create('trackers', function (Blueprint $table) {
             $table->increments('id');
-            
+            $table->integer('buyer_id');
             $table->integer('invoice_id')->unsigned();
             $table->integer('material_id')->unsigned();
            
@@ -33,7 +33,10 @@ class CreateTrackersTable extends Migration
             $table->bigInteger('pay_unit')->unsigned()->nullable();
             $table->decimal('pay_total', 40, 10)->unsigned()->nullable();
 
+
             $table->timestamps();
+
+
 
         });
     }

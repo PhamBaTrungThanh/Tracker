@@ -23,7 +23,7 @@ class MaterialTreeResource extends Resource
             'per' => $this->per,
             'brand' => $this->brand,
             'type' => 'material',
-            'currency' => $this->currency,
+            'currency' => ($this->currency === "") ? "đ" : $this->currency,
             'parent_id' => $this->parent_id,
             'has_children' => ($this->children_count > 0) ? true : false,
             'depth' => $this->depth,

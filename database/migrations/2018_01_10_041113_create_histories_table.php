@@ -16,9 +16,13 @@ class CreateHistoriesTable extends Migration
         Schema::create('histories', function (Blueprint $table) {
             $table->increments('id');
             // Which table are we tracking
-            $table->string('reference_table');
+            $table->string('reference_table')->nullable();
             // Which record from the table are we referencing
-            $table->integer('reference_id')->unsigned();
+            $table->integer('reference_id')->unsigned()->nullable();
+            // Who made the action
+            $table->string('affected_type');
+            // Which record from the table are we referencing
+            $table->integer('affected_id')->unsigned();
             // Who made the action
             $table->integer('actor_id')->unsigned();
             // What did they do

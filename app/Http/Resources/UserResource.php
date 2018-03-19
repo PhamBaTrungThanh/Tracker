@@ -16,7 +16,7 @@ class UserResource extends Resource
     {
         return 
         [
-            "user_id" => $this->id,
+            "id" => $this->id,
             "username" => $this->username,    
             "label" => $this->label(),
             "name" => $this->name,
@@ -50,6 +50,7 @@ class UserResource extends Resource
             "can_add_work" => $this->can_add_work(),
             "can_edit_work" => $this->can_edit_work(),
             "can_delete_work" => $this->can_delete_work(),
+            "can_add_user_to_workgroup" => $this->can_add_user_to_workgroup(),
         ];
     }
 }

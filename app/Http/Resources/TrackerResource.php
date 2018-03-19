@@ -26,6 +26,7 @@ class TrackerResource extends Resource
             'unreceive_sum' => ($this->unit - $this->received_unit) * $this->cost,
             'note' => "",
             'type' => "tracker",
+            'buyer_id' => $this->buyer_id,
         ];
     }
 }

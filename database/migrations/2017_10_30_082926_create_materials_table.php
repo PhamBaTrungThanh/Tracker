@@ -28,7 +28,7 @@ class CreateMaterialsTable extends Migration
             $table->string('per')->nullable();
             $table->timestamps();
 
-            NestedSet::columns($table);
+            $table->nestedSet();
         });
     }
 
