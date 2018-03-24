@@ -20,6 +20,7 @@ class UserResource extends Resource
             "username" => $this->username,    
             "label" => $this->label(),
             "name" => $this->name,
+            "first_name" => substr($this->name, strrpos($this->name, " ") + 1),
             "joined_at" => $this->joined_at,
             "mariage_status" => $this->mariage_status,
             "family_status" => $this->family_status,
@@ -51,6 +52,7 @@ class UserResource extends Resource
             "can_edit_work" => $this->can_edit_work(),
             "can_delete_work" => $this->can_delete_work(),
             "can_add_user_to_workgroup" => $this->can_add_user_to_workgroup(),
+            "can_create_workgroup" => $this->can_create_workgroup()
         ];
     }
 }

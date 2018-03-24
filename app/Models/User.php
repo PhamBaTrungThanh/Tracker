@@ -108,4 +108,8 @@ class User extends Authenticatable
     {
         return in_array($this->role, [0, 1]);
     }
+    public function can_create_workgroup()
+    {
+        return in_array($this->role, [0, 1]); 
+    }
 }

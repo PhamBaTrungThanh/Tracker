@@ -17,6 +17,8 @@ class CreateWorkgroupsTable extends Migration
             $table->increments('id');
             $table->string('name');
             $table->boolean('is_private');
+            $table->integer('creator_id');
+            $table->integer('leader_id')->default(0);
             $table->nestedSet();
             $table->timestamps();
         });

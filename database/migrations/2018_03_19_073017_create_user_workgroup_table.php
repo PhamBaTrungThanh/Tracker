@@ -17,6 +17,7 @@ class CreateUserWorkgroupTable extends Migration
             $table->increments('id');
             $table->integer('user_id');
             $table->integer('workgroup_id');
+            $table->string('role')->default('member');
             $table->timestamps();
         });
     }
