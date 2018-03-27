@@ -33,8 +33,15 @@ class WorkgroupController extends Controller
             $workgroup->is_private = $request->is_private;
             $workgroup->parent_id = $request->parent_id;
             $workgroup->creator_id = $request->user()->id;
+            $workgroup->leader_id = $request->leader_id;
             $workgroup->save();
-            return new WorkgroupResource($workgroup);
+            if ($workgroup->leader_id) {
+                $workgroup->users()->attach([
+                     $workgroup->leader_id => ["role" => "leader"],
+                ]);               
+            }
+
+            return new WorkgroupResource($workgroup->loadMissing('users'));
         }
     }
 
@@ -59,11 +66,31 @@ class WorkgroupController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $workgroup = Workgroup::find($id);
-        $workgroup->name = $request->name;
-        $workgroup->is_private = $request->is_private;
-        $workgroup->save();
-        return new WorkgroupResource($workgroup);
+        if ($request->action === "update_workgroup") {
+            $workgroup = Workgroup::find($id);
+            $workgroup->name = $request->name;
+            $workgroup->is_private = $request->is_private;
+            if ($workgroup->leader_id !== $request->leader_id) {
+                if ($workgroup->leader_id !== 0) {
+                    $workgroup->users()->updateExistingPivot($workgroup->leader_id, ["role" => "member"]);
+                }
+                if ($request->leader_id !== 0) {
+                    $workgroup->users()->updateExistingPivot($request->leader_id, ["role" => "leader"]);
+                }
+                $workgroup->leader_id = $request->leader_id;
+            }
+            $workgroup->save();
+            $workgroup->loadMissing('users');
+            return new WorkgroupResource($workgroup);            
+        }
+        if ($request->action === "add_new_users") {
+            $workgroup = Workgroup::find($id);
+            $workgroup->users()->attach($request->user_list);
+            $workgroup->save();
+            $workgroup->loadMissing('users');
+            return new WorkgroupResource($workgroup);
+        }
+        return response()->json([], 204);
     }
 
     /**
@@ -74,6 +101,9 @@ class WorkgroupController extends Controller
      */
     public function destroy($id)
     {
-        //
+        $workgroup = Workgroup::find($id);
+        $workgroup->users()->detach();
+        $workgroup->delete();
+        return response()->json(['message' => 'success'], 200);
     }
 }

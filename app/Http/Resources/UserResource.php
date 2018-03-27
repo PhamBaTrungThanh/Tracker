@@ -3,7 +3,7 @@
 namespace App\Http\Resources;
 
 use Illuminate\Http\Resources\Json\Resource;
-
+use Illuminate\Support\Facades\Storage;
 class UserResource extends Resource
 {
     /**
@@ -36,7 +36,8 @@ class UserResource extends Resource
             "birthday" => ($this->birthday) ? $this->birthday->format('d/m/Y') : "",
             "order" => $this->order,
             "email" => $this->email,
-            
+            "avatar" => ($this->avatar) ? $this->avatar : asset(Storage::url("default-avatar.png")),
+
             "can_see_reports" => true,
             "can_add_invoice" => $this->can_add_invoice(),
             "can_edit_invoice" => $this->can_edit_invoice(),
