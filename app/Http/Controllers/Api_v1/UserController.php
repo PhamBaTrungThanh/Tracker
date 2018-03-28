@@ -10,6 +10,20 @@ use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 class UserController extends Controller
 {
+    public $updatable_fields = [
+        'joined_at',
+        'mariage_status',
+        'family_status',
+        'current_workplace',
+        'current_job',
+        'address',
+        'phone_number',
+        'native_place',
+        'id_number',
+        'uid',
+        'birthday',
+        'workplace',
+    ];
     public function index(Request $request)
     {
         $user = $request->user();
@@ -46,10 +60,23 @@ class UserController extends Controller
     }
     public function update(Request $request, User $user)
     {
-        if ($request->action === "change_password") 
-        {
+        if ($request->action === "change_password") {
             $user->password = bcrypt($request->password);
             $user->save();
+            return response()->json(["success" => true], 200);
+        }
+        if ($request->action === "update_info") {
+            $field_name = snake_case($request->field_name);
+            if (!in_array($field_name, $this->updatable_fields)) 
+            {
+                return response()->json(["error" => true], 400);
+            }
+            if ($user->{$field_name} === $request->value) {
+                return response()->json(["error" => true], 204);
+            }
+            $user->{$field_name} = $request->value;
+            $user->save();
+            return response()->json(["update" => [$field_name => $request->value]], 200);
         }
     }
 
