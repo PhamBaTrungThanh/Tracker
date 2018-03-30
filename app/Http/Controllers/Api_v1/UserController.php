@@ -24,6 +24,9 @@ class UserController extends Controller
         'birthday',
         'workplace',
     ];
+    public $dates = [
+        'birthday',
+    ];
     public function index(Request $request)
     {
         $user = $request->user();
@@ -67,15 +70,17 @@ class UserController extends Controller
         }
         if ($request->action === "update_info") {
             $field_name = snake_case($request->field_name);
-            if (!in_array($field_name, $this->updatable_fields)) 
-            {
+            if (!in_array($field_name, $this->updatable_fields)) {
                 return response()->json(["error" => true], 400);
             }
-            if ($user->{$field_name} === $request->value) {
+
+            $value = (in_array($field_name, $this->dates)) ? Carbon::createFromFormat("d/m/Y", $request->value) : $request->value;
+            if ($user->{$field_name} === $value) {
                 return response()->json(["error" => true], 204);
             }
-            $user->{$field_name} = $request->value;
+            $user->{$field_name} = $value;
             $user->save();
+
             return response()->json(["update" => [$field_name => $request->value]], 200);
         }
     }
