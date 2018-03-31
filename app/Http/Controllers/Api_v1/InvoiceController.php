@@ -80,7 +80,7 @@ class InvoiceController extends Controller
      */
     public function store(Request $request)
     {
-        if ($request->filled('provider_id')) {
+        if ($request->input('provider_id') !== 0) {
             $provider_id = $request->input('provider_id');
             $new_provider = false;
 
@@ -110,7 +110,7 @@ class InvoiceController extends Controller
         $invoice->provider_id = $provider_id;
         $invoice->payment_total = 0;
         $invoice->total = 0;
-
+        $invoice->buyer_id = $request->user()->id;
         $invoice->save();
 
         $trackers = [];
@@ -177,6 +177,7 @@ class InvoiceController extends Controller
                             $boq_eloquent->vat = $boq['vat'];
                             $boq_eloquent->vat_sum = ( floatval($boq['unit']) * floatval($boq['price']) * (floatval($boq['vat'])/100) );
                             $boq_eloquent->total = ( floatval($boq['unit']) * floatval($boq['price']) * (floatval($boq['vat'])/100 + 1) );
+                            $boq_eloquent->description = "";
                             $boq_eloquent->save();
 
                             $boqs[] = new BoqResource($boq_eloquent);

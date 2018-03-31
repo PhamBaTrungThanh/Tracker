@@ -27,6 +27,7 @@ class TrackerResource extends Resource
             'note' => "",
             'type' => "tracker",
             'buyer_id' => $this->buyer_id,
+            'vat' => $this->vat
         ];
     }
 }

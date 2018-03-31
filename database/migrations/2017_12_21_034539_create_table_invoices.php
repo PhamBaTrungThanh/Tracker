@@ -20,6 +20,7 @@ class CreateTableInvoices extends Migration
             $table->string('type')->default('invoice');
             $table->string('name');
             $table->string('slug');
+            $table->integer('buyer_id');
             $table->date('signed_at')->nullable();
             $table->decimal('total', 40, 10)->nullable()->unsigned()->default(0);
             $table->decimal('payment_total', 40, 10)->nullable()->unsigned()->default(0);
