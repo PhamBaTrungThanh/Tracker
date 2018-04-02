@@ -90,6 +90,13 @@ class WorkgroupController extends Controller
             $workgroup->loadMissing('users');
             return new WorkgroupResource($workgroup);
         }
+        if ($request->action === "remove_user") {
+            $workgroup = Workgroup::find($id);
+            $workgroup->users()->detach($request->user_id);
+            $workgroup->save();
+            $workgroup->loadMissing('users');
+            return new WorkgroupResource($workgroup);
+        }
         return response()->json([], 204);
     }
 
