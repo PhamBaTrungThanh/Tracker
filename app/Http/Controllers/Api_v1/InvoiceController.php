@@ -15,7 +15,7 @@ use App\Http\Resources\ReceiveResource;
 use App\Http\Resources\ProviderResource;
 use App\Http\Resources\TrackerResource;
 use App\Http\Resources\BoqResource;
-use App\Http\Resources\MaterialResource;
+use App\Http\Resources\MaterialTreeResource;
 
 use App\Models\Receive;
 use App\Models\Tracker;
@@ -126,6 +126,7 @@ class InvoiceController extends Controller
                 $material = new Material;
                 $material->name = $node['name'];
                 $material->brand = $node['brand'];
+                $material->per = $node['per'];
                 $material->work_id =  $request->input('work_id');
                 $material->currency = ($node['currency']) ? $node['currency'] : "";
                 $material->total_unit = ($tracker) ? $tracker['unit'] : 0;
@@ -139,7 +140,8 @@ class InvoiceController extends Controller
                     $material->parent_id = $uid_to_id[$node['parent_uid']];
                 }
                 $material->save();
-                $materials[] = new MaterialResource($material);
+                $material->depth = $node['depth'];
+                $materials[] = new MaterialTreeResource($material);
                 if (isset($node['has_children'])) {
                     $uid_to_id[$node['uid']] = $material->id;
                 }

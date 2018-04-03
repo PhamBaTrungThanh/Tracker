@@ -30,7 +30,7 @@ class MaterialTreeResource extends Resource
             'invoice_count' => $this->invoice_count,
             'total' => $this->total_price,
             'received_unit' => $this->received_unit,
-            'work_id' => $this->work_id,
+            'work_id' => (int) $this->work_id,
         ];
     }
 }
