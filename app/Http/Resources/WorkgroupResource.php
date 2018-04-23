@@ -29,6 +29,7 @@ class WorkgroupResource extends JsonResource
                     ];
                 }); 
             }),
+            "categories" => CategoryResource::collection($this->whenLoaded('categories')),
         ];
     }
 }

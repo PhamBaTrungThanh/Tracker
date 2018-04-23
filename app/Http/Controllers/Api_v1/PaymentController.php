@@ -152,6 +152,7 @@ class PaymentController extends Controller
      */
     public function update(Request $request, Payment $payment)
     {
+        $affected = false;
         if ($request->name !== $payment->name) {
             $payment->name = $request->name;
             
@@ -161,6 +162,7 @@ class PaymentController extends Controller
             $payment->invoice->payment_total = $payment->invoice->payment_total - $payment->amount + $request->amount;
             $payment->amount = $request->amount;
             $payment->invoice->save();
+            $affected = true;
         }
         if ($request->paid_on !== $payment->paid_on) {
             $payment->paid_on = $request->paid_on;
@@ -176,10 +178,12 @@ class PaymentController extends Controller
         $payment->save();
         
         $payment->notes()->create([
-            'content' => $request->reason,
-            'action' => 'edit',
+            'content' => $request->edit_reason,
+            'action' => 'edit.payment',
             'actor_id' => $request->user()->id,
         ]);
+        $after_effects = ($affected) ? ["invoice" => new InvoiceResource($payment->invoice)] : false;
+        return (new PaymentResource($payment))->additional(["affected" => $after_effects]);
     }
 
     /**

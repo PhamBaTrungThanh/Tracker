@@ -5,7 +5,9 @@ namespace App\Http\Controllers\Api_v1;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Models\Workgroup;
+use App\Models\Category;
 use App\Http\Resources\WorkgroupResource;
+use App\Http\Resources\CategoryResource;
 class WorkgroupController extends Controller
 {
     /**
@@ -15,7 +17,7 @@ class WorkgroupController extends Controller
      */
     public function index()
     {
-        $workgroup = Workgroup::defaultOrder()->withDepth()->with('users')->get();
+        $workgroup = Workgroup::defaultOrder()->withDepth()->with(['users', 'categories'])->get();
         return WorkgroupResource::collection($workgroup);
     }
 
@@ -35,13 +37,19 @@ class WorkgroupController extends Controller
             $workgroup->creator_id = $request->user()->id;
             $workgroup->leader_id = $request->leader_id;
             $workgroup->save();
+            $workgroup->categories()->createMany([
+                ["name" => "Chưa phân loại", "type" => "uncategorized", "order" => -1],
+                ["name" => "Đang thực hiện", "order" => 0],
+                ["name" => "Tạm ngưng", "order" => 1],
+                ["name" => "Đã hoàn thành", "order" => 2
+            ]]);
             if ($workgroup->leader_id) {
                 $workgroup->users()->attach([
                      $workgroup->leader_id => ["role" => "leader"],
                 ]);               
             }
 
-            return new WorkgroupResource($workgroup->loadMissing('users'));
+            return new WorkgroupResource($workgroup->loadMissing(['users', 'categories']));
         }
     }
 
@@ -97,6 +105,12 @@ class WorkgroupController extends Controller
             $workgroup->loadMissing('users');
             return new WorkgroupResource($workgroup);
         }
+        if ($request->action === "update_categories_order") {
+            foreach ($request->input('order_list') as $category) {
+                Category::where('id', $category['id'])->update(['order' => $category['order']]);
+            }
+            return response()->json(["success" => true], 200);
+        }
         return response()->json([], 204);
     }
 
@@ -110,6 +124,7 @@ class WorkgroupController extends Controller
     {
         $workgroup = Workgroup::find($id);
         $workgroup->users()->detach();
+        $workgroup->categories()->delete();
         $workgroup->delete();
         return response()->json(['message' => 'success'], 200);
     }

@@ -141,6 +141,7 @@ class InvoiceController extends Controller
                 }
                 $material->save();
                 $material->depth = $node['depth'];
+                $material->has_children = $node['has_children'];
                 $materials[] = new MaterialTreeResource($material);
                 if (isset($node['has_children'])) {
                     $uid_to_id[$node['uid']] = $material->id;
@@ -152,20 +153,22 @@ class InvoiceController extends Controller
             }
 
             if ($tracker) {
-                $tracker_eloquent = new Tracker;
-                $tracker_eloquent->material_id = $material_id;
-                $tracker_eloquent->invoice_id = $invoice->id;
-                $tracker_eloquent->bought_at = $invoice->signed_at;
-                $tracker_eloquent->unit = $tracker['unit'];
-                $tracker_eloquent->received_unit = 0;
-                $tracker_eloquent->cost = $tracker['price'];
-                $tracker_eloquent->vat = $tracker['vat'];
-                $tracker_eloquent->buyer_id = $request->user()->id;
-                $tracker_eloquent->vat_sum = ( floatval($tracker['unit']) * floatval($tracker['price']) * (floatval($tracker['vat'])/100) );
-                $tracker_eloquent->total = ( floatval($tracker['unit']) * floatval($tracker['price']) * (floatval($tracker['vat'])/100 + 1) );
-                $tracker_eloquent->save();
-                $trackers[] = new TrackerResource($tracker_eloquent);
-                $sum += $tracker_eloquent->total;
+                if ($tracker['price'] !== 0 && $tracker['unit'] !== 0) {
+                    $tracker_eloquent = new Tracker;
+                    $tracker_eloquent->material_id = $material_id;
+                    $tracker_eloquent->invoice_id = $invoice->id;
+                    $tracker_eloquent->bought_at = $invoice->signed_at;
+                    $tracker_eloquent->unit = $tracker['unit'];
+                    $tracker_eloquent->received_unit = 0;
+                    $tracker_eloquent->cost = $tracker['price'];
+                    $tracker_eloquent->vat = $tracker['vat'];
+                    $tracker_eloquent->buyer_id = $request->user()->id;
+                    $tracker_eloquent->vat_sum = ( floatval($tracker['unit']) * floatval($tracker['price']) * (floatval($tracker['vat'])/100) );
+                    $tracker_eloquent->total = ( floatval($tracker['unit']) * floatval($tracker['price']) * (floatval($tracker['vat'])/100 + 1) );
+                    $tracker_eloquent->save();
+                    $trackers[] = new TrackerResource($tracker_eloquent);
+                    $sum += $tracker_eloquent->total;
+                }
             }
             if (count($node['boqs']) > 0) {
                 foreach ($node['boqs'] as $boq) {

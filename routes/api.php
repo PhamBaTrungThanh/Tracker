@@ -35,7 +35,7 @@ Route::prefix('v1')->middleware('auth:api')->namespace('Api_v1')->group(function
     
     Route::resource('/invoice', 'InvoiceController');
     
-
+    Route::resource('/category', 'CategoryController');
     Route::resource('/payment', 'PaymentController');  
     Route::post('/payment/archive', 'PaymentController@archive');
     Route::resource('/tracker', 'TrackerController');
@@ -46,5 +46,5 @@ Route::prefix('v1')->middleware('auth:api')->namespace('Api_v1')->group(function
     Route::delete('/task/delete', 'TaskController@massDelete');
     Route::resource('/task', 'TaskController');
     Route::resource('/workgroup', 'WorkgroupController');
-
+    Route::resource('/project', 'ProjectController');
 });

@@ -12,4 +12,9 @@ class Workgroup extends Model
     {
     	return $this->belongsToMany(User::class)->withPivot('role');
     }
+
+    public function categories()
+    {
+    	return $this->morphMany(Category::class, 'parent')->orderBy('order', 'asc');
+    }
 }
